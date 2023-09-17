@@ -1,0 +1,22 @@
+import 'package:flutter/material.dart';
+
+class AppNavigation {
+  static to(context, {required Widget nextPage}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => nextPage,
+      ),
+    );
+  }
+
+  static off(context, {required Widget nextPage}) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => nextPage,
+      ),
+      (route) => true,
+    );
+  }
+}
