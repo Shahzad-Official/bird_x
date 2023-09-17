@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1041073843468",
+    "project_id": "birdx-1",
+    "storage_bucket": "birdx-1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041073843468:android:1c895979a27d3df06ced29",
+        "android_client_info": {
+          "package_name": "com.example.bird_x"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXRYDcGSXaRWtV42zmMbLCeZc7B4qwD-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,6 +9,7 @@ class AppText extends StatelessWidget {
   final TextAlign? textAlign;
   final int? maxLines;
   final TextOverflow? overFlow;
+  final TextDecoration? textDecoration;
   const AppText({
     Key? key,
     required this.text,
@@ -18,16 +19,19 @@ class AppText extends StatelessWidget {
     this.textAlign,
     this.maxLines,
     this.overFlow,
+    this.textDecoration,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.roboto(
+      style: GoogleFonts.poppins(
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color,
+        decoration: textDecoration,
+        decorationColor: color,
       ),
       maxLines: maxLines,
       overflow: overFlow,

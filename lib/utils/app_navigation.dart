@@ -19,4 +19,17 @@ class AppNavigation {
       (route) => true,
     );
   }
+
+  static offAll(context, {required Widget nextPage}) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => nextPage,
+      ),
+    );
+  }
+
+  static back(context) {
+    Navigator.pop(context);
+  }
 }

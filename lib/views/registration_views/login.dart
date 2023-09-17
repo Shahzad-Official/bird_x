@@ -1,6 +1,21 @@
+import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
+import 'package:bird_x/controllers/registration_controllers/login_controller.dart';
+import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/views/main_page_views/main_page.dart';
+import 'package:bird_x/views/registration_views/forget_password.dart';
+import 'package:bird_x/views/registration_views/signup.dart';
+import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_logo.dart';
+import 'package:bird_x/widgets/app_shadowcontainer.dart';
+import 'package:bird_x/widgets/app_text.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../widgets/app_field.dart';
 
@@ -9,15 +24,195 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    var size = MediaQuery.of(context).size;
+    return Scaffold(
       body: SafeArea(
         child: Padding(
           padding: AppSpacing.defaultPadding,
-          child: Column(
+          child: ListView(
+            shrinkWrap: true,
             children: [
-              AppLogo(),
+              SizedBox(
+                height: size.height * 0.05,
+              ),
+              Row(
+                children: [
+                  const AppText(
+                    text: "Welcome To BirdX ",
+                    fontSize: 25,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  SvgPicture.asset(
+                    "assets/icons/login.svg",
+                    // ignore: deprecated_member_use
+                    color: AppColors.primaryColor,
+                    height: 35,
+                    width: 35,
+                  ),
+                ],
+              ),
               AppSpacing.heigthSpace20,
-              AppField(),
+              const AppLogo(),
+              AppSpacing.heigthSpace30,
+              const AppField(
+                hintText: "Email",
+                textType: TextInputType.emailAddress,
+                prefixIcon: Icon(
+                  Icons.email_outlined,
+                ),
+              ),
+              AppSpacing.heigthSpace20,
+              GetBuilder<LoginController>(
+                init: LoginController(),
+                initState: (_) {},
+                builder: (_) {
+                  return AppField(
+                    isObsecure: _.isObsecure,
+                    textType: TextInputType.visiblePassword,
+                    hintText: "Password",
+                    prefixIcon: const Icon(
+                      Icons.lock_outline,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        _.changeObsecurity();
+                      },
+                      icon: Icon(
+                        _.isObsecure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    AppNavigation.offAll(
+                      context,
+                      nextPage: const ForgetPassword(),
+                    );
+                  },
+                  child: const AppText(
+                    text: "Forget Password?",
+                  ),
+                ),
+              ),
+              AppSpacing.heigthSpace30,
+              AppButton(
+                onTap: () {
+                  AppNavigation.offAll(
+                    context,
+                    nextPage: const MainPage(),
+                  );
+                },
+                text: "LOGIN",
+              ),
+              AppSpacing.heigthSpace30,
+              const Row(
+                children: [
+                  Expanded(
+                    child: Divider(),
+                  ),
+                  AppText(
+                    text: "  OR  ",
+                    color: Colors.grey,
+                  ),
+                  Expanded(
+                    child: Divider(),
+                  ),
+                ],
+              ),
+              AppSpacing.heigthSpace20,
+              Center(
+                child: Wrap(
+                  spacing: 30,
+                  runSpacing: 50,
+                  children: [
+                    InkWell(
+                      onTap: () async {
+                        await GoogleSignIn().signIn().then(
+                              (value) => debugPrint(value!.email),
+                            );
+                      },
+                      child: AppShadowcontainer(
+                        height: 55,
+                        width: 55,
+                        child: SvgPicture.asset(
+                          "assets/icons/google.svg",
+                          height: 30,
+                          width: 30,
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () async {
+                        await FacebookAuth.instance.login().then(
+                          (value) {
+                            debugPrint(value.message);
+                          },
+                        );
+                      },
+                      child: AppShadowcontainer(
+                        height: 55,
+                        width: 55,
+                        child: SvgPicture.asset(
+                          "assets/icons/facebook.svg",
+                          height: 30,
+                          width: 30,
+                        ),
+                      ),
+                    ),
+                    // InkWell(
+                    //   onTap: () async {
+                    //     // await TwitterLogin(apiKey: "1703391159060492288Bitsbytes60", apiSecretKey: "27787682", redirectURI: "").login().then((value) => null);
+                    //   },
+                    //   child: AppShadowcontainer(
+                    //     height: 55,
+                    //     width: 55,
+                    //     child: SvgPicture.asset(
+                    //       "assets/icons/twitter.svg",
+                    //       height: 30,
+                    //       width: 30,
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
+              AppSpacing.heigthSpace30,
+              Center(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Don't have an account? ",
+                        style: GoogleFonts.poppins(
+                          fontSize: 17,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "SignUp",
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            AppNavigation.offAll(
+                              context,
+                              nextPage: const Signup(),
+                            );
+                          },
+                        style: GoogleFonts.poppins(
+                          fontSize: 17,
+                          color: AppColors.primaryColor,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
