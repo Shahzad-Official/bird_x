@@ -4,7 +4,6 @@ import 'package:bird_x/controllers/registration_controllers/signup_controller.da
 import 'package:bird_x/main.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/registration_views/login.dart';
-import 'package:bird_x/views/registration_views/otp_verification.dart';
 import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_field.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
@@ -115,6 +114,26 @@ class _SignupState extends State<Signup> {
               ),
               AppSpacing.heigthSpace20,
               AppSpacing.heigthSpace30,
+              Row(
+                children: [
+                  Expanded(
+                    child: AppField(
+                      controller: _controller.firstName,
+                      hintText: "First Name",
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: AppField(
+                      controller: _controller.lastName,
+                      hintText: "Last Name",
+                    ),
+                  ),
+                ],
+              ),
+              AppSpacing.heigthSpace20,
               AppField(
                 controller: _controller.email,
                 hintText: "Email",
@@ -200,6 +219,7 @@ class _SignupState extends State<Signup> {
                 initState: (_) {},
                 builder: (_) {
                   return AppField(
+                    controller: _controller.password,
                     isObsecure: _.isObsecure,
                     textType: TextInputType.visiblePassword,
                     hintText: "Password",
@@ -224,6 +244,7 @@ class _SignupState extends State<Signup> {
                 initState: (_) {},
                 builder: (_) {
                   return AppField(
+                    controller: _controller.cpassword,
                     isObsecure: _.isObsecure1,
                     textType: TextInputType.visiblePassword,
                     hintText: "Confirm Password",
@@ -243,16 +264,18 @@ class _SignupState extends State<Signup> {
                 },
               ),
               AppSpacing.heigthSpace30,
-              AppButton(
-                onTap: () {
-                  AppNavigation.offAll(
-                    context,
-                    nextPage: OtpVerification(
-                      email: _controller.email.text,
-                    ),
+              GetBuilder<SignupController>(
+                init: SignupController(),
+                initState: (_) {},
+                builder: (_) {
+                  return AppButton(
+                    isLoading: _.isLoading,
+                    onTap: () async {
+                      await _.registerUser(context);
+                    },
+                    text: "SIGNUP",
                   );
                 },
-                text: "SIGNUP",
               ),
               AppSpacing.heigthSpace30,
               Center(

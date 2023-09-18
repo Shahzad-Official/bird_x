@@ -2,7 +2,6 @@ import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/controllers/registration_controllers/login_controller.dart';
 import 'package:bird_x/utils/app_navigation.dart';
-import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/views/registration_views/forget_password.dart';
 import 'package:bird_x/views/registration_views/signup.dart';
 import 'package:bird_x/widgets/app_button.dart';
@@ -13,15 +12,21 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../widgets/app_field.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final LoginController _controller = Get.put(LoginController());
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -54,10 +59,11 @@ class Login extends StatelessWidget {
               AppSpacing.heigthSpace20,
               const AppLogo(),
               AppSpacing.heigthSpace30,
-              const AppField(
+              AppField(
+                controller: _controller.email,
                 hintText: "Email",
                 textType: TextInputType.emailAddress,
-                prefixIcon: Icon(
+                prefixIcon: const Icon(
                   Icons.email_outlined,
                 ),
               ),
@@ -67,6 +73,7 @@ class Login extends StatelessWidget {
                 initState: (_) {},
                 builder: (_) {
                   return AppField(
+                    controller: _.password,
                     isObsecure: _.isObsecure,
                     textType: TextInputType.visiblePassword,
                     hintText: "Password",
@@ -99,14 +106,18 @@ class Login extends StatelessWidget {
                 ),
               ),
               AppSpacing.heigthSpace30,
-              AppButton(
-                onTap: () {
-                  AppNavigation.offAll(
-                    context,
-                    nextPage: const MainPage(),
+              GetBuilder<LoginController>(
+                init: LoginController(),
+                initState: (_) {},
+                builder: (_) {
+                  return AppButton(
+                    isLoading: _.isLoading,
+                    onTap: () async {
+                      await _.login(context);
+                    },
+                    text: "LOGIN",
                   );
                 },
-                text: "LOGIN",
               ),
               AppSpacing.heigthSpace30,
               const Row(

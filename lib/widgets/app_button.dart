@@ -1,12 +1,18 @@
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
   final VoidCallback? onTap;
-
-  const AppButton({Key? key, required this.text, this.onTap}) : super(key: key);
+  final bool isLoading;
+  const AppButton({
+    Key? key,
+    required this.text,
+    this.onTap,
+    this.isLoading = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +27,17 @@ class AppButton extends StatelessWidget {
           color: AppColors.primaryColor,
         ),
         child: Center(
-          child: AppText(
-            text: text,
-            fontSize: 17,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
+          child: isLoading
+              ? const SpinKitChasingDots(
+                  color: Colors.white,
+                  size: 25,
+                )
+              : AppText(
+                  text: text,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
         ),
       ),
     );

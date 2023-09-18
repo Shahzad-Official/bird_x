@@ -87,6 +87,7 @@ class AppPhoneField extends StatelessWidget {
         ),
       ),
       child: IntlPhoneField(
+        controller: controller,
         initialCountryCode: initialCountry,
         onChanged: onChanged,
         decoration: InputDecoration(
