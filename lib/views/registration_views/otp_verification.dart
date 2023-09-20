@@ -1,9 +1,6 @@
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/controllers/registration_controllers/otp_controller.dart';
-import 'package:bird_x/utils/app_navigation.dart';
-import 'package:bird_x/views/registration_views/reset_password.dart';
-import 'package:bird_x/views/registration_views/successfull_registration.dart';
 import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_logo.dart';
 import 'package:bird_x/widgets/app_text.dart';
@@ -54,6 +51,7 @@ class _OtpVerificationState extends State<OtpVerification> {
 
   @override
   void initState() {
+    _controller.email = widget.email;
     _controller.startTimer();
     super.initState();
   }
@@ -148,29 +146,25 @@ class _OtpVerificationState extends State<OtpVerification> {
               ),
               AppSpacing.heigthSpace30,
               Pinput(
+                controller: _controller.otp,
                 length: 5,
                 defaultPinTheme: defaultPinTheme,
                 focusedPinTheme: focusedPinTheme,
                 submittedPinTheme: submittedPinTheme,
               ),
               AppSpacing.heigthSpace30,
-              AppButton(
-                onTap: () {
-                  if (widget.isForgetEmail) {
-                    AppNavigation.offAll(
-                      context,
-                      nextPage: const ResetPassword(),
-                    );
-                  } else {
-                    AppNavigation.offAll(
-                      context,
-                      nextPage: const SuccessfullRegistration(
-                        isForgetPass: false,
-                      ),
-                    );
-                  }
+              GetBuilder<OtpController>(
+                init: OtpController(),
+                initState: (_) {},
+                builder: (_) {
+                  return AppButton(
+                    isLoading: _.isLoading,
+                    onTap: () async {
+                      await _.verifyOtp(context, isForgetEmail: widget.isForgetEmail);
+                    },
+                    text: "VERIFY",
+                  );
                 },
-                text: "VERIFY",
               ),
             ],
           ),

@@ -86,8 +86,8 @@ class SignupController extends GetxController {
         longitude: "longitude",
         gender: groupValue,
       );
-      isLoading = false;
-      update();
     }
+    isLoading = false;
+    update();
   }
 }

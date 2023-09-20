@@ -1,13 +1,14 @@
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
+import 'package:bird_x/controllers/registration_controllers/forget_password_controller.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/registration_views/login.dart';
-import 'package:bird_x/views/registration_views/otp_verification.dart';
 import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_field.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 class ForgetPassword extends StatefulWidget {
   const ForgetPassword({Key? key}) : super(key: key);
@@ -17,7 +18,7 @@ class ForgetPassword extends StatefulWidget {
 }
 
 class _ForgetPasswordState extends State<ForgetPassword> {
-  TextEditingController email = TextEditingController();
+  final ForgetPasswordController _controller = Get.put(ForgetPasswordController());
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -30,7 +31,8 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       body: SafeArea(
         child: Padding(
           padding: AppSpacing.defaultPadding,
-          child: Column(
+          child: ListView(
+            shrinkWrap: true,
             children: [
               SizedBox(
                 height: size.height * 0.1,
@@ -40,7 +42,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
               ),
               AppSpacing.heigthSpace30,
               AppField(
-                controller: email,
+                controller: _controller.email,
                 hintText: "Email",
                 textType: TextInputType.emailAddress,
                 prefixIcon: const Icon(
@@ -48,17 +50,18 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                 ),
               ),
               AppSpacing.heigthSpace30,
-              AppButton(
-                onTap: () {
-                  AppNavigation.offAll(
-                    context,
-                    nextPage: OtpVerification(
-                      email: email.text,
-                      isForgetEmail: true,
-                    ),
+              GetBuilder<ForgetPasswordController>(
+                init: ForgetPasswordController(),
+                initState: (_) {},
+                builder: (_) {
+                  return AppButton(
+                    isLoading: _.isLoading,
+                    onTap: () async {
+                      await _.sendOtp(context);
+                    },
+                    text: "RESET PASSWORD",
                   );
                 },
-                text: "RESET PASSWORD",
               ),
               AppSpacing.heigthSpace30,
               TextButton(
