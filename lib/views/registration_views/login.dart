@@ -10,11 +10,10 @@ import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../widgets/app_field.dart';
 
@@ -140,40 +139,60 @@ class _LoginState extends State<Login> {
                   spacing: 30,
                   runSpacing: 50,
                   children: [
-                    InkWell(
-                      onTap: () async {
-                        await GoogleSignIn().signIn().then(
-                              (value) => debugPrint(value!.email),
-                            );
-                      },
-                      child: AppShadowcontainer(
-                        height: 55,
-                        width: 55,
-                        child: SvgPicture.asset(
-                          "assets/icons/google.svg",
-                          height: 30,
-                          width: 30,
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () async {
-                        await FacebookAuth.instance.login().then(
-                          (value) {
-                            debugPrint(value.message);
+                    GetBuilder<LoginController>(
+                      init: LoginController(),
+                      initState: (_) {},
+                      builder: (_) {
+                        return InkWell(
+                          onTap: () async {
+                            await _.googleLogin(context);
                           },
+                          child: AppShadowcontainer(
+                            height: 55,
+                            width: 190,
+                            shape: BoxShape.rectangle,
+                            child: _.googleLoading
+                                ? SpinKitChasingDots(
+                                    color: AppColors.primaryColor,
+                                    size: 20,
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      SvgPicture.asset(
+                                        "assets/icons/google.svg",
+                                        height: 30,
+                                        width: 30,
+                                      ),
+                                      AppText(
+                                        text: "Google Login",
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ],
+                                  ),
+                          ),
                         );
                       },
-                      child: AppShadowcontainer(
-                        height: 55,
-                        width: 55,
-                        child: SvgPicture.asset(
-                          "assets/icons/facebook.svg",
-                          height: 30,
-                          width: 30,
-                        ),
-                      ),
                     ),
+                    // InkWell(
+                    //   onTap: () async {
+                    //     await FacebookAuth.instance.login().then(
+                    //       (value) {
+                    //         debugPrint(value.message);
+                    //       },
+                    //     );
+                    //   },
+                    //   child: AppShadowcontainer(
+                    //     height: 55,
+                    //     width: 55,
+                    //     child: SvgPicture.asset(
+                    //       "assets/icons/facebook.svg",
+                    //       height: 30,
+                    //       width: 30,
+                    //     ),
+                    //   ),
+                    // ),
                     // InkWell(
                     //   onTap: () async {
                     //     // await TwitterLogin(apiKey: "1703391159060492288Bitsbytes60", apiSecretKey: "27787682", redirectURI: "").login().then((value) => null);

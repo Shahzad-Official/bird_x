@@ -26,4 +26,13 @@ class LoginController extends GetxController {
     isLoading = false;
     update();
   }
+
+  bool googleLoading = false;
+  googleLogin(context) async {
+    googleLoading = true;
+    update();
+    await RegistrationServices().googleLogin(context);
+    googleLoading = false;
+    update();
+  }
 }
