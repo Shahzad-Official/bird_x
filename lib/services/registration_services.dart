@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/main.dart';
@@ -61,11 +60,7 @@ class RegistrationServices {
       }
     }).catchError((err) {
       debugPrint(err.toString());
-      if (err is SocketException) {
-        AppSnackbar.showSnackbar(title: "Error", message: "Check your internet connection");
-      } else {
-        AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-      }
+      AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
     });
   }
 
@@ -88,6 +83,8 @@ class RegistrationServices {
       var data = jsonDecode(value.body);
 
       if (value.statusCode == 200) {
+        box.put("token", data['token']);
+        box.put("userData", value.body);
         AppSnackbar.showSnackbar(title: "Success", message: data['message']);
         AppNavigation.offAll(
           context,
@@ -98,11 +95,7 @@ class RegistrationServices {
       }
     }).catchError((err) {
       debugPrint(err.toString());
-      if (err is SocketException) {
-        AppSnackbar.showSnackbar(title: "Error", message: "Check your internet connection");
-      } else {
-        AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-      }
+      AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
     });
   }
 
@@ -144,11 +137,7 @@ class RegistrationServices {
       },
     ).catchError((err) {
       debugPrint(err.toString());
-      if (err is SocketException) {
-        AppSnackbar.showSnackbar(title: "Error", message: "Check your internet connection");
-      } else {
-        AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-      }
+      AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
     });
   }
 }
