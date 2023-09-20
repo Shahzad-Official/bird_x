@@ -22,7 +22,6 @@ class AppShadowcontainer extends StatelessWidget {
       height: height ?? 70,
       width: width ?? 70,
       decoration: BoxDecoration(
-        borderRadius: shape == null ? null : BorderRadius.circular(10),
         color: color ?? Colors.white,
         shape: shape ?? BoxShape.circle,
         boxShadow: [

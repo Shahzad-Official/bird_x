@@ -126,3 +126,68 @@ class AppPhoneField extends StatelessWidget {
     );
   }
 }
+
+class SearchField extends StatelessWidget {
+  final TextEditingController? controller;
+  final Widget? prefixIcon, suffixIcon;
+  final String? hintText;
+  final TextInputType? textType;
+  final void Function()? onTap;
+  const SearchField({
+    super.key,
+    this.controller,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.hintText,
+    this.textType,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            offset: const Offset(0, 4),
+            blurRadius: 4,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: TextFormField(
+        onTap: onTap,
+        readOnly: onTap == null ? false : true,
+        keyboardType: textType,
+        controller: controller,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          labelStyle: GoogleFonts.poppins(),
+          hintText: hintText,
+          hintStyle: GoogleFonts.roboto(
+            fontSize: 18,
+            fontWeight: FontWeight.w400,
+            color: const Color(0xffABAAAA),
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+          prefixIcon: prefixIcon,
+          suffixIcon: suffixIcon,
+          enabledBorder: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+}

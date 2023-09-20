@@ -12,10 +12,10 @@ class MainPageController extends GetxController {
     update();
   }
 
-  List<Widget> allPages = const [
-    HomeView(),
+  List<Widget> allPages =  [
+    const HomeView(),
     ChatsView(),
-    WishlistView(),
-    ProfileView(),
+    const WishlistView(),
+    const ProfileView(),
   ];
 }

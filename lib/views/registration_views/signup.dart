@@ -72,12 +72,14 @@ class _SignupState extends State<Signup> {
                                 return Padding(
                                   padding: const EdgeInsets.all(15),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
                                     children: [
                                       InkWell(
                                         onTap: () {
                                           AppNavigation.back(context);
-                                          _controller.pickProfile(source: ImageSource.camera);
+                                          _controller.pickProfile(
+                                              source: ImageSource.camera);
                                         },
                                         child: const AppShadowcontainer(
                                           child: Icon(
@@ -88,7 +90,8 @@ class _SignupState extends State<Signup> {
                                       InkWell(
                                         onTap: () {
                                           AppNavigation.back(context);
-                                          _controller.pickProfile(source: ImageSource.gallery);
+                                          _controller.pickProfile(
+                                              source: ImageSource.gallery);
                                         },
                                         child: const AppShadowcontainer(
                                           child: Icon(
@@ -232,7 +235,9 @@ class _SignupState extends State<Signup> {
                         _.changeObsecurity();
                       },
                       icon: Icon(
-                        _.isObsecure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _.isObsecure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                       ),
                     ),
                   );
@@ -257,7 +262,9 @@ class _SignupState extends State<Signup> {
                         _.changeObsecurity1();
                       },
                       icon: Icon(
-                        _.isObsecure1 ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _.isObsecure1
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                       ),
                     ),
                   );

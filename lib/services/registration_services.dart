@@ -1,13 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bird_x/constants/api_constant.dart';
-import 'package:bird_x/main.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
 import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/views/registration_views/otp_verification.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 
 class RegistrationServices {
@@ -60,7 +59,11 @@ class RegistrationServices {
       }
     }).catchError((err) {
       debugPrint(err.toString());
-      AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
+      if (err is SocketException) {
+        AppSnackbar.showSnackbar(title: "Error", message: "Check your internet connection");
+      } else {
+        AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      }
     });
   }
 
@@ -83,8 +86,6 @@ class RegistrationServices {
       var data = jsonDecode(value.body);
 
       if (value.statusCode == 200) {
-        box.put("token", data['token']);
-        box.put("userData", value.body);
         AppSnackbar.showSnackbar(title: "Success", message: data['message']);
         AppNavigation.offAll(
           context,
@@ -95,48 +96,11 @@ class RegistrationServices {
       }
     }).catchError((err) {
       debugPrint(err.toString());
-      AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
-    });
-  }
-
-  googleLogin(context) async {
-    await GoogleSignIn().signOut();
-    await GoogleSignIn().signIn().then(
-      (value) async {
-        var body = jsonEncode({
-          "email": value?.email,
-          "firstName": value?.displayName?.split(" ").first,
-          "lastName": value?.displayName?.split(" ").last,
-          "imageUrl": value!.photoUrl ?? "",
-        });
-        await post(
-          Uri.parse(ApiConstant.baseUrl + ApiConstant.googleSigin),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: body,
-        ).then((value) {
-          var data = jsonDecode(value.body);
-
-          if (value.statusCode == 200) {
-            box.put("token", data['token']);
-
-            box.put("userData", value.body);
-            AppSnackbar.showSnackbar(title: "Message", message: data['message']);
-            AppNavigation.offAll(
-              context,
-              nextPage: const MainPage(),
-            );
-          } else {
-            AppSnackbar.showSnackbar(title: "Error", message: data['message']);
-          }
-        }).catchError((err) {
-          debugPrint(err);
-          AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
-        });
-      },
-    ).catchError((err) {
-      debugPrint(err.toString());
+      if (err is SocketException) {
+        AppSnackbar.showSnackbar(title: "Error", message: "Check your internet connection");
+      } else {
+        AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      }
     });
   }
 }
