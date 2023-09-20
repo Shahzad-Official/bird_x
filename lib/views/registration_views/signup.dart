@@ -79,11 +79,11 @@ class _SignupState extends State<Signup> {
                                           AppNavigation.back(context);
                                           _controller.pickProfile(source: ImageSource.camera);
                                         },
-                                        child: SizedBox(
+                                        child: const SizedBox(
                                           height: 120,
                                           child: Column(
                                             children: [
-                                              const AppShadowcontainer(
+                                              AppShadowcontainer(
                                                 child: Icon(
                                                   Icons.camera_alt_outlined,
                                                 ),
@@ -104,11 +104,11 @@ class _SignupState extends State<Signup> {
                                           AppNavigation.back(context);
                                           _controller.pickProfile(source: ImageSource.gallery);
                                         },
-                                        child: SizedBox(
+                                        child: const SizedBox(
                                           height: 120,
                                           child: Column(
                                             children: [
-                                              const AppShadowcontainer(
+                                              AppShadowcontainer(
                                                 child: Icon(
                                                   Icons.photo_outlined,
                                                 ),

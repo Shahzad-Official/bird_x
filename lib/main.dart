@@ -36,6 +36,11 @@ class MyApp extends StatelessWidget {
             color: Colors.black,
           ),
         ),
+        navigationBarTheme: NavigationBarThemeData(
+          indicatorShape: BeveledRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
         brightness: Brightness.light,
         primarySwatch: AppColors().customMaterialColor,
         colorScheme: ColorScheme.fromSeed(
