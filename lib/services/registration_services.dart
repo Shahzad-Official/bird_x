@@ -34,7 +34,6 @@ class RegistrationServices {
       "password": password,
       "mobile": mobile,
       "profile": profile,
-      "fileType": "png",
       "location": {
         "address": address,
         "latitude": latitude,
