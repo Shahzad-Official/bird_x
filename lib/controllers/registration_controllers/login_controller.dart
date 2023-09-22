@@ -17,11 +17,14 @@ class LoginController extends GetxController {
     isLoading = true;
     update();
     if (email.text.isEmpty || !email.text.isEmail) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please enter valid email!");
     } else if (password.text.isEmpty || password.text.length < 6) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid password!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please enter valid password!");
     } else {
-      await RegistrationServices().login(context, email: email.text, password: password.text);
+      await RegistrationServices()
+          .login(context, email: email.text, password: password.text);
     }
     isLoading = false;
     update();

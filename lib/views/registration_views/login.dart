@@ -84,7 +84,9 @@ class _LoginState extends State<Login> {
                         _.changeObsecurity();
                       },
                       icon: Icon(
-                        _.isObsecure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _.isObsecure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                       ),
                     ),
                   );
@@ -118,6 +120,7 @@ class _LoginState extends State<Login> {
                   );
                 },
               ),
+         
               AppSpacing.heigthSpace30,
               const Row(
                 children: [
@@ -157,7 +160,8 @@ class _LoginState extends State<Login> {
                                     size: 20,
                                   )
                                 : Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
                                     children: [
                                       SvgPicture.asset(
                                         "assets/icons/google.svg",
