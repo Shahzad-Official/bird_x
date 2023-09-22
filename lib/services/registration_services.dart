@@ -34,12 +34,9 @@ class RegistrationServices {
       "password": password,
       "mobile": mobile,
       "profile": profile,
-      "fileType": "png",
-      "location": {
-        "address": address,
-        "latitude": latitude,
-        "longitude": longitude,
-      },
+      "address": address,
+      "latitude": latitude,
+      "longitude": longitude,
       "gender": gender,
     });
     await post(

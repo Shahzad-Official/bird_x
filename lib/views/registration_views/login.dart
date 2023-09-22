@@ -155,7 +155,7 @@ class _LoginState extends State<Login> {
                             width: 190,
                             shape: BoxShape.rectangle,
                             child: _.googleLoading
-                                ? SpinKitChasingDots(
+                                ? const SpinKitChasingDots(
                                     color: AppColors.primaryColor,
                                     size: 20,
                                   )
@@ -168,7 +168,7 @@ class _LoginState extends State<Login> {
                                         height: 30,
                                         width: 30,
                                       ),
-                                      AppText(
+                                      const AppText(
                                         text: "Google Login",
                                         fontSize: 17,
                                         fontWeight: FontWeight.w600,
