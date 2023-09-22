@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bird_x/services/registration_services.dart';
+import 'package:bird_x/utils/app_image_utils.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,11 +43,26 @@ class SignupController extends GetxController {
   String base64Image = "";
   pickProfile({required ImageSource source}) async {
     // ignore: invalid_use_of_visible_for_testing_member
-    await ImagePicker.platform.getImageFromSource(source: source).then((value) {
+    await ImagePicker.platform.getImageFromSource(source: source).then((value) async {
       if (value != null) {
-        profile = File(value.path);
+        var newprofile = File(value.path);
+        var fileSize = await AppImageUtils.fileSize(newprofile);
+        if (fileSize > 2) {
+          var file = await AppImageUtils.compressImage(
+            file: newprofile,
+            quality: fileSize > 5 && fileSize <= 10
+                ? 20
+                : fileSize > 10
+                    ? 30
+                    : 50,
+          );
+
+          profile = file;
+        } else {
+          profile = newprofile;
+        }
         base64Image = base64Encode(profile!.readAsBytesSync());
-        debugPrint(base64Image);
+
         update();
       } else {}
     }).catchError((err) {
