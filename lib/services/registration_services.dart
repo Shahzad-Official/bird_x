@@ -44,27 +44,37 @@ class RegistrationServices {
       headers: {"Content-Type": "application/json"},
       body: body,
     ).then((value) {
-      var data = jsonDecode(value.body);
-
-      AppSnackbar.showSnackbar(title: "Success", message: data['message']);
-      if (value.statusCode == 201) {
-        box.put("token", data['token']);
+      if (value.statusCode == 200 ||
+          value.statusCode == 201 ||
+          value.statusCode == 400) {
+        var data = jsonDecode(value.body);
 
         AppSnackbar.showSnackbar(title: "Success", message: data['message']);
-        AppNavigation.offAll(
-          context,
-          nextPage: OtpVerification(
-            email: email,
-          ),
-        );
+        if (value.statusCode == 201) {
+          box.put("token", data['token']);
+
+          AppSnackbar.showSnackbar(title: "Success", message: data['message']);
+          AppNavigation.offAll(
+            context,
+            nextPage: OtpVerification(
+              email: email,
+            ),
+          );
+        } else {
+          AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+        }
       } else {
-        AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+        print(value.statusCode);
       }
-    }).catchError((err) {
-      debugPrint(err.toString());
-      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-      // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
-    });
+    })
+
+        // .catchError((err) {
+        //   debugPrint(err.toString());
+        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+        //   // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
+        // })
+
+        ;
   }
 
   login(
@@ -126,7 +136,8 @@ class RegistrationServices {
             box.put("token", data['token']);
 
             box.put("userData", value.body);
-            AppSnackbar.showSnackbar(title: "Message", message: data['message']);
+            AppSnackbar.showSnackbar(
+                title: "Message", message: data['message']);
             AppNavigation.offAll(
               context,
               nextPage: const MainPage(),

@@ -1,5 +1,7 @@
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/controllers/main_page_controllers/main_page_controller.dart';
+import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/views/add_product/add_product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -41,7 +43,9 @@ class _MainPageState extends State<MainPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          AppNavigation.to(context, nextPage: const AddProduct());
+        },
         child: SvgPicture.asset(
           "assets/icons/add.svg",
           height: 20,
@@ -71,7 +75,9 @@ class _MainPageState extends State<MainPage> {
                   height: 25,
                   width: 25,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 0 ? AppColors.primaryColor : Colors.black,
+                  color: _.selectedIndex == 0
+                      ? AppColors.primaryColor
+                      : Colors.black,
                 ),
                 label: "Home",
               ),
@@ -81,7 +87,9 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 1 ? AppColors.primaryColor : Colors.black,
+                  color: _.selectedIndex == 1
+                      ? AppColors.primaryColor
+                      : Colors.black,
                 ),
                 label: "Chats",
               ),
@@ -91,7 +99,9 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 2 ? AppColors.primaryColor : Colors.black,
+                  color: _.selectedIndex == 2
+                      ? AppColors.primaryColor
+                      : Colors.black,
                 ),
                 label: "WishList",
               ),
@@ -101,7 +111,9 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 3 ? AppColors.primaryColor : Colors.black,
+                  color: _.selectedIndex == 3
+                      ? AppColors.primaryColor
+                      : Colors.black,
                 ),
                 label: "Profile",
               ),
