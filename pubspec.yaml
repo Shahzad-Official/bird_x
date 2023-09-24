@@ -76,7 +76,7 @@ dependencies:
   path_provider: any
 
   #share plugins
-  share_plus: any
+  share_plus: ^7.1.0
   url_launcher: ^6.1.14
 
   #social login

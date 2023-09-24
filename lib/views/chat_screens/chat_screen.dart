@@ -8,7 +8,8 @@ import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final String? name;
-  const ChatScreen({super.key, this.name});
+
+  const ChatScreen({Key? key, this.name}) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -50,10 +51,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GestureDetector(
-                        onTap: () {
-                          AppNavigation.back(context);
-                        },
-                        child: const Icon(Icons.arrow_back)),
+                      onTap: () {
+                        AppNavigation.back(context);
+                      },
+                      child: const Icon(Icons.arrow_back),
+                    ),
                     const SizedBox(
                       width: 20,
                     ),
@@ -74,28 +76,29 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                 ),
-                InkWell(
-                  onTap: () {},
-                  child: Container(
-                    height: 35,
-                    width: 35,
-                    decoration: BoxDecoration(
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.1),
-                            offset: Offset(0, 4),
-                            blurRadius: 15,
-                            spreadRadius: 0,
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SvgPicture.asset("assets/icons/phone.svg"),
-                    ),
-                  ),
-                ),
+                // InkWell(
+                //   onTap: () {},
+                //   child: Container(
+                //     height: 35,
+                //     width: 35,
+                //     decoration: BoxDecoration(
+                //       boxShadow: const [
+                //         BoxShadow(
+                //           color: Color.fromRGBO(0, 0, 0, 0.1),
+                //           offset: Offset(0, 4),
+                //           blurRadius: 15,
+                //           spreadRadius: 0,
+                //         ),
+                //       ],
+                //       borderRadius: BorderRadius.circular(10),
+                //       color: Colors.white,
+                //     ),
+                //     child: Padding(
+                //       padding: const EdgeInsets.all(8.0),
+                //       child: SvgPicture.asset("assets/icons/phone.svg"),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -106,11 +109,10 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final message = _messages[index]['text'];
-                  final alignment = _messages[index]['alignment'];
+              child: ListView(
+                children: _messages.map((messageData) {
+                  final message = messageData['text'];
+                  final alignment = messageData['alignment'];
                   final textColor = alignment == CrossAxisAlignment.start
                       ? const Color(0xff212121)
                       : Colors.white;
@@ -118,42 +120,62 @@ class _ChatScreenState extends State<ChatScreen> {
                       ? const BorderRadius.only(
                           bottomLeft: Radius.circular(16),
                           bottomRight: Radius.circular(16),
-                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
                         )
                       : const BorderRadius.only(
                           bottomLeft: Radius.circular(16),
                           bottomRight: Radius.circular(16),
-                          topRight: Radius.circular(16),
+                          topLeft: Radius.circular(16),
                         );
 
-                  final time = _messages[index]['time'] as DateTime;
+                  final time = messageData['time'] as DateTime;
                   final formattedTime = DateFormat.Hm().format(time);
-                  return Column(
-                    crossAxisAlignment: alignment,
+
+                  return Row(
+                    mainAxisAlignment: alignment == CrossAxisAlignment.start
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.end,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.all(8.0),
-                        padding: const EdgeInsets.all(12.0),
-                        decoration: BoxDecoration(
-                            color: alignment == CrossAxisAlignment.start
-                                ? const Color(0xffF0F0F1)
-                                : AppColors.primaryColor,
-                            borderRadius: borderRadius),
-                        child: Text(
-                          message,
-                          style: TextStyle(color: textColor),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 10),
-                        child: AppText(
-                          text: formattedTime,
-                          fontSize: 10,
-                        ),
+                      Column(
+                        crossAxisAlignment: alignment == CrossAxisAlignment.end
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.all(8.0),
+                            constraints: BoxConstraints(
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.75,
+                            ),
+                            padding: const EdgeInsets.all(12.0),
+                            decoration: BoxDecoration(
+                              color: alignment == CrossAxisAlignment.start
+                                  ? const Color(0xffF0F0F1)
+                                  : AppColors.primaryColor,
+                              borderRadius: borderRadius,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: alignment,
+                              children: [
+                                AppText(
+                                  text: message,
+                                  color: textColor,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10, right: 10),
+                            child: AppText(
+                              text: formattedTime,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   );
-                },
+                }).toList(),
               ),
             ),
             Padding(
@@ -197,8 +219,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                 height: 40,
                                 width: 40,
                                 decoration: const BoxDecoration(
-                                    color: AppColors.primaryColor,
-                                    shape: BoxShape.circle),
+                                  color: AppColors.primaryColor,
+                                  shape: BoxShape.circle,
+                                ),
                                 child: Center(
                                   child:
                                       SvgPicture.asset("assets/icons/send.svg"),
@@ -208,12 +231,16 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.black.withOpacity(0.1), width: 1),
+                              color: Colors.black.withOpacity(0.1),
+                              width: 1,
+                            ),
                             borderRadius: BorderRadius.circular(30),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.black.withOpacity(0.1), width: 1),
+                              color: Colors.black.withOpacity(0.1),
+                              width: 1,
+                            ),
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
