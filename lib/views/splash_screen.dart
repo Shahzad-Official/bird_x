@@ -5,6 +5,7 @@ import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/main.dart';
 import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/views/registration_views/login.dart';
 import 'package:bird_x/widgets/app_logo.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () {
         AppNavigation.offAll(
           context,
-          nextPage: const Login(),
+          nextPage: box.get("isLoggedIn") != null && box.get("isLoggedIn") == true ? const MainPage() : const Login(),
         );
       },
     );

@@ -44,9 +44,7 @@ class RegistrationServices {
       headers: {"Content-Type": "application/json"},
       body: body,
     ).then((value) {
-      if (value.statusCode == 200 ||
-          value.statusCode == 201 ||
-          value.statusCode == 400) {
+      if (value.statusCode == 200 || value.statusCode == 201 || value.statusCode == 400) {
         var data = jsonDecode(value.body);
 
         AppSnackbar.showSnackbar(title: "Success", message: data['message']);
@@ -66,15 +64,11 @@ class RegistrationServices {
       } else {
         print(value.statusCode);
       }
-    })
-
-        // .catchError((err) {
-        //   debugPrint(err.toString());
-        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-        //   // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
-        // })
-
-        ;
+    }).catchError((err) {
+      debugPrint(err.toString());
+      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
+    });
   }
 
   login(
@@ -99,6 +93,7 @@ class RegistrationServices {
         box.put("token", data['token']);
         box.put("userData", value.body);
         AppSnackbar.showSnackbar(title: "Success", message: data['message']);
+        box.put("isLoggedIn", true);
         AppNavigation.offAll(
           context,
           nextPage: const MainPage(),
@@ -134,10 +129,9 @@ class RegistrationServices {
 
           if (value.statusCode == 200) {
             box.put("token", data['token']);
-
+            box.put("isLoggedIn", true);
             box.put("userData", value.body);
-            AppSnackbar.showSnackbar(
-                title: "Message", message: data['message']);
+            AppSnackbar.showSnackbar(title: "Message", message: data['message']);
             AppNavigation.offAll(
               context,
               nextPage: const MainPage(),

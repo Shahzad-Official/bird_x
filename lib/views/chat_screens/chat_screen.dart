@@ -1,38 +1,86 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/constants/app_colors.dart';
+import 'package:bird_x/main.dart';
+import 'package:bird_x/models/all_chats_model.dart';
+import 'package:bird_x/models/user_model.dart';
+import 'package:bird_x/services/chat_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class ChatScreen extends StatefulWidget {
-  final String? name;
-
-  const ChatScreen({Key? key, this.name}) : super(key: key);
+  final UserData userData;
+  const ChatScreen({super.key, required this.userData});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final StreamController<List<ChatData>> _chatStream = StreamController<List<ChatData>>();
+  Socket socket = io(
+    ApiConstant.mainUrl,
+    OptionBuilder().setTransports(['websocket']).disableAutoConnect().build(),
+  );
   final TextEditingController _messageController = TextEditingController();
-  final List<Map<String, dynamic>> _messages = [];
+  List<ChatData> chats = [];
+  final ChatServices _chatServices = ChatServices();
+  Map<String, dynamic> userData = {};
+  bool isLoading = false;
+  getData() async {
+    setState(() {
+      isLoading = true;
+    });
+    userData = jsonDecode(box.get("userData"));
+
+    await _chatServices.createRoom(
+      senderId: userData['data']['_id'].toString(),
+      receiverId: widget.userData.sId.toString(),
+    );
+
+    socket.connect();
+    socket.onConnect((data) => debugPrint("user connected"));
+    socket.onDisconnect((data) => debugPrint("user disconnect"));
+    socket.onError((data) => debugPrint("error on connection $data"));
+    socket.emit("join_room", _chatServices.roomData.data!.sId.toString());
+    socket.on("message", (data) {
+      debugPrint("message data is $data");
+    });
+    await _chatServices.getRoomChats(_chatServices.roomData.data!.sId.toString());
+    chats = _chatServices.allChatsModel.data!;
+    _chatStream.add(chats);
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   void _sendMessage() {
     String messageText = _messageController.text;
     if (messageText.isNotEmpty) {
-      setState(() {
-        _messages.add({
-          'text': messageText,
-          'time': DateTime.now(),
-          'alignment': _messages.length % 2 == 0
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-        });
-      });
+      var messageData = _chatServices.sendMessage(
+        message: messageText,
+        senderId: userData['data']['_id'].toString(),
+        receiverId: widget.userData.sId.toString(),
+        roomId: _chatServices.roomData.data!.sId.toString(),
+      );
+      socket.emit("message", messageData);
+
       _messageController.clear();
     }
+  }
+
+  @override
+  void initState() {
+    getData();
+
+    super.initState();
   }
 
   @override
@@ -51,11 +99,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        AppNavigation.back(context);
-                      },
-                      child: const Icon(Icons.arrow_back),
-                    ),
+                        onTap: () {
+                          AppNavigation.back(context);
+                        },
+                        child: const Icon(Icons.arrow_back)),
                     const SizedBox(
                       width: 20,
                     ),
@@ -64,7 +111,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         AppText(
-                          text: widget.name.toString(),
+                          text: "${widget.userData.firstName!} ${widget.userData.lastName}",
                           fontSize: 18,
                         ),
                         const AppText(
@@ -76,29 +123,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                 ),
-                // InkWell(
-                //   onTap: () {},
-                //   child: Container(
-                //     height: 35,
-                //     width: 35,
-                //     decoration: BoxDecoration(
-                //       boxShadow: const [
-                //         BoxShadow(
-                //           color: Color.fromRGBO(0, 0, 0, 0.1),
-                //           offset: Offset(0, 4),
-                //           blurRadius: 15,
-                //           spreadRadius: 0,
-                //         ),
-                //       ],
-                //       borderRadius: BorderRadius.circular(10),
-                //       color: Colors.white,
-                //     ),
-                //     child: Padding(
-                //       padding: const EdgeInsets.all(8.0),
-                //       child: SvgPicture.asset("assets/icons/phone.svg"),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -109,59 +133,48 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             Expanded(
-              child: ListView(
-                children: _messages.map((messageData) {
-                  final message = messageData['text'];
-                  final alignment = messageData['alignment'];
-                  final textColor = alignment == CrossAxisAlignment.start
-                      ? const Color(0xff212121)
-                      : Colors.white;
-                  final borderRadius = alignment == CrossAxisAlignment.start
-                      ? const BorderRadius.only(
-                          bottomLeft: Radius.circular(16),
-                          bottomRight: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                        )
-                      : const BorderRadius.only(
-                          bottomLeft: Radius.circular(16),
-                          bottomRight: Radius.circular(16),
-                          topLeft: Radius.circular(16),
-                        );
+              child: StreamBuilder<List<ChatData>>(
+                stream: _chatStream.stream,
+                builder: (context, snapshot) {
+                  if (snapshot.data == null || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: AppText(
+                        text: "NO Data Found",
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final message = snapshot.data![index].message.toString();
+                      final alignment = snapshot.data![index].senderId == userData['_id'] ? CrossAxisAlignment.start : CrossAxisAlignment.end;
+                      final textColor = alignment == CrossAxisAlignment.start ? const Color(0xff212121) : Colors.white;
+                      final borderRadius = alignment == CrossAxisAlignment.start
+                          ? const BorderRadius.only(
+                              bottomLeft: Radius.circular(16),
+                              bottomRight: Radius.circular(16),
+                              topLeft: Radius.circular(16),
+                            )
+                          : const BorderRadius.only(
+                              bottomLeft: Radius.circular(16),
+                              bottomRight: Radius.circular(16),
+                              topRight: Radius.circular(16),
+                            );
 
-                  final time = messageData['time'] as DateTime;
-                  final formattedTime = DateFormat.Hm().format(time);
-
-                  return Row(
-                    mainAxisAlignment: alignment == CrossAxisAlignment.start
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.end,
-                    children: [
-                      Column(
-                        crossAxisAlignment: alignment == CrossAxisAlignment.end
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
+                      final time = DateTime.parse(snapshot.data![index].createdOn.toString());
+                      final formattedTime = DateFormat.Hm().format(time);
+                      return Column(
+                        crossAxisAlignment: alignment,
                         children: [
                           Container(
                             margin: const EdgeInsets.all(8.0),
-                            constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.75,
-                            ),
                             padding: const EdgeInsets.all(12.0),
-                            decoration: BoxDecoration(
-                              color: alignment == CrossAxisAlignment.start
-                                  ? const Color(0xffF0F0F1)
-                                  : AppColors.primaryColor,
-                              borderRadius: borderRadius,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: alignment,
-                              children: [
-                                AppText(
-                                  text: message,
-                                  color: textColor,
-                                ),
-                              ],
+                            decoration: BoxDecoration(color: alignment == CrossAxisAlignment.start ? const Color(0xffF0F0F1) : AppColors.primaryColor, borderRadius: borderRadius),
+                            child: Text(
+                              message,
+                              style: TextStyle(color: textColor),
                             ),
                           ),
                           Padding(
@@ -172,10 +185,10 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                           ),
                         ],
-                      ),
-                    ],
+                      );
+                    },
                   );
-                }).toList(),
+                },
               ),
             ),
             Padding(
@@ -207,8 +220,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             fontWeight: FontWeight.w400,
                             color: const Color(0xff4C4C4C),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 15.0, horizontal: 25.0),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 25.0),
                           suffixIcon: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: InkWell(
@@ -218,29 +230,19 @@ class _ChatScreenState extends State<ChatScreen> {
                               child: Container(
                                 height: 40,
                                 width: 40,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.primaryColor,
-                                  shape: BoxShape.circle,
-                                ),
+                                decoration: const BoxDecoration(color: AppColors.primaryColor, shape: BoxShape.circle),
                                 child: Center(
-                                  child:
-                                      SvgPicture.asset("assets/icons/send.svg"),
+                                  child: SvgPicture.asset("assets/icons/send.svg"),
                                 ),
                               ),
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black.withOpacity(0.1),
-                              width: 1,
-                            ),
+                            borderSide: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
                             borderRadius: BorderRadius.circular(30),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black.withOpacity(0.1),
-                              width: 1,
-                            ),
+                            borderSide: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),

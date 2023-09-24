@@ -51,6 +51,7 @@ dependencies:
 
   #internet plugins
   http: any
+  socket_io_client: any
 
   #animation plugins
   animations: ^2.0.8
@@ -74,6 +75,7 @@ dependencies:
   cached_network_image: ^3.2.3
   flutter_image_compress: ^2.0.4
   path_provider: any
+  
 
   #share plugins
   share_plus: ^7.1.0
