@@ -1,4 +1,6 @@
+import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/constants/app_spacing.dart';
+import 'package:bird_x/models/all_chats_model.dart';
 import 'package:bird_x/services/chat_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/chat_screens/chat_screen.dart';
@@ -8,6 +10,12 @@ import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:socket_io_client/socket_io_client.dart';
+
+Socket socket = io(
+  ApiConstant.mainUrl,
+  OptionBuilder().setTransports(['websocket']).disableAutoConnect().build(),
+);
 
 class ChatsView extends StatefulWidget {
   const ChatsView({Key? key}) : super(key: key);
@@ -25,6 +33,7 @@ class _ChatsViewState extends State<ChatsView> {
       isLoading = true;
     });
     await _chatServices.getAllUsers();
+
     setState(() {
       isLoading = false;
     });
@@ -32,6 +41,10 @@ class _ChatsViewState extends State<ChatsView> {
 
   @override
   void initState() {
+    socket.connect();
+    socket.onConnect((data) => debugPrint("user connected"));
+    socket.onDisconnect((data) => debugPrint("user disconnect"));
+    socket.onError((data) => debugPrint("error on connection $data"));
     getData();
     super.initState();
   }
@@ -131,9 +144,24 @@ class _ChatsViewState extends State<ChatsView> {
                                             fontSize: 17,
                                             fontWeight: FontWeight.w500,
                                           ),
-                                          const AppText(
-                                            text: "Sup Dude?😅",
-                                            fontSize: 15,
+                                          FutureBuilder<AllChatsModel>(
+                                            future: _chatServices.getUserChats(
+                                              _chatServices.allUsersModel.data![index].sId.toString(),
+                                            ),
+                                            builder: (context, snap) {
+                                              if (snap.hasData) {
+                                                return AppText(
+                                                  text: snap.data == null || snap.data!.data == null || snap.data!.data!.isEmpty
+                                                      ? ""
+                                                      : snap.data!.data!.last.senderId.toString() == _chatServices.allUsersModel.data![index].sId.toString()
+                                                          ? snap.data!.data!.last.senderId.toString()
+                                                          : "You: ${snap.data!.data!.last.message.toString()}",
+                                                  fontSize: 15,
+                                                );
+                                              } else {
+                                                return const AppText(text: "loading...");
+                                              }
+                                            },
                                           ),
                                         ],
                                       ),

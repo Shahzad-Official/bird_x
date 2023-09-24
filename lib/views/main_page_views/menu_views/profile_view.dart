@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:bird_x/constants/app_colors.dart';
+import 'package:bird_x/main.dart';
+import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/views/main_page_views/menu_views/home_view.dart';
 import 'package:bird_x/views/profile/about_us.dart';
 import 'package:bird_x/views/profile/edit_profile.dart';
 import 'package:bird_x/views/profile/privacy_policy.dart';
+import 'package:bird_x/widgets/app_cached_image.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -11,8 +17,22 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../constants/app_spacing.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  LoginModel userData = LoginModel();
+  @override
+  void initState() {
+    var data = jsonDecode(box.get("userData"));
+    userData = LoginModel.fromJson(data);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,49 +43,32 @@ class ProfileView extends StatelessWidget {
             padding: AppSpacing.defaultPadding,
             child: Column(
               children: [
+                AppSpacing.heigthSpace20,
+                AppCachedImage(
+                  height: 150,
+                  width: 150,
+                  shape: BoxShape.circle,
+                  url: userData.data!.profile.toString(),
+                ),
                 AppSpacing.heigthSpace10,
-                Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      height: 120,
-                      width: 120,
-                      decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                              image: NetworkImage(
-                                "https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80",
-                              ),
-                              fit: BoxFit.cover)),
+                    AppText(
+                      text: "${userData.data!.firstName} ${userData.data!.lastName}",
+                      color: AppColors.primaryColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
                     ),
-                    const SizedBox(
-                      width: 20,
+                    AppText(
+                      text: userData.data!.location!.address.toString(),
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.50,
-                          child: const Flexible(
-                            child: AppText(
-                              text: "MR. ABC",
-                              color: AppColors.primaryColor,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              overFlow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        const AppText(
-                          text: "Multan",
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        const AppText(
-                          text: "Since 2022",
-                          fontSize: 17,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ],
+                    AppText(
+                      text: "Since ${AppDateUtils.formatDate(pattern: "dd MMM yyyy", date: userData.data!.createdOn.toString())}",
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
                     ),
                   ],
                 ),

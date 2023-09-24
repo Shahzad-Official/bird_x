@@ -1,15 +1,16 @@
-class UserModel {
+class LoginModel {
   bool? success;
   String? message;
   UserData? data;
+  String? token;
 
-  UserModel({this.success, this.message, this.data});
+  LoginModel({this.success, this.message, this.data, this.token});
 
-  UserModel.fromJson(json) {
+  LoginModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-
-    data = json['data'];
+    data = json['data'] != null ? new UserData.fromJson(json['data']) : null;
+    token = json['token'];
   }
 
   Map<String, dynamic> toJson() {
@@ -17,8 +18,9 @@ class UserModel {
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
-      data['data'] = this.data!;
+      data['data'] = this.data!.toJson();
     }
+    data['token'] = this.token;
     return data;
   }
 }
