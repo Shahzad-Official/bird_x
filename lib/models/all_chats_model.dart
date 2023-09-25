@@ -11,15 +11,15 @@ class AllChatsModel {
     if (json['data'] != null) {
       data = <ChatData>[];
       json['data'].forEach((v) {
-        data!.add(new ChatData.fromJson(v));
+        data!.add(ChatData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -49,14 +49,14 @@ class ChatData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['roomId'] = this.roomId;
-    data['senderId'] = this.senderId;
-    data['receiverId'] = this.receiverId;
-    data['messageType'] = this.messageType;
-    data['message'] = this.message;
-    data['createdOn'] = this.createdOn;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['roomId'] = roomId;
+    data['senderId'] = senderId;
+    data['receiverId'] = receiverId;
+    data['messageType'] = messageType;
+    data['message'] = message;
+    data['createdOn'] = createdOn;
     return data;
   }
 }

@@ -14,11 +14,13 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final MainPageController _controller = Get.put(MainPageController());
   late PageController _pageController;
+
   @override
   void initState() {
     _pageController = PageController(
-      initialPage: 0,
+      initialPage: _controller.selectedIndex,
     );
     super.initState();
   }
@@ -75,9 +77,7 @@ class _MainPageState extends State<MainPage> {
                   height: 25,
                   width: 25,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 0
-                      ? AppColors.primaryColor
-                      : Colors.black,
+                  color: _.selectedIndex == 0 ? AppColors.primaryColor : Colors.black,
                 ),
                 label: "Home",
               ),
@@ -87,9 +87,7 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 1
-                      ? AppColors.primaryColor
-                      : Colors.black,
+                  color: _.selectedIndex == 1 ? AppColors.primaryColor : Colors.black,
                 ),
                 label: "Chats",
               ),
@@ -99,9 +97,7 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 2
-                      ? AppColors.primaryColor
-                      : Colors.black,
+                  color: _.selectedIndex == 2 ? AppColors.primaryColor : Colors.black,
                 ),
                 label: "WishList",
               ),
@@ -111,9 +107,7 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 3
-                      ? AppColors.primaryColor
-                      : Colors.black,
+                  color: _.selectedIndex == 3 ? AppColors.primaryColor : Colors.black,
                 ),
                 label: "Profile",
               ),

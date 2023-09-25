@@ -50,7 +50,6 @@ class AppCachedImage extends StatelessWidget {
         );
       },
       errorWidget: (context, url, error) {
-        debugPrint(url);
         return Container(
           height: height,
           width: width,

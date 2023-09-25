@@ -9,18 +9,18 @@ class LoginModel {
   LoginModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ? new UserData.fromJson(json['data']) : null;
+    data = json['data'] != null ? UserData.fromJson(json['data']) : null;
     token = json['token'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['token'] = this.token;
+    data['token'] = token;
     return data;
   }
 }
@@ -38,11 +38,27 @@ class UserData {
   bool? isVerified;
   String? createdOn;
   String? subscription;
+  bool? isOnline;
+  String? lastActive;
 
-  UserData({this.location, this.sId, this.firstName, this.lastName, this.email, this.profile, this.mobile, this.password, this.gender, this.isVerified, this.createdOn, this.subscription});
+  UserData(
+      {this.location,
+      this.sId,
+      this.firstName,
+      this.lastName,
+      this.email,
+      this.profile,
+      this.mobile,
+      this.password,
+      this.gender,
+      this.isVerified,
+      this.createdOn,
+      this.subscription,
+      this.isOnline,
+      this.lastActive});
 
   UserData.fromJson(Map<String, dynamic> json) {
-    location = json['location'] != null ? new Location.fromJson(json['location']) : null;
+    location = json['location'] != null ? Location.fromJson(json['location']) : null;
     sId = json['_id'];
     firstName = json['firstName'];
     lastName = json['lastName'];
@@ -54,24 +70,28 @@ class UserData {
     isVerified = json['isVerified'];
     createdOn = json['createdOn'];
     subscription = json['subscription'];
+    isOnline = json['isOnline'];
+    lastActive = json['lastActive'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.location != null) {
-      data['location'] = this.location!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (location != null) {
+      data['location'] = location!.toJson();
     }
-    data['_id'] = this.sId;
-    data['firstName'] = this.firstName;
-    data['lastName'] = this.lastName;
-    data['email'] = this.email;
-    data['profile'] = this.profile;
-    data['mobile'] = this.mobile;
-    data['password'] = this.password;
-    data['gender'] = this.gender;
-    data['isVerified'] = this.isVerified;
-    data['createdOn'] = this.createdOn;
-    data['subscription'] = this.subscription;
+    data['_id'] = sId;
+    data['firstName'] = firstName;
+    data['lastName'] = lastName;
+    data['email'] = email;
+    data['profile'] = profile;
+    data['mobile'] = mobile;
+    data['password'] = password;
+    data['gender'] = gender;
+    data['isVerified'] = isVerified;
+    data['createdOn'] = createdOn;
+    data['subscription'] = subscription;
+    data['isOnline'] = isOnline;
+    data['lastActive'] = lastActive;
     return data;
   }
 }
@@ -90,10 +110,10 @@ class Location {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['address'] = this.address;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['address'] = address;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
     return data;
   }
 }

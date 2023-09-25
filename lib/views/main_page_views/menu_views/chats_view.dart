@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/constants/app_spacing.dart';
+import 'package:bird_x/main.dart';
 import 'package:bird_x/models/all_chats_model.dart';
+import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/services/chat_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/views/chat_screens/chat_screen.dart';
 import 'package:bird_x/views/notifications.dart/notifications.dart';
 import 'package:bird_x/widgets/app_cached_image.dart';
@@ -26,12 +31,26 @@ class ChatsView extends StatefulWidget {
 
 class _ChatsViewState extends State<ChatsView> {
   final ChatServices _chatServices = ChatServices();
-
+  LoginModel loginModel = LoginModel();
   bool isLoading = false;
   getData() async {
     setState(() {
       isLoading = true;
     });
+    loginModel = LoginModel.fromJson(
+      jsonDecode(
+        box.get("userData"),
+      ),
+    );
+
+    socket.emit(
+      "updateStatus",
+      {
+        "userId": loginModel.data?.sId.toString(),
+        "isOnline": true,
+      },
+    );
+
     await _chatServices.getAllUsers();
 
     setState(() {
@@ -42,11 +61,33 @@ class _ChatsViewState extends State<ChatsView> {
   @override
   void initState() {
     socket.connect();
+
     socket.onConnect((data) => debugPrint("user connected"));
-    socket.onDisconnect((data) => debugPrint("user disconnect"));
+    socket.onDisconnect((data) {
+      socket.emit(
+        "updateStatus",
+        {
+          "userId": loginModel.data?.sId.toString(),
+          "isOnline": false,
+        },
+      );
+      debugPrint("user disconnect");
+    });
     socket.onError((data) => debugPrint("error on connection $data"));
     getData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    socket.emit(
+      "updateStatus",
+      {
+        "userId": loginModel.data?.sId.toString(),
+        "isOnline": false,
+      },
+    );
+    super.dispose();
   }
 
   @override
@@ -86,7 +127,7 @@ class _ChatsViewState extends State<ChatsView> {
         ),
       ),
       body: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : Padding(
@@ -95,7 +136,7 @@ class _ChatsViewState extends State<ChatsView> {
                 children: [
                   AppSpacing.heigthSpace20,
                   _chatServices.allUsersModel.data == null || _chatServices.allUsersModel.data!.isEmpty
-                      ? Center(
+                      ? const Center(
                           child: AppText(
                             text: "NO Data found!",
                             fontSize: 18,
@@ -154,7 +195,7 @@ class _ChatsViewState extends State<ChatsView> {
                                                   text: snap.data == null || snap.data!.data == null || snap.data!.data!.isEmpty
                                                       ? ""
                                                       : snap.data!.data!.last.senderId.toString() == _chatServices.allUsersModel.data![index].sId.toString()
-                                                          ? snap.data!.data!.last.senderId.toString()
+                                                          ? snap.data!.data!.last.message.toString()
                                                           : "You: ${snap.data!.data!.last.message.toString()}",
                                                   fontSize: 15,
                                                 );
@@ -166,17 +207,31 @@ class _ChatsViewState extends State<ChatsView> {
                                         ],
                                       ),
                                       const Spacer(),
-                                      const AppText(
-                                        text: "14:33",
-                                        color: Color(0xff5F5F5F),
-                                        fontSize: 12,
-                                      )
+                                      FutureBuilder<AllChatsModel>(
+                                        future: _chatServices.getUserChats(
+                                          _chatServices.allUsersModel.data![index].sId.toString(),
+                                        ),
+                                        builder: (context, snap) {
+                                          if (snap.hasData) {
+                                            return AppText(
+                                              text: snap.data == null || snap.data!.data == null || snap.data!.data!.isEmpty
+                                                  ? ""
+                                                  : AppDateUtils.formatDate(pattern: "hh:mm aa", date: snap.data!.data!.last.createdOn.toString()),
+                                              color: const Color(0xff5F5F5F),
+                                              fontSize: 12,
+                                            );
+                                          } else {
+                                            return const AppText(text: "loading...");
+                                          }
+                                        },
+                                      ),
                                     ],
                                   ),
                                 ),
                               ),
                             );
-                          }),
+                          },
+                        ),
                 ],
               ),
             ),

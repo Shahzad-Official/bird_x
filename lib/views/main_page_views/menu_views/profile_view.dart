@@ -158,6 +158,7 @@ class ProfileTabWidget extends StatelessWidget {
                 ),
                 SvgPicture.asset(
                   img,
+                  // ignore: deprecated_member_use
                   color: AppColors.primaryColor,
                   height: 27,
                   width: 27,

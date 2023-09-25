@@ -45,10 +45,9 @@ class AddProductController extends GetxController {
     } else {
       multiImages.clear();
 
-      pickedImage.forEach((element) {
+      for (var element in pickedImage) {
         multiImages.add(File(element.path));
-        print(element.path);
-      });
+      }
     }
     update();
   }
@@ -57,16 +56,13 @@ class AddProductController extends GetxController {
     isLoading = true;
     update();
     if (thumnail == null) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please select your thumbnail picture!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please select your thumbnail picture!");
     } else if (price.text.isEmpty || !price.text.isNotEmpty) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please enter valid email price!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email price!");
     } else if (title.text.isEmpty) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter title!");
     } else if (description.text.isEmpty) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please enter Description!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please enter Description!");
     } else {}
     isLoading = false;
     update();
