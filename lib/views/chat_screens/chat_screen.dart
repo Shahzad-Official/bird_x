@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/controllers/chat_controller/chat_controller.dart';
 import 'package:bird_x/controllers/main_page_controllers/main_page_controller.dart';
