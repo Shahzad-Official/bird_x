@@ -37,13 +37,14 @@ class ChatController extends GetxController {
 
       chatStream.add(chats);
 
-      scrollController.scrollTo(
-        index: chats.length - 1,
-        // scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.ease,
-      );
-
+      if (scrollController.isAttached) {
+        scrollController.scrollTo(
+          index: chats.length - 1,
+          // scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      }
       message.clear();
       socket.emit(
         "stopTyping",
