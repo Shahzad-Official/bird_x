@@ -32,8 +32,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final ChatController _chatController = Get.put(ChatController());
   ChatData? myChatData;
 
-  bool isTyping = false;
-
   final ChatServices _chatServices = ChatServices();
   Map<String, dynamic> userData = {};
   bool isLoading = false;
@@ -47,35 +45,11 @@ class _ChatScreenState extends State<ChatScreen> {
       senderId: userData['data']['_id'].toString(),
       receiverId: widget.userData.sId.toString(),
     );
-
-    socket.on("isTyping", (data) {
-      setState(() {
-        isTyping = true;
-      });
-      _chatController.scrollController.scrollTo(
-        index: _chatController.chats.length - 1,
-        duration: const Duration(milliseconds: 500),
-      );
-    });
-    socket.on("stopTyping", (data) {
-      isTyping = false;
-    });
-
-    socket.on("message", (data) {
-      ChatData chatData = ChatData.fromJson(data);
-      _chatController.chats.add(chatData);
-
-      _chatController.chatStream.add(_chatController.chats);
-      {
-        _chatController.scrollController.scrollTo(
-          index: _chatController.chats.length - 1,
-          duration: const Duration(milliseconds: 500),
-        );
-      }
-    });
+    _chatController.eventListening();
     await _chatServices.getRoomChats(_chatServices.roomData.data!.sId.toString());
     _chatController.chats = _chatServices.allChatsModel.data!;
     _chatController.chatStream.add(_chatController.chats);
+
     myChatData = _chatServices.allChatsModel.data == null || _chatServices.allChatsModel.data!.isEmpty
         ? null
         : _chatServices.allChatsModel.data?.lastWhere(
@@ -85,6 +59,14 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       isLoading = false;
     });
+    Future.delayed(
+      Duration(milliseconds: 200),
+      () {
+        if (_chatController.scrollController.isAttached) {
+          _chatController.scrollToDown();
+        }
+      },
+    );
   }
 
   bool isScrollAble = false;
@@ -98,6 +80,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     Get.delete<ChatController>();
+    socket.emit(
+      "offline",
+      _chatServices.roomData.data!.sId.toString(),
+    );
     super.dispose();
   }
 
@@ -137,39 +123,47 @@ class _ChatScreenState extends State<ChatScreen> {
                       const SizedBox(
                         width: 20,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          AppText(
-                            text: "${widget.userData.firstName!} ${widget.userData.lastName}",
-                            fontSize: 18,
-                          ),
-                          FutureBuilder(
-                            future: RegistrationServices().getUserData(widget.userData.sId.toString()),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return AppText(
-                                  text: snapshot.data == null || snapshot.data!.isOnline == null || snapshot.data!.lastActive == null
-                                      ? ""
-                                      : snapshot.data!.isOnline!
+                      GetBuilder<ChatController>(
+                        init: ChatController(),
+                        initState: (_) {},
+                        builder: (_) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              AppText(
+                                text: "${widget.userData.firstName!} ${widget.userData.lastName}",
+                                fontSize: 18,
+                              ),
+                              FutureBuilder(
+                                future: RegistrationServices().getUserData(widget.userData.sId.toString()),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return AppText(
+                                      text: _.isOnline
                                           ? "Online"
-                                          : "Last active: ${AppDateUtils.formatDate(
-                                              pattern: "hh:mm aa",
-                                              date: snapshot.data!.lastActive.toString(),
-                                            )}",
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w300,
-                                  color: snapshot.data!.isOnline! ? Colors.green : null,
-                                );
-                              } else {
-                                return const AppText(
-                                  text: "",
-                                );
-                              }
-                            },
-                          ),
-                        ],
+                                          : snapshot.data == null || snapshot.data!.isOnline == null || snapshot.data!.lastActive == null
+                                              ? ""
+                                              : snapshot.data!.isOnline!
+                                                  ? "Online"
+                                                  : "Last active: ${AppDateUtils.formatDate(
+                                                      pattern: "hh:mm aa",
+                                                      date: snapshot.data!.lastActive.toString(),
+                                                    )}",
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w300,
+                                      color: _.isOnline || snapshot.data!.isOnline! ? Colors.green : null,
+                                    );
+                                  } else {
+                                    return const AppText(
+                                      text: "",
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -209,7 +203,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     if (index == _.chats.length) {
                                       return Align(
                                         alignment: Alignment.centerLeft,
-                                        child: !isTyping
+                                        child: !_.isTyping
                                             ? const SizedBox()
                                             : Container(
                                                 margin: const EdgeInsets.all(8.0),
@@ -307,11 +301,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                           "isTyping",
                                           _chatServices.roomData.data!.sId.toString(),
                                         );
-                                      } else {
-                                        socket.emit(
-                                          "stopTyping",
-                                          _chatServices.roomData.data!.sId.toString(),
-                                        );
                                       }
                                     },
                                     child: TextFormField(
@@ -332,7 +321,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                           child: InkWell(
                                             onTap: () {
                                               _chatController.sendMessage(
-                                                socket,
                                                 receiverId: widget.userData.sId.toString(),
                                                 senderId: userData['data']['_id'],
                                                 roomId: _chatServices.roomData.data!.sId.toString(),
