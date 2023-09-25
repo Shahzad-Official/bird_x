@@ -1,18 +1,23 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:bird_x/constants/app_colors.dart';
+import 'package:bird_x/controllers/chat_controller/chat_controller.dart';
+import 'package:bird_x/controllers/main_page_controllers/main_page_controller.dart';
 import 'package:bird_x/main.dart';
 import 'package:bird_x/models/all_chats_model.dart';
 import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/services/chat_services.dart';
+import 'package:bird_x/services/registration_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/utils/date_utils.dart';
+import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/views/main_page_views/menu_views/chats_view.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -24,10 +29,11 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final ItemScrollController _scrollController = ItemScrollController();
-  final StreamController<List<ChatData>> _chatStream = StreamController();
-  final TextEditingController _messageController = TextEditingController();
-  List<ChatData> chats = [];
+  final ChatController _chatController = Get.put(ChatController());
+  ChatData? myChatData;
+
+  bool isTyping = false;
+
   final ChatServices _chatServices = ChatServices();
   Map<String, dynamic> userData = {};
   bool isLoading = false;
@@ -42,18 +48,32 @@ class _ChatScreenState extends State<ChatScreen> {
       receiverId: widget.userData.sId.toString(),
     );
 
-    socket.on("message", (data) {
-      ChatData chatData = ChatData.fromJson(data);
-      chats.add(chatData);
-
-      _chatStream.add(chats);
-      _scrollController.scrollTo(
-        index: chats.length - 1,
+    socket.on("isTyping", (data) {
+      setState(() {
+        isTyping = true;
+      });
+      _chatController.scrollController.scrollTo(
+        index: _chatController.chats.length - 1,
         duration: const Duration(milliseconds: 500),
       );
     });
-    await _chatServices
-        .getRoomChats(_chatServices.roomData.data!.sId.toString());
+    socket.on("stopTyping", (data) {
+      isTyping = false;
+    });
+
+    socket.on("message", (data) {
+      ChatData chatData = ChatData.fromJson(data);
+      _chatController.chats.add(chatData);
+
+      _chatController.chatStream.add(_chatController.chats);
+      {
+        _chatController.scrollController.scrollTo(
+          index: _chatController.chats.length - 1,
+          duration: const Duration(milliseconds: 500),
+        );
+      }
+    });
+    await _chatServices.getRoomChats(_chatServices.roomData.data!.sId.toString());
     chats = _chatServices.allChatsModel.data!;
     _chatStream.add(chats);
 
@@ -62,39 +82,18 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _sendMessage() {
-    String messageText = _messageController.text;
-    if (messageText.isNotEmpty) {
-      var messageData = _chatServices.sendMessage(
-        message: messageText,
-        senderId: userData['data']['_id'].toString(),
-        receiverId: widget.userData.sId.toString(),
-        roomId: _chatServices.roomData.data!.sId.toString(),
-      );
-      socket.emit("message", messageData);
-      ChatData chatData = ChatData(
-        createdOn: DateTime.now().toUtc().toString(),
-        message: messageText,
-        senderId: userData['data']['_id'].toString(),
-        receiverId: widget.userData.sId.toString(),
-        roomId: _chatServices.roomData.data!.sId.toString(),
-      );
-      chats.add(chatData);
-
-      _chatStream.add(chats);
-      _scrollController.scrollTo(
-        index: chats.length - 1,
-        duration: const Duration(milliseconds: 500),
-      );
-      _messageController.clear();
-    }
-  }
-
+  bool isScrollAble = false;
   @override
   void initState() {
     getData();
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    Get.delete<ChatController>();
+    super.dispose();
   }
 
   @override
@@ -125,8 +124,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         AppText(
-                          text:
-                              "${widget.userData.firstName!} ${widget.userData.lastName}",
+                          text: "${widget.userData.firstName!} ${widget.userData.lastName}",
                           fontSize: 18,
                         ),
                         const AppText(
@@ -169,45 +167,31 @@ class _ChatScreenState extends State<ChatScreen> {
                             itemCount: chats.length,
                             itemBuilder: (context, index) {
                               final message = chats[index].message.toString();
-                              final alignment = chats[index].senderId ==
-                                      userData['data']['_id']
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.start;
-                              final textColor =
-                                  alignment == CrossAxisAlignment.end
-                                      ? const Color(0xff212121)
-                                      : Colors.white;
-                              final borderRadius =
-                                  alignment == CrossAxisAlignment.end
-                                      ? const BorderRadius.only(
-                                          bottomLeft: Radius.circular(16),
-                                          bottomRight: Radius.circular(16),
-                                          topLeft: Radius.circular(16),
-                                        )
-                                      : const BorderRadius.only(
-                                          bottomLeft: Radius.circular(16),
-                                          bottomRight: Radius.circular(16),
-                                          topRight: Radius.circular(16),
-                                        );
+                              final alignment = chats[index].senderId == userData['data']['_id'] ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+                              final textColor = alignment == CrossAxisAlignment.end ? const Color(0xff212121) : Colors.white;
+                              final borderRadius = alignment == CrossAxisAlignment.end
+                                  ? const BorderRadius.only(
+                                      bottomLeft: Radius.circular(16),
+                                      bottomRight: Radius.circular(16),
+                                      topLeft: Radius.circular(16),
+                                    )
+                                  : const BorderRadius.only(
+                                      bottomLeft: Radius.circular(16),
+                                      bottomRight: Radius.circular(16),
+                                      topRight: Radius.circular(16),
+                                    );
 
-                              final time = DateTime.parse(
-                                  chats[index].createdOn.toString());
-                              final formattedTime =
-                                  DateFormat.Hm().format(time);
+                              final time = DateTime.parse(chats[index].createdOn.toString());
+                              final formattedTime = DateFormat.Hm().format(time);
                               return Column(
                                 crossAxisAlignment: alignment,
                                 children: [
                                   Container(
                                     margin: const EdgeInsets.all(8.0),
                                     padding: const EdgeInsets.all(12.0),
-                                    constraints: BoxConstraints(
-                                        maxWidth:
-                                            MediaQuery.of(context).size.width *
-                                                0.7),
+                                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
                                     decoration: BoxDecoration(
-                                      color: alignment == CrossAxisAlignment.end
-                                          ? const Color(0xffF0F0F1)
-                                          : AppColors.primaryColor,
+                                      color: alignment == CrossAxisAlignment.end ? const Color(0xffF0F0F1) : AppColors.primaryColor,
                                       borderRadius: borderRadius,
                                     ),
                                     child: Text(
@@ -216,8 +200,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10, right: 10),
+                                    padding: const EdgeInsets.only(left: 10, right: 10),
                                     child: AppText(
                                       text: formattedTime,
                                       fontSize: 10,
@@ -260,8 +243,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   fontWeight: FontWeight.w400,
                                   color: const Color(0xff4C4C4C),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 15.0, horizontal: 25.0),
+                                contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 25.0),
                                 suffixIcon: Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: InkWell(
@@ -271,26 +253,19 @@ class _ChatScreenState extends State<ChatScreen> {
                                     child: Container(
                                       height: 40,
                                       width: 40,
-                                      decoration: const BoxDecoration(
-                                          color: AppColors.primaryColor,
-                                          shape: BoxShape.circle),
+                                      decoration: const BoxDecoration(color: AppColors.primaryColor, shape: BoxShape.circle),
                                       child: Center(
-                                        child: SvgPicture.asset(
-                                            "assets/icons/send.svg"),
+                                        child: SvgPicture.asset("assets/icons/send.svg"),
                                       ),
                                     ),
                                   ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.black.withOpacity(0.1),
-                                      width: 1),
+                                  borderSide: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.black.withOpacity(0.1),
-                                      width: 1),
+                                  borderSide: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),

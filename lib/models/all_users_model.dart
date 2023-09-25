@@ -13,15 +13,15 @@ class AllUsersModel {
     if (json['data'] != null) {
       data = <UserData>[];
       json['data'].forEach((v) {
-        data!.add(new UserData.fromJson(v));
+        data!.add(UserData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }

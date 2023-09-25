@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/main.dart';
+import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
 import 'package:bird_x/views/main_page_views/main_page.dart';
@@ -61,9 +62,7 @@ class RegistrationServices {
         } else {
           AppSnackbar.showSnackbar(title: "Error", message: data['message']);
         }
-      } else {
-        print(value.statusCode);
-      }
+      } else {}
     }).catchError((err) {
       debugPrint(err.toString());
       AppSnackbar.showSnackbar(title: "Error", message: err.toString());
@@ -263,5 +262,23 @@ class RegistrationServices {
       AppSnackbar.showSnackbar(title: "Error", message: err.toString());
       // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
     });
+  }
+
+  Future<UserData> getUserData(String userId) async {
+    UserData userData = UserData();
+    await get(
+      Uri.parse("${ApiConstant.baseUrl}${ApiConstant.getUserData}?userId=$userId"),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    ).then((value) {
+      var data = jsonDecode(value.body);
+      if (value.statusCode == 200) {
+        userData = UserData.fromJson(data['data']);
+      }
+    }).catchError((err) {
+      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+    });
+    return userData;
   }
 }

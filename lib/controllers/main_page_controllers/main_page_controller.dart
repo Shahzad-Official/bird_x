@@ -14,7 +14,7 @@ class MainPageController extends GetxController {
 
   List<Widget> allPages =  [
     const HomeView(),
-    ChatsView(),
+    const ChatsView(),
     const WishlistView(),
     const ProfileView(),
   ];
