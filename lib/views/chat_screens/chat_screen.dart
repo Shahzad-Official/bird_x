@@ -52,7 +52,8 @@ class _ChatScreenState extends State<ChatScreen> {
         duration: const Duration(milliseconds: 500),
       );
     });
-    await _chatServices.getRoomChats(_chatServices.roomData.data!.sId.toString());
+    await _chatServices
+        .getRoomChats(_chatServices.roomData.data!.sId.toString());
     chats = _chatServices.allChatsModel.data!;
     _chatStream.add(chats);
 
@@ -124,7 +125,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         AppText(
-                          text: "${widget.userData.firstName!} ${widget.userData.lastName}",
+                          text:
+                              "${widget.userData.firstName!} ${widget.userData.lastName}",
                           fontSize: 18,
                         ),
                         const AppText(
@@ -167,31 +169,45 @@ class _ChatScreenState extends State<ChatScreen> {
                             itemCount: chats.length,
                             itemBuilder: (context, index) {
                               final message = chats[index].message.toString();
-                              final alignment = chats[index].senderId == userData['data']['_id'] ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-                              final textColor = alignment == CrossAxisAlignment.end ? const Color(0xff212121) : Colors.white;
-                              final borderRadius = alignment == CrossAxisAlignment.end
-                                  ? const BorderRadius.only(
-                                      bottomLeft: Radius.circular(16),
-                                      bottomRight: Radius.circular(16),
-                                      topLeft: Radius.circular(16),
-                                    )
-                                  : const BorderRadius.only(
-                                      bottomLeft: Radius.circular(16),
-                                      bottomRight: Radius.circular(16),
-                                      topRight: Radius.circular(16),
-                                    );
+                              final alignment = chats[index].senderId ==
+                                      userData['data']['_id']
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start;
+                              final textColor =
+                                  alignment == CrossAxisAlignment.end
+                                      ? const Color(0xff212121)
+                                      : Colors.white;
+                              final borderRadius =
+                                  alignment == CrossAxisAlignment.end
+                                      ? const BorderRadius.only(
+                                          bottomLeft: Radius.circular(16),
+                                          bottomRight: Radius.circular(16),
+                                          topLeft: Radius.circular(16),
+                                        )
+                                      : const BorderRadius.only(
+                                          bottomLeft: Radius.circular(16),
+                                          bottomRight: Radius.circular(16),
+                                          topRight: Radius.circular(16),
+                                        );
 
-                              final time = DateTime.parse(chats[index].createdOn.toString());
-                              final formattedTime = DateFormat.Hm().format(time);
+                              final time = DateTime.parse(
+                                  chats[index].createdOn.toString());
+                              final formattedTime =
+                                  DateFormat.Hm().format(time);
                               return Column(
                                 crossAxisAlignment: alignment,
                                 children: [
                                   Container(
                                     margin: const EdgeInsets.all(8.0),
                                     padding: const EdgeInsets.all(12.0),
-                                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+                                    constraints: BoxConstraints(
+                                        maxWidth:
+                                            MediaQuery.of(context).size.width *
+                                                0.7),
                                     decoration: BoxDecoration(
-                                      color: alignment == CrossAxisAlignment.end ? const Color(0xffF0F0F1) : AppColors.primaryColor,
+                                      color: alignment == CrossAxisAlignment.end
+                                          ? const Color(0xffF0F0F1)
+                                          : AppColors.primaryColor,
                                       borderRadius: borderRadius,
                                     ),
                                     child: Text(
@@ -200,7 +216,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 10, right: 10),
+                                    padding: const EdgeInsets.only(
+                                        left: 10, right: 10),
                                     child: AppText(
                                       text: formattedTime,
                                       fontSize: 10,
@@ -243,7 +260,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                   fontWeight: FontWeight.w400,
                                   color: const Color(0xff4C4C4C),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 25.0),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 15.0, horizontal: 25.0),
                                 suffixIcon: Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: InkWell(
@@ -253,19 +271,26 @@ class _ChatScreenState extends State<ChatScreen> {
                                     child: Container(
                                       height: 40,
                                       width: 40,
-                                      decoration: const BoxDecoration(color: AppColors.primaryColor, shape: BoxShape.circle),
+                                      decoration: const BoxDecoration(
+                                          color: AppColors.primaryColor,
+                                          shape: BoxShape.circle),
                                       child: Center(
-                                        child: SvgPicture.asset("assets/icons/send.svg"),
+                                        child: SvgPicture.asset(
+                                            "assets/icons/send.svg"),
                                       ),
                                     ),
                                   ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
+                                  borderSide: BorderSide(
+                                      color: Colors.black.withOpacity(0.1),
+                                      width: 1),
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
+                                  borderSide: BorderSide(
+                                      color: Colors.black.withOpacity(0.1),
+                                      width: 1),
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
