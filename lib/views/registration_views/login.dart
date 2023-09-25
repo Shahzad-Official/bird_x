@@ -2,7 +2,6 @@ import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/controllers/registration_controllers/login_controller.dart';
 import 'package:bird_x/utils/app_navigation.dart';
-import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/views/registration_views/forget_password.dart';
 import 'package:bird_x/views/registration_views/signup.dart';
 import 'package:bird_x/widgets/app_button.dart';
@@ -119,12 +118,6 @@ class _LoginState extends State<Login> {
                     },
                     text: "LOGIN",
                   );
-                },
-              ),
-              AppButton(
-                text: "text",
-                onTap: () {
-                  AppNavigation.to(context, nextPage: const MainPage());
                 },
               ),
               AppSpacing.heigthSpace30,
