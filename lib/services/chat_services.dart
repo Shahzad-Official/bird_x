@@ -68,9 +68,11 @@ class ChatServices {
     ).then((value) {
       var data = jsonDecode(value.body);
       allUsersModel = AllUsersModel.fromJson(data);
-    }).catchError((err) {
-      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-    });
+    })
+        // .catchError((err) {
+        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+        // })
+        ;
   }
 
   AllChatsModel allChatsModel = AllChatsModel();
@@ -84,9 +86,11 @@ class ChatServices {
     ).then((value) {
       var data = jsonDecode(value.body);
       allChatsModel = AllChatsModel.fromJson(data);
-    }).catchError((err) {
-      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-    });
+    })
+        // .catchError((err) {
+        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+        // })
+        ;
   }
 
   Future<AllChatsModel> getUserChats(String receiverId) async {
@@ -99,9 +103,11 @@ class ChatServices {
     ).then((value) {
       var data = jsonDecode(value.body);
       allChatsModel = AllChatsModel.fromJson(data);
-    }).catchError((err) {
-      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-    });
+    })
+        // .catchError((err) {
+        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+        // })
+        ;
     return allChatsModel;
   }
 }
