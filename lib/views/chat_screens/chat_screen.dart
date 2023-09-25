@@ -49,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _chatStream.add(chats);
       _scrollController.scrollTo(
         index: chats.length - 1,
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
       );
     });
     await _chatServices.getRoomChats(_chatServices.roomData.data!.sId.toString());
@@ -83,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _chatStream.add(chats);
       _scrollController.scrollTo(
         index: chats.length - 1,
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
       );
       _messageController.clear();
     }
@@ -142,7 +142,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
       body: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : Padding(
@@ -154,7 +154,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       stream: _chatStream.stream,
                       builder: (context, snapshot) {
                         if (snapshot.data == null || snapshot.data!.isEmpty) {
-                          return Center(
+                          return const Center(
                             child: AppText(
                               text: "NO Data Found",
                               fontSize: 18,
