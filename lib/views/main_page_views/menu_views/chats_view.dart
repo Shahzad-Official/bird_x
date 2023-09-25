@@ -112,7 +112,8 @@ class _ChatsViewState extends State<ChatsView> {
                 Flexible(
                   child: InkWell(
                     onTap: () {
-                      AppNavigation.to(context, nextPage: const Notifications());
+                      AppNavigation.to(context,
+                          nextPage: const Notifications());
                     },
                     child: AppShadowcontainer(
                       child: SvgPicture.asset(
@@ -135,7 +136,8 @@ class _ChatsViewState extends State<ChatsView> {
               child: Column(
                 children: [
                   AppSpacing.heigthSpace20,
-                  _chatServices.allUsersModel.data == null || _chatServices.allUsersModel.data!.isEmpty
+                  _chatServices.allUsersModel.data == null ||
+                          _chatServices.allUsersModel.data!.isEmpty
                       ? const Center(
                           child: AppText(
                             text: "NO Data found!",
@@ -154,21 +156,25 @@ class _ChatsViewState extends State<ChatsView> {
                                   AppNavigation.to(
                                     context,
                                     nextPage: ChatScreen(
-                                      userData: _chatServices.allUsersModel.data![index],
+                                      userData: _chatServices
+                                          .allUsersModel.data![index],
                                     ),
                                   );
                                 },
                                 child: Container(
                                   height: 52,
                                   width: double.infinity,
-                                  decoration: const BoxDecoration(color: Colors.white),
+                                  decoration:
+                                      const BoxDecoration(color: Colors.white),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(30),
                                         child: AppCachedImage(
-                                          url: _chatServices.allUsersModel.data![index].profile!,
+                                          url: _chatServices.allUsersModel
+                                              .data![index].profile!,
                                           height: 52,
                                           width: 52,
                                           fit: BoxFit.cover,
@@ -178,29 +184,55 @@ class _ChatsViewState extends State<ChatsView> {
                                         width: 15,
                                       ),
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           AppText(
-                                            text: "${_chatServices.allUsersModel.data![index].firstName!} ${_chatServices.allUsersModel.data![index].lastName}",
+                                            text:
+                                                "${_chatServices.allUsersModel.data![index].firstName!} ${_chatServices.allUsersModel.data![index].lastName}",
                                             fontSize: 17,
                                             fontWeight: FontWeight.w500,
                                           ),
                                           FutureBuilder<AllChatsModel>(
                                             future: _chatServices.getUserChats(
-                                              _chatServices.allUsersModel.data![index].sId.toString(),
+                                              _chatServices.allUsersModel
+                                                  .data![index].sId
+                                                  .toString(),
                                             ),
                                             builder: (context, snap) {
                                               if (snap.hasData) {
-                                                return AppText(
-                                                  text: snap.data == null || snap.data!.data == null || snap.data!.data!.isEmpty
-                                                      ? ""
-                                                      : snap.data!.data!.last.senderId.toString() == _chatServices.allUsersModel.data![index].sId.toString()
-                                                          ? snap.data!.data!.last.message.toString()
-                                                          : "You: ${snap.data!.data!.last.message.toString()}",
-                                                  fontSize: 15,
+                                                return Row(
+                                                  children: [
+                                                    AppText(
+                                                      text: snap.data == null ||
+                                                              snap.data!.data ==
+                                                                  null ||
+                                                              snap.data!.data!
+                                                                  .isEmpty
+                                                          ? ""
+                                                          : snap
+                                                                      .data!
+                                                                      .data!
+                                                                      .last
+                                                                      .senderId
+                                                                      .toString() ==
+                                                                  _chatServices
+                                                                      .allUsersModel
+                                                                      .data![
+                                                                          index]
+                                                                      .sId
+                                                                      .toString()
+                                                              ? snap.data!.data!
+                                                                  .last.message
+                                                                  .toString()
+                                                              : "You: ${snap.data!.data!.last.message.toString()}",
+                                                      fontSize: 15,
+                                                    ),
+                                                  ],
                                                 );
                                               } else {
-                                                return const AppText(text: "loading...");
+                                                return const AppText(
+                                                    text: "loading...");
                                               }
                                             },
                                           ),
@@ -209,19 +241,28 @@ class _ChatsViewState extends State<ChatsView> {
                                       const Spacer(),
                                       FutureBuilder<AllChatsModel>(
                                         future: _chatServices.getUserChats(
-                                          _chatServices.allUsersModel.data![index].sId.toString(),
+                                          _chatServices
+                                              .allUsersModel.data![index].sId
+                                              .toString(),
                                         ),
                                         builder: (context, snap) {
                                           if (snap.hasData) {
                                             return AppText(
-                                              text: snap.data == null || snap.data!.data == null || snap.data!.data!.isEmpty
+                                              text: snap.data == null ||
+                                                      snap.data!.data == null ||
+                                                      snap.data!.data!.isEmpty
                                                   ? ""
-                                                  : AppDateUtils.formatDate(pattern: "hh:mm aa", date: snap.data!.data!.last.createdOn.toString()),
+                                                  : AppDateUtils.formatDate(
+                                                      pattern: "hh:mm aa",
+                                                      date: snap.data!.data!
+                                                          .last.createdOn
+                                                          .toString()),
                                               color: const Color(0xff5F5F5F),
                                               fontSize: 12,
                                             );
                                           } else {
-                                            return const AppText(text: "loading...");
+                                            return const AppText(
+                                                text: "loading...");
                                           }
                                         },
                                       ),
