@@ -60,7 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
       isLoading = false;
     });
     Future.delayed(
-      Duration(milliseconds: 200),
+      const Duration(milliseconds: 200),
       () {
         if (_chatController.scrollController.isAttached) {
           _chatController.scrollToDown();
