@@ -9,6 +9,7 @@ import 'package:bird_x/views/main_page_views/menu_views/home_view.dart';
 import 'package:bird_x/views/profile/about_us.dart';
 import 'package:bird_x/views/profile/edit_profile.dart';
 import 'package:bird_x/views/profile/privacy_policy.dart';
+import 'package:bird_x/views/profile/subscriptions.dart';
 import 'package:bird_x/widgets/app_cached_image.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,8 @@ class _ProfileViewState extends State<ProfileView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     AppText(
-                      text: "${userData.data!.firstName} ${userData.data!.lastName}",
+                      text:
+                          "${userData.data!.firstName} ${userData.data!.lastName}",
                       color: AppColors.primaryColor,
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -66,7 +68,8 @@ class _ProfileViewState extends State<ProfileView> {
                       fontWeight: FontWeight.w600,
                     ),
                     AppText(
-                      text: "Since ${AppDateUtils.formatDate(pattern: "dd MMM yyyy", date: userData.data!.createdOn.toString())}",
+                      text:
+                          "Since ${AppDateUtils.formatDate(pattern: "dd MMM yyyy", date: userData.data!.createdOn.toString())}",
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
@@ -85,7 +88,9 @@ class _ProfileViewState extends State<ProfileView> {
                 ProfileTabWidget(
                   img: "assets/icons/sub.svg",
                   text: "Subscriptions",
-                  onTap: () {},
+                  onTap: () {
+                    AppNavigation.to(context, nextPage: const Subscriptions());
+                  },
                 ),
                 ProfileTabWidget(
                   img: "assets/icons/share.svg",
