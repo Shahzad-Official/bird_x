@@ -301,6 +301,11 @@ class _ChatScreenState extends State<ChatScreen> {
                                           "isTyping",
                                           _chatServices.roomData.data!.sId.toString(),
                                         );
+                                      } else {
+                                        socket.emit(
+                                          "stopTyping",
+                                          _chatServices.roomData.data!.sId.toString(),
+                                        );
                                       }
                                     },
                                     child: TextFormField(
