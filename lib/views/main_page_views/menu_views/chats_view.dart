@@ -193,17 +193,24 @@ class _ChatsViewState extends State<ChatsView> {
                                             fontSize: 17,
                                             fontWeight: FontWeight.w500,
                                           ),
-                                          FutureBuilder<AllChatsModel>(
-                                            future: _chatServices.getUserChats(
-                                              _chatServices.allUsersModel
-                                                  .data![index].sId
-                                                  .toString(),
-                                            ),
-                                            builder: (context, snap) {
-                                              if (snap.hasData) {
-                                                return Row(
-                                                  children: [
-                                                    AppText(
+                                          Flexible(
+                                            child: FutureBuilder<AllChatsModel>(
+                                              future:
+                                                  _chatServices.getUserChats(
+                                                _chatServices.allUsersModel
+                                                    .data![index].sId
+                                                    .toString(),
+                                              ),
+                                              builder: (context, snap) {
+                                                if (snap.hasData) {
+                                                  return SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.57,
+                                                    child: AppText(
+                                                      maxLines: 1,
                                                       text: snap.data == null ||
                                                               snap.data!.data ==
                                                                   null ||
@@ -228,13 +235,13 @@ class _ChatsViewState extends State<ChatsView> {
                                                               : "You: ${snap.data!.data!.last.message.toString()}",
                                                       fontSize: 15,
                                                     ),
-                                                  ],
-                                                );
-                                              } else {
-                                                return const AppText(
-                                                    text: "loading...");
-                                              }
-                                            },
+                                                  );
+                                                } else {
+                                                  return const AppText(
+                                                      text: "loading...");
+                                                }
+                                              },
+                                            ),
                                           ),
                                         ],
                                       ),
