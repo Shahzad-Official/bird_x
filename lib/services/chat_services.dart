@@ -41,7 +41,7 @@ class ChatServices {
       }
     }).catchError((err) {
       debugPrint(err.toString());
-      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      // AppSnackbar.showSnackbar(title: "Error", message: err.toString());
     });
   }
 
@@ -72,7 +72,8 @@ class ChatServices {
       var data = jsonDecode(value.body);
       allUsersModel = AllUsersModel.fromJson(data);
     }).catchError((err) {
-      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      debugPrint(err.toString());
+      // AppSnackbar.showSnackbar(title: "Error", message: err.toString());
     });
   }
 
@@ -88,23 +89,30 @@ class ChatServices {
       var data = jsonDecode(value.body);
       allChatsModel = AllChatsModel.fromJson(data);
     }).catchError((err) {
-      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      debugPrint(err.toString());
+      // AppSnackbar.showSnackbar(title: "Error", message: err.toString());
     });
   }
 
-  Future<AllChatsModel> getUserChats(String receiverId) async {
+  Future<ChatData> getUserChats(String receiverId) async {
+    ChatData chatData = ChatData();
     await get(
-      Uri.parse("${ApiConstant.baseUrl}${ApiConstant.roomChats}?receiverId=$receiverId"),
+      Uri.parse("${ApiConstant.baseUrl}${ApiConstant.lastMessage}?receiverId=$receiverId"),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token",
       },
     ).then((value) {
       var data = jsonDecode(value.body);
-      allChatsModel = AllChatsModel.fromJson(data);
+      if (data['data'] != null) {
+        chatData = ChatData.fromJson(data['data']);
+      } else {
+        chatData = ChatData();
+      }
     }).catchError((err) {
-      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      debugPrint(err.toString());
+      // AppSnackbar.showSnackbar(title: "Error", message: err.toString());
     });
-    return allChatsModel;
+    return chatData;
   }
 }

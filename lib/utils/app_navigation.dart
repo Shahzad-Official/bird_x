@@ -21,11 +21,12 @@ class AppNavigation {
   }
 
   static offAll(context, {required Widget nextPage}) {
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         builder: (context) => nextPage,
       ),
+      (route) => false,
     );
   }
 

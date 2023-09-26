@@ -48,11 +48,10 @@ class RegistrationServices {
       if (value.statusCode == 200 || value.statusCode == 201 || value.statusCode == 400) {
         var data = jsonDecode(value.body);
 
-        AppSnackbar.showSnackbar(title: "Success", message: data['message']);
         if (value.statusCode == 201) {
           box.put("token", data['token']);
+          box.put("tempPass", password);
 
-          AppSnackbar.showSnackbar(title: "Success", message: data['message']);
           AppNavigation.offAll(
             context,
             nextPage: OtpVerification(
@@ -74,6 +73,7 @@ class RegistrationServices {
     context, {
     required String email,
     required String password,
+    bool isAfterVerification = false,
   }) async {
     var body = jsonEncode({
       "email": email,
@@ -85,18 +85,28 @@ class RegistrationServices {
         "Content-Type": "application/json",
       },
       body: body,
-    ).then((value) {
+    ).then((value) async {
       var data = jsonDecode(value.body);
 
       if (value.statusCode == 200) {
         box.put("token", data['token']);
         box.put("userData", value.body);
-        AppSnackbar.showSnackbar(title: "Success", message: data['message']);
+
         box.put("isLoggedIn", true);
-        AppNavigation.offAll(
+        if (!isAfterVerification) {
+          AppSnackbar.showSnackbar(title: "Success", message: data['message']);
+          AppNavigation.offAll(
+            context,
+            nextPage: const MainPage(),
+          );
+        }
+      } else if (value.statusCode == 401) {
+        await sendOtp(
           context,
-          nextPage: const MainPage(),
+          email: email,
+          fromLogin: true,
         );
+        AppSnackbar.showSnackbar(title: "Error", message: data['message']);
       } else {
         AppSnackbar.showSnackbar(title: "Error", message: data['message']);
       }
@@ -115,7 +125,7 @@ class RegistrationServices {
           "email": value?.email,
           "firstName": value?.displayName?.split(" ").first,
           "lastName": value?.displayName?.split(" ").last,
-          "imageUrl": value!.photoUrl ?? "",
+          "imageUrl": value!.photoUrl ?? " ",
         });
         await post(
           Uri.parse(ApiConstant.baseUrl + ApiConstant.googleSigin),
@@ -144,16 +154,19 @@ class RegistrationServices {
           // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
         });
       },
-    ).catchError((err) {
-      debugPrint(err.toString());
-      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-      // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
-    });
+    )
+        // .catchError((err) {
+        //   debugPrint(err.toString());
+        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+        //   // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
+        // })
+        ;
   }
 
   sendOtp(
     context, {
     required String email,
+    bool fromLogin = false,
   }) async {
     var body = jsonEncode({
       "email": email,
@@ -168,12 +181,15 @@ class RegistrationServices {
       var data = jsonDecode(value.body);
 
       if (value.statusCode == 200) {
-        AppSnackbar.showSnackbar(title: "Success", message: data['message']);
+        if (!fromLogin) {
+          AppSnackbar.showSnackbar(title: "Success", message: data['message']);
+        }
+
         AppNavigation.offAll(
           context,
           nextPage: OtpVerification(
             email: email,
-            isForgetEmail: true,
+            isForgetEmail: fromLogin ? false : true,
           ),
         );
       } else {
@@ -214,6 +230,12 @@ class RegistrationServices {
             ),
           );
         } else {
+          login(
+            context,
+            email: email,
+            password: box.get("tempPass").toString(),
+            isAfterVerification: true,
+          );
           AppNavigation.offAll(
             context,
             nextPage: const SuccessfullRegistration(

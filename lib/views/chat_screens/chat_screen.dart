@@ -9,6 +9,7 @@ import 'package:bird_x/models/all_chats_model.dart';
 import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/services/chat_services.dart';
 import 'package:bird_x/services/registration_services.dart';
+import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/widgets/app_text.dart';
@@ -27,7 +28,7 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   final ChatController _chatController = Get.put(ChatController());
   ChatData? myChatData;
 
@@ -77,6 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isScrollAble = false;
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     getData();
 
     super.initState();
@@ -96,7 +98,39 @@ class _ChatScreenState extends State<ChatScreen> {
         "isOnline": false,
       },
     );
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      socket.emit(
+        "online",
+        _chatServices.roomData.data!.sId.toString(),
+      );
+      socket.emit(
+        "updateStatus",
+        {
+          "userId": userData.data?.sId.toString(),
+          "isOnline": true,
+        },
+      );
+    } else {
+      socket.emit(
+        "offline",
+        _chatServices.roomData.data!.sId.toString(),
+      );
+      socket.emit(
+        "updateStatus",
+        {
+          "userId": userData.data?.sId.toString(),
+          "isOnline": false,
+        },
+      );
+    }
+
+    super.didChangeAppLifecycleState(state);
   }
 
   @override
@@ -104,8 +138,10 @@ class _ChatScreenState extends State<ChatScreen> {
     return WillPopScope(
       onWillPop: () async {
         Get.find<MainPageController>().selectedIndex = 1;
-        Get.offAll(
-          () => const MainPage(),
+
+        AppNavigation.offAll(
+          context,
+          nextPage: const MainPage(),
         );
         return true;
       },
@@ -125,8 +161,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       BackButton(
                         onPressed: () {
                           Get.find<MainPageController>().selectedIndex = 1;
-                          Get.offAll(
-                            () => const MainPage(),
+
+                          AppNavigation.offAll(
+                            context,
+                            nextPage: const MainPage(),
                           );
                         },
                       ),
@@ -190,7 +228,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 init: ChatController(),
                 builder: (_) {
                   if (_.isOnline) {
-                    print("user is online");
                     Get.find<MainChatController>().isNewMessage = false;
                   }
 

@@ -21,7 +21,7 @@ class NotificationService {
       },
       body: body,
     ).then((value) {
-      print(value.body);
+      debugPrint(value.body);
     }).catchError((err) {
       debugPrint("update fcm error=> $err");
     });

@@ -63,7 +63,7 @@ class _ChatsViewState extends State<ChatsView> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: AppText(
+        title: const AppText(
           text: "Chats",
           fontSize: 20,
           fontWeight: FontWeight.w500,
@@ -136,7 +136,7 @@ class _ChatsViewState extends State<ChatsView> {
                                 fontSize: 17,
                                 fontWeight: FontWeight.w500,
                               ),
-                              subtitle: FutureBuilder<AllChatsModel>(
+                              subtitle: FutureBuilder<ChatData>(
                                 future: _chatServices.getUserChats(
                                   _chatServices.allUsersModel.data![index].sId.toString(),
                                 ),
@@ -149,14 +149,15 @@ class _ChatsViewState extends State<ChatsView> {
                                           maxLines: 1,
                                           text: _.isNewMessage && _.chatData.senderId == _chatServices.allUsersModel.data![index].sId.toString()
                                               ? _.chatData.message.toString()
-                                              : snap.data == null || snap.data!.data == null || snap.data!.data!.isEmpty
-                                                  ? ""
-                                                  : snap.data!.data!.last.senderId.toString() == _chatServices.allUsersModel.data![index].sId.toString()
-                                                      ? snap.data!.data!.last.message.toString()
-                                                      : "You: ${snap.data!.data!.last.message.toString()}",
+                                              : snap.data == null || snap.data!.message == null
+                                                  ? "No messages yet"
+                                                  : snap.data!.senderId.toString() == _chatServices.allUsersModel.data![index].sId.toString()
+                                                      ? snap.data!.message.toString()
+                                                      : "You: ${snap.data!.message.toString()}",
                                           fontSize: 15,
                                           fontWeight: _.isNewMessage && _.chatData.senderId == _chatServices.allUsersModel.data![index].sId.toString() ? FontWeight.w700 : null,
                                           overFlow: TextOverflow.ellipsis,
+                                          fontStyle: snap.data == null || snap.data == null ? FontStyle.italic : null,
                                         );
                                       },
                                     );
@@ -165,16 +166,16 @@ class _ChatsViewState extends State<ChatsView> {
                                   }
                                 },
                               ),
-                              trailing: FutureBuilder<AllChatsModel>(
+                              trailing: FutureBuilder<ChatData>(
                                 future: _chatServices.getUserChats(
                                   _chatServices.allUsersModel.data![index].sId.toString(),
                                 ),
                                 builder: (context, snap) {
                                   if (snap.hasData) {
                                     return AppText(
-                                      text: snap.data == null || snap.data!.data == null || snap.data!.data!.isEmpty
+                                      text: snap.data == null || snap.data == null || snap.data!.createdOn == null
                                           ? ""
-                                          : AppDateUtils.formatDate(pattern: "hh:mm aa", date: snap.data!.data!.last.createdOn.toString()),
+                                          : AppDateUtils.formatDate(pattern: "hh:mm aa", date: snap.data!.createdOn.toString()),
                                       color: const Color(0xff5F5F5F),
                                       fontSize: 12,
                                     );

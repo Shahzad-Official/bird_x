@@ -1,7 +1,9 @@
 import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/constants/app_colors.dart';
+import 'package:bird_x/controllers/chat_controller/main_chat_controller.dart';
 import 'package:bird_x/controllers/main_page_controllers/main_page_controller.dart';
 import 'package:bird_x/main.dart';
+import 'package:bird_x/models/all_chats_model.dart';
 import 'package:bird_x/services/local_notification_service.dart';
 import 'package:bird_x/services/notification_service.dart';
 import 'package:bird_x/utils/app_navigation.dart';
@@ -25,6 +27,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final MainChatController _chatController = Get.put(MainChatController());
   final MainPageController _controller = Get.put(MainPageController());
   late PageController _pageController;
 
@@ -52,6 +55,10 @@ class _MainPageState extends State<MainPage> {
         if (message != null) {
           if (message.notification != null) {
             if (message.notification!.title.toString().toLowerCase().contains("message")) {
+              ChatData chatData = ChatData.fromJson(message.data);
+
+              _chatController.changeIsNewStatus(true);
+              _chatController.getChatData(chatData);
               Get.find<MainPageController>().selectedIndex = 1;
               AppNavigation.offAll(
                 context,
@@ -67,6 +74,10 @@ class _MainPageState extends State<MainPage> {
       (message) {
         debugPrint("FirebaseMessaging.onMessage.listen");
         if (message.notification != null) {
+          ChatData chatData = ChatData.fromJson(message.data);
+
+          _chatController.changeIsNewStatus(true);
+          _chatController.getChatData(chatData);
           LocalNotificationService.createanddisplaynotification(message);
         }
       },
@@ -77,6 +88,7 @@ class _MainPageState extends State<MainPage> {
         debugPrint("FirebaseMessaging.onMessageOpenedApp.listen");
 
         if (message.notification != null) {
+          debugPrint(message.data.toString());
           if (message.notification!.title.toString().toLowerCase().contains("message")) {
             Get.find<MainPageController>().selectedIndex = 1;
             AppNavigation.offAll(
