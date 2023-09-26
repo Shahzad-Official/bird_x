@@ -6,10 +6,9 @@ import 'package:bird_x/models/all_chats_model.dart';
 import 'package:bird_x/models/all_users_model.dart';
 import 'package:bird_x/models/room_model.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
+import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-
-import '../views/main_page_views/menu_views/chats_view.dart';
 
 class ChatServices {
   String get token => box.get("token");
@@ -33,6 +32,10 @@ class ChatServices {
       if (value.statusCode == 200) {
         roomData = RoomModel.fromJson(data);
         socket.emit("join_room", roomData.data!.sId.toString());
+        socket.emit(
+          "online",
+          roomData.data!.sId.toString(),
+        );
       } else {
         AppSnackbar.showSnackbar(title: "Error", message: data['message']);
       }
@@ -68,11 +71,9 @@ class ChatServices {
     ).then((value) {
       var data = jsonDecode(value.body);
       allUsersModel = AllUsersModel.fromJson(data);
-    })
-        // .catchError((err) {
-        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-        // })
-        ;
+    }).catchError((err) {
+      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+    });
   }
 
   AllChatsModel allChatsModel = AllChatsModel();
@@ -86,11 +87,9 @@ class ChatServices {
     ).then((value) {
       var data = jsonDecode(value.body);
       allChatsModel = AllChatsModel.fromJson(data);
-    })
-        // .catchError((err) {
-        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-        // })
-        ;
+    }).catchError((err) {
+      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+    });
   }
 
   Future<AllChatsModel> getUserChats(String receiverId) async {
@@ -103,11 +102,9 @@ class ChatServices {
     ).then((value) {
       var data = jsonDecode(value.body);
       allChatsModel = AllChatsModel.fromJson(data);
-    })
-        // .catchError((err) {
-        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-        // })
-        ;
+    }).catchError((err) {
+      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+    });
     return allChatsModel;
   }
 }

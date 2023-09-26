@@ -1,10 +1,21 @@
+import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/controllers/main_page_controllers/main_page_controller.dart';
+import 'package:bird_x/main.dart';
+import 'package:bird_x/services/local_notification_service.dart';
+import 'package:bird_x/services/notification_service.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/add_product/add_product.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:socket_io_client/socket_io_client.dart';
+
+Socket socket = io(
+  ApiConstant.mainUrl,
+  OptionBuilder().setTransports(['websocket']).disableAutoConnect().build(),
+);
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -21,6 +32,60 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     _pageController = PageController(
       initialPage: _controller.selectedIndex,
+    );
+    socket.connect();
+    socket.onConnect((data) => debugPrint("user connected"));
+    socket.onDisconnect((data) {
+      debugPrint("user disconnect");
+    });
+    socket.onError((data) => debugPrint("error on connection $data"));
+    FirebaseMessaging.instance.getToken().then((value) {
+      if (box.get("fcm") == null || box.get("fcm") != value) {
+        box.put("fcm", value);
+        NotificationService().updateFcm();
+      }
+    });
+
+    FirebaseMessaging.instance.getInitialMessage().then(
+      (message) {
+        debugPrint("FirebaseMessaging.instance.getInitialMessage");
+        if (message != null) {
+          if (message.notification != null) {
+            if (message.notification!.title.toString().toLowerCase().contains("message")) {
+              Get.find<MainPageController>().selectedIndex = 1;
+              AppNavigation.offAll(
+                context,
+                nextPage: const MainPage(),
+              );
+            }
+          }
+        }
+      },
+    );
+
+    FirebaseMessaging.onMessage.listen(
+      (message) {
+        debugPrint("FirebaseMessaging.onMessage.listen");
+        if (message.notification != null) {
+          LocalNotificationService.createanddisplaynotification(message);
+        }
+      },
+    );
+
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) {
+        debugPrint("FirebaseMessaging.onMessageOpenedApp.listen");
+
+        if (message.notification != null) {
+          if (message.notification!.title.toString().toLowerCase().contains("message")) {
+            Get.find<MainPageController>().selectedIndex = 1;
+            AppNavigation.offAll(
+              context,
+              nextPage: const MainPage(),
+            );
+          }
+        }
+      },
     );
     super.initState();
   }

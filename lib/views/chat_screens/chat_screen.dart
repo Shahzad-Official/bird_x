@@ -2,16 +2,15 @@ import 'dart:convert';
 
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/controllers/chat_controller/chat_controller.dart';
+import 'package:bird_x/controllers/chat_controller/main_chat_controller.dart';
 import 'package:bird_x/controllers/main_page_controllers/main_page_controller.dart';
 import 'package:bird_x/main.dart';
 import 'package:bird_x/models/all_chats_model.dart';
 import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/services/chat_services.dart';
 import 'package:bird_x/services/registration_services.dart';
-import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/views/main_page_views/main_page.dart';
-import 'package:bird_x/views/main_page_views/menu_views/chats_view.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -33,16 +32,22 @@ class _ChatScreenState extends State<ChatScreen> {
   ChatData? myChatData;
 
   final ChatServices _chatServices = ChatServices();
-  Map<String, dynamic> userData = {};
+  LoginModel userData = LoginModel();
   bool isLoading = false;
   getData() async {
     setState(() {
       isLoading = true;
     });
-    userData = jsonDecode(box.get("userData"));
-
+    userData = LoginModel.fromJson(jsonDecode(box.get("userData")));
+    socket.emit(
+      "updateStatus",
+      {
+        "userId": userData.data?.sId.toString(),
+        "isOnline": true,
+      },
+    );
     await _chatServices.createRoom(
-      senderId: userData['data']['_id'].toString(),
+      senderId: userData.data!.sId.toString(),
       receiverId: widget.userData.sId.toString(),
     );
     _chatController.eventListening();
@@ -84,6 +89,13 @@ class _ChatScreenState extends State<ChatScreen> {
       "offline",
       _chatServices.roomData.data!.sId.toString(),
     );
+    socket.emit(
+      "updateStatus",
+      {
+        "userId": userData.data?.sId.toString(),
+        "isOnline": false,
+      },
+    );
     super.dispose();
   }
 
@@ -92,9 +104,8 @@ class _ChatScreenState extends State<ChatScreen> {
     return WillPopScope(
       onWillPop: () async {
         Get.find<MainPageController>().selectedIndex = 1;
-        AppNavigation.offAll(
-          context,
-          nextPage: const MainPage(),
+        Get.offAll(
+          () => const MainPage(),
         );
         return true;
       },
@@ -114,9 +125,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       BackButton(
                         onPressed: () {
                           Get.find<MainPageController>().selectedIndex = 1;
-                          AppNavigation.offAll(
-                            context,
-                            nextPage: const MainPage(),
+                          Get.offAll(
+                            () => const MainPage(),
                           );
                         },
                       ),
@@ -179,6 +189,11 @@ class _ChatScreenState extends State<ChatScreen> {
             : GetBuilder<ChatController>(
                 init: ChatController(),
                 builder: (_) {
+                  if (_.isOnline) {
+                    print("user is online");
+                    Get.find<MainChatController>().isNewMessage = false;
+                  }
+
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -227,7 +242,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                       );
                                     } else {
                                       final message = _.chats[index].message.toString();
-                                      final alignment = _.chats[index].senderId == userData['data']['_id'] ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+                                      final alignment = _.chats[index].senderId == userData.data!.sId ? CrossAxisAlignment.end : CrossAxisAlignment.start;
                                       final textColor = alignment == CrossAxisAlignment.end ? const Color(0xff212121) : Colors.white;
                                       final borderRadius = alignment == CrossAxisAlignment.end
                                           ? const BorderRadius.only(
@@ -327,7 +342,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                             onTap: () {
                                               _chatController.sendMessage(
                                                 receiverId: widget.userData.sId.toString(),
-                                                senderId: userData['data']['_id'],
+                                                senderId: userData.data!.sId.toString(),
                                                 roomId: _chatServices.roomData.data!.sId.toString(),
                                               );
                                             },

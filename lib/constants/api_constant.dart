@@ -13,6 +13,7 @@ class ApiConstant {
   static const updatePassword = "/auth/update-password";
   static const sendOtp = "/auth/send-otp";
   static const getUserData = "/auth/";
+  static const updateFcm = "/auth/update-fcm";
 
   //chat routes
   static const createRoom = "/chat/create-room";
