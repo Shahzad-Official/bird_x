@@ -13,7 +13,9 @@
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true"
         >
-        
+       <meta-data
+         android:name="com.google.firebase.messaging.default_notification_color"
+         android:resource="@color/colorPrimary" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -58,5 +60,10 @@
             <data android:scheme="@string/fb_login_protocol_scheme" />
         </intent-filter>
     </activity>
+    <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDq33g2UnBUqsMbCPvHT8imFd20IsLuel0"/>
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_channel_id"
+                android:value="petx"/>
     </application>
 </manifest>
