@@ -4,7 +4,7 @@ class ApiConstant {
   static const baseUrl = "$mainUrl/api";
 
   //Auth routes
-  static const getUsers = "/auth/all";
+  // static const getUsers = "/auth/all";
   static const login = "/auth/login";
   static const signUp = "/auth/signUp";
   static const googleSigin = "/auth/google-signin";
@@ -19,4 +19,5 @@ class ApiConstant {
   static const createRoom = "/chat/create-room";
   static const roomChats = "/chat";
   static const lastMessage = "/chat/last-message";
+  static const getUsers = "/chat/my-chat-rooms";
 }

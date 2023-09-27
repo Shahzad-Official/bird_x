@@ -6,6 +6,7 @@ import 'package:bird_x/models/all_chats_model.dart';
 import 'package:bird_x/models/all_users_model.dart';
 import 'package:bird_x/models/room_model.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
+import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -70,7 +71,11 @@ class ChatServices {
       },
     ).then((value) {
       var data = jsonDecode(value.body);
+
       allUsersModel = AllUsersModel.fromJson(data);
+      allUsersModel.data!.sort((a, b) {
+        return AppDateUtils.toDateTime(b.lastActive.toString()).compareTo(AppDateUtils.toDateTime(a.lastActive.toString()));
+      });
     }).catchError((err) {
       debugPrint(err.toString());
       // AppSnackbar.showSnackbar(title: "Error", message: err.toString());
