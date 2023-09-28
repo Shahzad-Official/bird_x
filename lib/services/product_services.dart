@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/main.dart';
+import 'package:bird_x/models/category_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/main_page_views/menu_views/home_view.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,33 @@ import 'package:http/http.dart' as http;
 
 import '../utils/app_snackbar.dart';
 
-class AddProductServices {
+class ProductServices {
   String get token => box.get("token");
+  Future<CategoryModel> fetchCategories() async {
+    CategoryModel categoryModel = CategoryModel();
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    await http
+        .get(
+      Uri.parse(ApiConstant.baseUrl + ApiConstant.categories),
+      headers: headers,
+    )
+        .then((value) {
+      var data = jsonDecode(value.body);
+      if (value.statusCode == 200) {
+        categoryModel = CategoryModel.fromJson(data);
+      } else {
+        AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+      }
+    }).catchError((err) {
+      debugPrint("Error to load data=> $err");
+    });
+    return categoryModel;
+  }
 
   Future<void> addProduct(
     context, {
@@ -38,7 +64,6 @@ class AddProductServices {
       request.fields['longitude'] = longitude;
       request.fields['categoryId'] = 'your_category_id_here';
 
-
       // Add image files to the request as MultipartFile
       for (var file in multiImages) {
         if (file != null) {
@@ -51,10 +76,7 @@ class AddProductServices {
 
       var response = await request.send();
 
-      print('Response Status Code: ${response.statusCode}');
-
       var responseData = await response.stream.bytesToString();
-      print('Response Data: $responseData');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         var responseData = await response.stream.bytesToString();

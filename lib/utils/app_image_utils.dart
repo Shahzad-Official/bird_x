@@ -4,7 +4,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AppImageUtils {
-  static Future<File?> compressImage({required File file, int quality = 50}) async {
+  static Future<File> compressImage({required File file, int quality = 50}) async {
     final tempDir = await getTemporaryDirectory();
     var list = tempDir.listSync();
     for (final file in list) {

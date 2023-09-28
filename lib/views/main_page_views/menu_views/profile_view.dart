@@ -130,7 +130,7 @@ class _ProfileViewState extends State<ProfileView> {
 
                     AppNavigation.offAll(
                       context,
-                      nextPage: Login(),
+                      nextPage: const Login(),
                     );
                   },
                 ),
