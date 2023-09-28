@@ -11,6 +11,7 @@ class AppField extends StatelessWidget {
   final TextInputType? textType;
   final bool isObsecure;
   final void Function()? onTap;
+  final TextInputType? keyboardType;
   const AppField({
     super.key,
     this.controller,
@@ -20,6 +21,7 @@ class AppField extends StatelessWidget {
     this.suffixIcon,
     this.isObsecure = false,
     this.onTap,
+    this.keyboardType,
   });
 
   @override

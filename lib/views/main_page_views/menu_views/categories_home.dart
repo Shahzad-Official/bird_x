@@ -1,12 +1,15 @@
+import 'dart:convert';
+
 import 'package:bird_x/constants/app_spacing.dart';
+import 'package:bird_x/main.dart';
+import 'package:bird_x/models/category_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/notifications.dart/notifications.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
-import '../../../models/category_model.dart';
+import 'package:http/http.dart' as http;
 
 class CategoriesHome extends StatefulWidget {
   const CategoriesHome({super.key});
@@ -16,72 +19,27 @@ class CategoriesHome extends StatefulWidget {
 }
 
 class _CategoriesHomeState extends State<CategoriesHome> {
-  List<Category> categories = [
-    {
-      "id": "1",
-      "categoryName": "Pigeon",
-      "categoryIcon": "icon/Pigeon1695041577706.svg",
-      "color": "28dd00",
-      "createdOn": "2023-09-18T12:52:57.709Z",
-    },
-    {
-      "id": "2",
-      "categoryName": "Parrot",
-      "categoryIcon": "icon/Parrot1695041910354.svg",
-      "color": "00ffa1",
-      "createdOn": "2023-09-18T12:58:30.357Z",
-    },
-    {
-      "id": "3",
-      "categoryName": "Chicken",
-      "categoryIcon": "icon/Chicken1695042097877.svg",
-      "color": "ef5623",
-      "createdOn": "2023-09-18T13:01:37.879Z"
-    },
-    {
-      "id": "4",
-      "categoryName": "Cats",
-      "categoryIcon": "icon/Cats1695042398816.svg",
-      "color": "00ffbf",
-      "createdOn": "2023-09-18T13:06:38.819Z"
-    },
-    {
-      "id": "5",
-      "categoryName": "Dogs",
-      "categoryIcon": "icon/Dogs1695042817527.svg",
-      "color": "1d00ff",
-      "createdOn": "2023-09-18T13:13:37.529Z"
-    },
-    {
-      "id": "6",
-      "categoryName": "Fish",
-      "categoryIcon": "icon/Fish1695043189104.svg",
-      "color": "00aeff",
-      "createdOn": "2023-09-18T13:19:49.106Z"
-    },
-    {
-      "id": "7",
-      "categoryName": "Rabbit",
-      "categoryIcon": "icon/Rabbit1695043239825.svg",
-      "color": "bf00ff",
-      "createdOn": "2023-09-18T13:20:39.828Z"
-    },
-    {
-      "id": "8",
-      "categoryName": "Other",
-      "categoryIcon": "icon/Other1695043330512.svg",
-      "color": "24dd00",
-      "createdOn": "2023-09-18T13:22:10.514Z"
-    }
-  ].map((data) {
-    return Category(
-      id: data["id"] ?? "",
-      categoryName: data["categoryName"] ?? "",
-      categoryIcon: data["categoryIcon"] ?? "",
-      color: data["color"] ?? "",
-      createdOn: data["createdOn"] ?? "",
+  Future<CategoryModel> fetchData() async {
+    final token = box.get("token");
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.get(
+      Uri.parse('http://api.hexon.online:8080/api/categories'),
+      headers: headers,
     );
-  }).toList();
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      return CategoryModel.fromJson(jsonResponse);
+    } else {
+      print('HTTP Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      throw Exception('Failed to load data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,10 +85,21 @@ class _CategoriesHomeState extends State<CategoriesHome> {
       ),
       body: Padding(
         padding: AppSpacing.defaultPadding,
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
+        child: FutureBuilder<CategoryModel>(
+          future: fetchData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              final categories = snapshot.data?.data;
+
+              if (categories == null || categories.isEmpty) {
+                return const Text('No data available');
+              }
+
+              return ListView.builder(
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   final category = categories[index];
@@ -147,19 +116,13 @@ class _CategoriesHomeState extends State<CategoriesHome> {
                         children: [
                           Row(
                             children: [
-                              Container(
-                                height: 45,
-                                width: 45,
-                                decoration: const BoxDecoration(
-                                  color: Colors.green,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: SvgPicture.asset(category.categoryIcon),
-                              ),
                               const SizedBox(
                                 width: 15,
                               ),
-                              AppText(text: category.categoryName),
+                              AppText(
+                                text: "${category.categoryName} ",
+                              ),
+                              SvgPicture.asset(category.categoryIcon ?? ""),
                             ],
                           ),
                           const Icon(
@@ -172,9 +135,9 @@ class _CategoriesHomeState extends State<CategoriesHome> {
                     ),
                   );
                 },
-              ),
-            ),
-          ],
+              );
+            }
+          },
         ),
       ),
     );

@@ -20,4 +20,10 @@ class ApiConstant {
   static const roomChats = "/chat";
   static const lastMessage = "/chat/last-message";
   static const getUsers = "/chat/my-chat-rooms";
+
+  //product
+  static const addProduct = "/product";
+
+  //categories
+  static const categories = "/categories";
 }

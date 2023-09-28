@@ -252,6 +252,7 @@ class _AddProductState extends State<AddProduct> {
                         hintText: "Price",
                         prefixIcon: const Icon(Icons.attach_money_rounded),
                         controller: _.price,
+                        keyboardType: TextInputType.number,
                       ),
                       AppSpacing.heigthSpace20,
                       const AppText(
@@ -319,6 +320,7 @@ class _AddProductState extends State<AddProduct> {
                       AppSpacing.heigthSpace30,
                       AppButton(
                         text: "Next",
+                        isLoading: _.isLoading,
                         onTap: () async {
                           await _.addProduct(context);
                         },

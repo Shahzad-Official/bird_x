@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bird_x/services/add_product_services.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -16,6 +17,7 @@ class AddProductController extends GetxController {
   String base64Image = "";
   List<File?> multiImages = [];
   bool isLoading = false;
+  final AddProductServices _addProductServices = AddProductServices();
 
   pickProfile({required ImageSource source}) async {
     // ignore: invalid_use_of_visible_for_testing_member
@@ -56,14 +58,28 @@ class AddProductController extends GetxController {
     isLoading = true;
     update();
     if (thumnail == null) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please select your thumbnail picture!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please select your thumbnail picture!");
     } else if (price.text.isEmpty || !price.text.isNotEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email price!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please enter valid email price!");
     } else if (title.text.isEmpty) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter title!");
     } else if (description.text.isEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter Description!");
-    } else {}
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please enter Description!");
+    } else {
+      await _addProductServices.addProduct(
+        context,
+        profile: base64Image,
+        latitude: "latitude",
+        longitude: "longitude",
+        price: price.text,
+        name: title.text,
+        description: description.text,
+        multiImages: multiImages,
+      );
+    }
     isLoading = false;
     update();
   }
