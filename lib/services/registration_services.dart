@@ -317,8 +317,10 @@ class RegistrationServices {
         androidParameters: const AndroidParameters(
           packageName: "online.hexon.petx",
         ),
-        socialMetaTagParameters: const SocialMetaTagParameters(
-          title: "Register on PetX and sell your pets and buy new One.",
+        socialMetaTagParameters: SocialMetaTagParameters(
+          title: "Share the Pet Love: Grow Our Pack with PetX!",
+          description: "Share PetX with friends, and let's make our pet-loving community even more purr-fect together! 🐾❤️",
+          imageUrl: Uri.parse("https://raw.githubusercontent.com/Shahzad-Official/Public-Files/main/17195464_5847918%201.png"),
         ));
     await FirebaseDynamicLinks.instance.buildShortLink(linkParameters).then((value) {
       link = value.shortUrl.toString();

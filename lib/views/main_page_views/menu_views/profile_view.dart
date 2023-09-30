@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/main.dart';
 import 'package:bird_x/models/user_model.dart';
+import 'package:bird_x/services/registration_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/app_url_launch.dart';
 import 'package:bird_x/utils/date_utils.dart';
@@ -31,10 +32,9 @@ class _ProfileViewState extends State<ProfileView> {
   LoginModel userData = LoginModel();
   @override
   void initState() {
-    initDynamicLinks();
     var data = jsonDecode(box.get("userData"));
     userData = LoginModel.fromJson(data);
-
+    RegistrationServices.generateLink(userData.data!.referralCode.toString());
     super.initState();
   }
 
