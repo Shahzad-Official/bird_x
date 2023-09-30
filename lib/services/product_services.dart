@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/main.dart';
 import 'package:bird_x/models/category_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
-import 'package:bird_x/views/main_page_views/menu_views/home_view.dart';
+import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import '../utils/app_snackbar.dart';
 
@@ -42,68 +42,55 @@ class ProductServices {
   Future<void> addProduct(
     context, {
     required String price,
-    required String profile,
+    required String thumbnail,
+    required String categoryName,
     required String name,
     required String description,
     required String latitude,
     required String longitude,
-    required List<File?> multiImages,
+    required List<String> multiImages,
+    required String categoryId,
+    required String address,
+    // required String location,
   }) async {
-    try {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse(ApiConstant.baseUrl + ApiConstant.addProduct),
-      );
+    print("categoryId: $categoryId");
+    var body = jsonEncode({
+      "categoryId": categoryId,
+      "categoryName": categoryName,
+      "description": description,
+      "name": name,
+      "price": price,
+      "address": address,
+      "latitude": latitude,
+      "longitude": longitude,
+      "otherPics": multiImages,
+      "thumbnail": thumbnail,
+    });
 
-      request.fields['price'] = price;
-      request.fields['name'] = name;
-      request.fields['thumbnail'] = profile;
-
-      request.fields['description'] = description;
-      request.fields['latitude'] = latitude;
-      request.fields['longitude'] = longitude;
-      request.fields['categoryId'] = 'your_category_id_here';
-
-      // Add image files to the request as MultipartFile
-      for (var file in multiImages) {
-        if (file != null) {
-          request.files.add(
-            await http.MultipartFile.fromPath('otherPics', file.path),
-          );
-        }
-      }
-      request.headers['Authorization'] = 'Bearer $token';
-
-      var response = await request.send();
-
-      var responseData = await response.stream.bytesToString();
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        var responseData = await response.stream.bytesToString();
-        var data = jsonDecode(responseData);
-
-        if (response.statusCode == 201) {
-          box.put("token", data['token']);
-
-          AppNavigation.offAll(
-            context,
-            nextPage: const HomeView(),
-          );
-        } else {
-          AppSnackbar.showSnackbar(title: "Error", message: data['message']);
-        }
-      } else {
-        AppSnackbar.showSnackbar(
-          title: "Error",
-          message: "Failed to add the product. Please try again.",
+    await post(
+      Uri.parse(ApiConstant.baseUrl + ApiConstant.addProduct),
+      headers: {
+        "Authorization": "Bearer $token",
+      },
+      body: body,
+    ).then((value) {
+      print("Response status code: ${value.statusCode}");
+      print("Response body: ${value.body}");
+      if (value.statusCode == 201) {
+        AppNavigation.offAll(
+          context,
+          nextPage: const MainPage(),
         );
+        print(value.statusCode);
+      } else if (value.statusCode == 400) {
+        var data = jsonDecode(value.body);
+        AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+        print(value.statusCode);
+      } else {
+        print(value.statusCode);
       }
-    } catch (error) {
-      debugPrint(error.toString());
-      AppSnackbar.showSnackbar(
-        title: "Error",
-        message: "An error occurred. Please try again later.",
-      );
-    }
+    }).catchError((err) {
+      debugPrint("Error to load data => $err");
+    });
   }
 }

@@ -14,31 +14,41 @@ class AddProductController extends GetxController {
   TextEditingController description = TextEditingController();
   TextEditingController location = TextEditingController();
 
-  File? thumnail;
+  File? thumbnailImage;
+
   String base64Thumbnail = "";
-  List<File?> multiImages = [];
+  List<String> multiImagesbase64 = [];
+  List<File> multiImages = [];
+
   bool isLoading = false;
   final ProductServices _addProductServices = ProductServices();
 
-  pickProfile({required ImageSource source}) async {
+  pickThumbnail({required ImageSource source}) async {
     // ignore: invalid_use_of_visible_for_testing_member
-    await ImagePicker.platform.getImageFromSource(source: source).then((value) async {
+    await ImagePicker.platform
+        .getImageFromSource(source: source)
+        .then((value) async {
       if (value != null) {
-        File thumbnail = File(value.path);
-        var fileSize = await AppImageUtils.fileSize(thumbnail);
+        var newthumbnail = File(value.path);
+        var fileSize = await AppImageUtils.fileSize(newthumbnail);
         if (fileSize > 2) {
-          thumnail = await AppImageUtils.compressImage(
-            file: thumbnail,
+          var file = await AppImageUtils.compressImage(
+            file: newthumbnail,
             quality: fileSize > 5 && fileSize <= 10
                 ? 20
                 : fileSize > 10
                     ? 30
                     : 50,
           );
-          update();
-          base64Thumbnail = base64Encode(thumnail!.readAsBytesSync());
+
+          thumbnailImage = file;
+        } else {
+          thumbnailImage = newthumbnail;
         }
-      }
+        base64Thumbnail = base64Encode(thumbnailImage!.readAsBytesSync());
+
+        update();
+      } else {}
     }).catchError((err) {
       if (err is PathAccessException) {
       } else if (err is FileSystemException) {}
@@ -59,36 +69,61 @@ class AddProductController extends GetxController {
       multiImages.clear();
 
       for (var element in pickedImage) {
-        multiImages.add(File(element.path));
+        File otherImage = File(element.path);
+        var fileSize = await AppImageUtils.fileSize(otherImage);
+        if (fileSize > 2) {
+          otherImage = await AppImageUtils.compressImage(
+            file: otherImage,
+            quality: 50,
+          );
+        }
+        multiImages.add(otherImage);
+        update();
+        String image = base64Encode(otherImage.readAsBytesSync());
+
+        multiImagesbase64.add(image);
       }
     }
     update();
   }
 
-  addProduct(context) async {
+  addProduct(context,
+      {required String categoryName, required String categoryId}) async {
     isLoading = true;
     update();
-    if (thumnail == null) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please select your thumbnail picture!");
-    } else if (price.text.isEmpty || !price.text.isNotEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email price!");
-    } else if (title.text.isEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter title!");
-    } else if (description.text.isEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter Description!");
-    } else {
-      await _addProductServices.addProduct(
-        context,
-        profile: base64Thumbnail,
-        latitude: "latitude",
-        longitude: "longitude",
-        price: price.text,
-        name: title.text,
-        description: description.text,
-        multiImages: multiImages,
-      );
+    try {
+      if (thumbnailImage == null) {
+        AppSnackbar.showSnackbar(
+            title: "Error", message: "Please select your thumbnail picture!");
+      } else if (price.text.isEmpty || !price.text.isNotEmpty) {
+        AppSnackbar.showSnackbar(
+            title: "Error", message: "Please enter valid email price!");
+      } else if (title.text.isEmpty) {
+        AppSnackbar.showSnackbar(
+            title: "Error", message: "Please enter title!");
+      } else if (description.text.isEmpty) {
+        AppSnackbar.showSnackbar(
+            title: "Error", message: "Please enter Description!");
+      } else {
+        print("categoryId: $categoryId");
+        await _addProductServices.addProduct(
+          context,
+          thumbnail: base64Thumbnail,
+          latitude: "latitude",
+          longitude: "longitude",
+          price: price.text,
+          name: title.text,
+          description: description.text,
+          multiImages: multiImagesbase64,
+          categoryId: categoryId,
+          address: "hghg",
+          categoryName: categoryName,
+        );
+      }
+      isLoading = false;
+      update();
+    } catch (e) {
+      print("Errorabc: $e");
     }
-    isLoading = false;
-    update();
   }
 }

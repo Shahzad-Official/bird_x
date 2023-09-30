@@ -43,7 +43,9 @@ class SignupController extends GetxController {
   String base64Image = "";
   pickProfile({required ImageSource source}) async {
     // ignore: invalid_use_of_visible_for_testing_member
-    await ImagePicker.platform.getImageFromSource(source: source).then((value) async {
+    await ImagePicker.platform
+        .getImageFromSource(source: source)
+        .then((value) async {
       if (value != null) {
         var newprofile = File(value.path);
         var fileSize = await AppImageUtils.fileSize(newprofile);
@@ -75,19 +77,25 @@ class SignupController extends GetxController {
     isLoading = true;
     update();
     if (profile == null) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please select your profile picture!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please select your profile picture!");
     } else if (email.text.isEmpty || !email.text.isEmail) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email address!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please enter valid email address!");
     } else if (number.text.isEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter your phone number!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please enter your phone number!");
     }
     //  else if (location.text.isEmpty) {
     //   AppSnackbar.showSnackbar(title: "Error", message: "Please select your location!");
     // }
     else if (password.text.isEmpty || password.text.length < 6) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter password having at least 6 characters!");
+      AppSnackbar.showSnackbar(
+          title: "Error",
+          message: "Please enter password having at least 6 characters!");
     } else if (password.text != cpassword.text) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please check your confirm password!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please check your confirm password!");
     } else {
       await _registrationServices.registerUser(
         context,

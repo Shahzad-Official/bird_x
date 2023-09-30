@@ -46,7 +46,8 @@ class _CategoriesHomeState extends State<CategoriesHome> {
                 Flexible(
                   child: InkWell(
                     onTap: () {
-                      AppNavigation.to(context, nextPage: const Notifications());
+                      AppNavigation.to(context,
+                          nextPage: const Notifications());
                     },
                     child: AppShadowcontainer(
                       child: SvgPicture.asset(
@@ -82,36 +83,63 @@ class _CategoriesHomeState extends State<CategoriesHome> {
                   final category = categories[index];
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 55,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
+                    child: InkWell(
+                      onTap: () {},
+                      child: AppShadowcontainer(
+                        shape: BoxShape.rectangle,
+                        height: 60,
+                        width: double.infinity,
+                        child: Container(
+                          height: 60,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.white.withOpacity(0.9),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const SizedBox(
-                                width: 15,
+                              Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  Container(
+                                    height: 45,
+                                    width: 45,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                          width: 0.1,
+                                        ),
+                                        shape: BoxShape.circle),
+                                    child: Center(
+                                      child: SvgPicture.network(
+                                        "${ApiConstant.baseUrl}/${category.categoryIcon!}",
+                                        height: 30,
+                                        width: 30,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  AppText(
+                                    text: "${category.categoryName} ",
+                                    fontSize: 16,
+                                  ),
+                                ],
                               ),
-                              AppText(
-                                text: "${category.categoryName} ",
-                              ),
-                              SvgPicture.network(
-                                "${ApiConstant.baseUrl}/${category.categoryIcon!}",
-                                height: 20,
-                                width: 20,
+                              const Padding(
+                                padding: EdgeInsets.only(right: 12),
+                                child: Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: Color(0xffABAAAA),
+                                  size: 14,
+                                ),
                               ),
                             ],
                           ),
-                          const Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            color: Color(0xffABAAAA),
-                            size: 14,
-                          )
-                        ],
+                        ),
                       ),
                     ),
                   );

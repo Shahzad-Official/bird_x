@@ -7,13 +7,22 @@ import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_field.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../widgets/app_text.dart';
 
 class AddProduct extends StatefulWidget {
-  const AddProduct({super.key});
+  final String categoryName;
+  final String categoryIcon;
+  final String categoryId;
+
+  const AddProduct(
+      {super.key,
+      required this.categoryName,
+      required this.categoryIcon,
+      required this.categoryId});
 
   @override
   State<AddProduct> createState() => _AddProductState();
@@ -80,7 +89,7 @@ class _AddProductState extends State<AddProduct> {
                                     InkWell(
                                       onTap: () {
                                         AppNavigation.back(context);
-                                        _.pickProfile(
+                                        _.pickThumbnail(
                                             source: ImageSource.camera);
                                       },
                                       child: const SizedBox(
@@ -106,7 +115,7 @@ class _AddProductState extends State<AddProduct> {
                                     InkWell(
                                       onTap: () {
                                         AppNavigation.back(context);
-                                        _.pickProfile(
+                                        _.pickThumbnail(
                                             source: ImageSource.gallery);
                                       },
                                       child: const SizedBox(
@@ -149,11 +158,11 @@ class _AddProductState extends State<AddProduct> {
                                     borderRadius: BorderRadius.circular(10),
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
-                                      image: _.thumnail == null
+                                      image: _.thumbnailImage == null
                                           ? const AssetImage(
                                               "assets/images/placeholder2.jpg",
                                             )
-                                          : FileImage(_.thumnail!)
+                                          : FileImage(_.thumbnailImage!)
                                               as ImageProvider,
                                     )),
                                 child: const SizedBox(),
@@ -162,7 +171,7 @@ class _AddProductState extends State<AddProduct> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                if (_.thumnail == null)
+                                if (_.thumbnailImage == null)
                                   Container(
                                     height: 35,
                                     width: 35,
@@ -243,7 +252,7 @@ class _AddProductState extends State<AddProduct> {
                               child: const Center(
                                 child: Icon(Icons.add),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -260,37 +269,38 @@ class _AddProductState extends State<AddProduct> {
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
+                      AppSpacing.heigthSpace10,
                       Container(
                         height: 60,
                         width: double.infinity,
                         decoration: const BoxDecoration(),
                         child: Row(
                           children: [
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: Image.network(
-                                  "https://images.freeimages.com/images/large-previews/e5d/it-s-a-squirrel-1410688.jpg?fmt=webp&w=350",
-                                  height: 50,
-                                  width: 50,
-                                  fit: BoxFit.cover,
-                                )),
+                            Container(
+                              height: 55,
+                              width: 55,
+                              decoration: BoxDecoration(
+                                  border: Border.all(width: 0.1),
+                                  shape: BoxShape.circle),
+                              child: Center(
+                                child: SvgPicture.network(
+                                  widget.categoryIcon,
+                                  height: 40,
+                                  width: 40,
+                                ),
+                              ),
+                            ),
                             const SizedBox(
                               width: 20,
                             ),
-                            const Column(
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 AppText(
-                                  text: "Fish",
+                                  text: widget.categoryName,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
-                                ),
-                                AppText(
-                                  text: "Fish Company LTD",
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.brown,
                                 ),
                               ],
                             )
@@ -322,7 +332,9 @@ class _AddProductState extends State<AddProduct> {
                         text: "Next",
                         isLoading: _.isLoading,
                         onTap: () async {
-                          await _.addProduct(context);
+                          await _.addProduct(context,
+                              categoryName: widget.categoryName,
+                              categoryId: widget.categoryId);
                         },
                       )
                     ]);

@@ -7,7 +7,7 @@ import 'package:bird_x/models/all_chats_model.dart';
 import 'package:bird_x/services/local_notification_service.dart';
 import 'package:bird_x/services/notification_service.dart';
 import 'package:bird_x/utils/app_navigation.dart';
-import 'package:bird_x/views/add_product/add_product.dart';
+import 'package:bird_x/views/add_product/add_categories_product.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -54,7 +54,10 @@ class _MainPageState extends State<MainPage> {
         debugPrint("FirebaseMessaging.instance.getInitialMessage");
         if (message != null) {
           if (message.notification != null) {
-            if (message.notification!.title.toString().toLowerCase().contains("message")) {
+            if (message.notification!.title
+                .toString()
+                .toLowerCase()
+                .contains("message")) {
               ChatData chatData = ChatData.fromJson(message.data);
 
               _chatController.changeIsNewStatus(true);
@@ -89,7 +92,10 @@ class _MainPageState extends State<MainPage> {
 
         if (message.notification != null) {
           debugPrint(message.data.toString());
-          if (message.notification!.title.toString().toLowerCase().contains("message")) {
+          if (message.notification!.title
+              .toString()
+              .toLowerCase()
+              .contains("message")) {
             Get.find<MainPageController>().selectedIndex = 1;
             AppNavigation.offAll(
               context,
@@ -123,7 +129,7 @@ class _MainPageState extends State<MainPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          AppNavigation.to(context, nextPage: const AddProduct());
+          AppNavigation.to(context, nextPage: const CategoriesAddProduct());
         },
         child: SvgPicture.asset(
           "assets/icons/add.svg",
@@ -154,7 +160,9 @@ class _MainPageState extends State<MainPage> {
                   height: 25,
                   width: 25,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 0 ? AppColors.primaryColor : Colors.black,
+                  color: _.selectedIndex == 0
+                      ? AppColors.primaryColor
+                      : Colors.black,
                 ),
                 label: "Home",
               ),
@@ -164,7 +172,9 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 1 ? AppColors.primaryColor : Colors.black,
+                  color: _.selectedIndex == 1
+                      ? AppColors.primaryColor
+                      : Colors.black,
                 ),
                 label: "Chats",
               ),
@@ -174,7 +184,9 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 2 ? AppColors.primaryColor : Colors.black,
+                  color: _.selectedIndex == 2
+                      ? AppColors.primaryColor
+                      : Colors.black,
                 ),
                 label: "WishList",
               ),
@@ -184,7 +196,9 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 3 ? AppColors.primaryColor : Colors.black,
+                  color: _.selectedIndex == 3
+                      ? AppColors.primaryColor
+                      : Colors.black,
                 ),
                 label: "Profile",
               ),

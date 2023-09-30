@@ -65,7 +65,6 @@ class RegistrationServices {
     }).catchError((err) {
       debugPrint(err.toString());
       AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-      // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
     });
   }
 

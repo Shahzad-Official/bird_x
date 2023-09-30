@@ -8,7 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pinput/pinput.dart';
+// import 'package:pinput/pinput.dart';
 
 class OtpVerification extends StatefulWidget {
   final String email;
@@ -25,29 +25,29 @@ class OtpVerification extends StatefulWidget {
 
 class _OtpVerificationState extends State<OtpVerification> {
   final OtpController _controller = Get.put(OtpController());
-  final defaultPinTheme = PinTheme(
-    width: 56,
-    height: 56,
-    textStyle: const TextStyle(fontSize: 20, color: Color.fromRGBO(30, 60, 87, 1), fontWeight: FontWeight.w600),
-    decoration: BoxDecoration(
-      border: Border.all(color: AppColors.primaryColor),
-      borderRadius: BorderRadius.circular(20),
-    ),
-  );
+  // final defaultPinTheme = PinTheme(
+  //   width: 56,
+  //   height: 56,
+  //   textStyle: const TextStyle(fontSize: 20, color: Color.fromRGBO(30, 60, 87, 1), fontWeight: FontWeight.w600),
+  //   decoration: BoxDecoration(
+  //     border: Border.all(color: AppColors.primaryColor),
+  //     borderRadius: BorderRadius.circular(20),
+  //   ),
+  // );
 
-  get focusedPinTheme => defaultPinTheme.copyDecorationWith(
-        border: Border.all(
-          color: AppColors.primaryColor,
-          width: 1.5,
-        ),
-        borderRadius: BorderRadius.circular(8),
-      );
+  // get focusedPinTheme => defaultPinTheme.copyDecorationWith(
+  //       border: Border.all(
+  //         color: AppColors.primaryColor,
+  //         width: 1.5,
+  //       ),
+  //       borderRadius: BorderRadius.circular(8),
+  //     );
 
-  get submittedPinTheme => defaultPinTheme.copyWith(
-        decoration: defaultPinTheme.decoration!.copyWith(
-          color: const Color.fromARGB(255, 253, 219, 195).withOpacity(0.2),
-        ),
-      );
+  // get submittedPinTheme => defaultPinTheme.copyWith(
+  //       decoration: defaultPinTheme.decoration!.copyWith(
+  //         color: const Color.fromARGB(255, 253, 219, 195).withOpacity(0.2),
+  //       ),
+  //     );
 
   @override
   void initState() {
@@ -145,13 +145,13 @@ class _OtpVerificationState extends State<OtpVerification> {
                 },
               ),
               AppSpacing.heigthSpace30,
-              Pinput(
-                controller: _controller.otp,
-                length: 5,
-                defaultPinTheme: defaultPinTheme,
-                focusedPinTheme: focusedPinTheme,
-                submittedPinTheme: submittedPinTheme,
-              ),
+              // Pinput(
+              //   controller: _controller.otp,
+              //   length: 5,
+              //   defaultPinTheme: defaultPinTheme,
+              //   focusedPinTheme: focusedPinTheme,
+              //   submittedPinTheme: submittedPinTheme,
+              // ),
               AppSpacing.heigthSpace30,
               GetBuilder<OtpController>(
                 init: OtpController(),

@@ -107,7 +107,7 @@ class _HomeViewState extends State<HomeView> {
                 Flexible(
                   child: InkWell(
                     onTap: () {
-                       AppNavigation.to(context,
+                      AppNavigation.to(context,
                           nextPage: const Notifications());
                     },
                     child: AppShadowcontainer(
