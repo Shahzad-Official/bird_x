@@ -4,9 +4,9 @@ import 'package:bird_x/models/category_model.dart';
 import 'package:bird_x/services/product_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/add_product/add_product.dart';
+import 'package:bird_x/widgets/app_network_svg.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../widgets/app_text.dart';
 
@@ -57,12 +57,10 @@ class CategoriesAddProduct extends StatelessWidget {
                           context,
                           nextPage: AddProduct(
                             categoryName: "${category.categoryName} ",
-                            categoryIcon:
-                                "${ApiConstant.baseUrl}/${category.categoryIcon!}",
+                            categoryIcon: "${ApiConstant.baseUrl}/${category.categoryIcon!}",
                             categoryId: category.sId!,
                           ),
                         );
-                        print(category.sId);
                       },
                       child: AppShadowcontainer(
                         shape: BoxShape.rectangle,
@@ -92,10 +90,8 @@ class CategoriesAddProduct extends StatelessWidget {
                                         ),
                                         shape: BoxShape.circle),
                                     child: Center(
-                                      child: SvgPicture.network(
-                                        "${ApiConstant.baseUrl}/${category.categoryIcon!}",
-                                        height: 30,
-                                        width: 30,
+                                      child: AppCachedSvg(
+                                        url: category.categoryIcon.toString(),
                                       ),
                                     ),
                                   ),

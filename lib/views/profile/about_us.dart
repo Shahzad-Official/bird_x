@@ -1,5 +1,6 @@
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../widgets/app_text.dart';
 
@@ -29,27 +30,82 @@ class AboutUs extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              Row(
-                children: [
-                  AppText(
-                    text: "Lorem",
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ],
-              ),
               AppSpacing.heigthSpace10,
-              AppText(
-                text:
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus rhoncus, diam vitae semper lacinia, arcu turpis ornare nisi, non interdum ligula nunc nec ipsum. Donec suscipit in turpis eget pellentesque. Phasellus ornare at arcu at facilisis. Integer id augue id nisl varius semper sit amet sit amet sapien. Nulla laoreet, justo vel tempor ullamcorper, massa mauris volutpat tellus, posuere facilisis mauris sapien et magna. Integer sit amet dolor in quam eleifend condimentum. Cras imperdiet sem non metus eleifend, in tempus nisl mattis. Morbi eget tortor vitae arcu mollis dictum mattis non sapien. Praesent maximus risus mi, ut efficitur leo gravida eleifend. Nullam pharetra mauris quis leo tempor, non tincidunt ex fermentum. Pellentesque vitae nisi bibendum, egestas dui vitae, imperdiet dui. Nam vehicula augue non pharetra vulputate. In sed dapibus nunc, sed malesuada sapien. Nulla facilisi. Cras luctus tincidunt mauris, vitae rhoncus elit consequat vel. Phasellus fringilla, dui sed auctor bibendum, ante elit ultricies metus, vitae dapibus arcu justo ut nunc.  Cras luctus tincidunt mauris, vitae rhoncus elit consequat vel. Phasellus fringilla, dui sed auctor bibendum, ante elit ultricies metus, vitae dapibus arcu justo ut nunc.",
-                fontWeight: FontWeight.w500,
-                color: Color(0xff7F7F7F),
-              )
+              RichText(
+                text: TextSpan(
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.blueGrey,
+                  ),
+                  children: [
+                    const TextSpan(
+                      text: "Welcome to ",
+                    ),
+                    TextSpan(
+                      text: "PetX",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const TextSpan(
+                      text:
+                          ", your ultimate platform for all your pet, bird, and fish needs! We've completely reimagined the way you connect with your beloved animal companions, whether they have fur, feathers, or scales. Our app is the go-to destination for enthusiasts of all kinds, simplifying the process of buying, selling, and connecting with fellow pet lovers.",
+                    ),
+                    const TextSpan(
+                      text: "\n\nAt ",
+                    ),
+                    TextSpan(
+                      text: "PetX",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const TextSpan(
+                      text:
+                          ", we understand the unique bonds people share with their pets, birds, and fish. Whether you're looking for your next loyal companion, seeking to rehome a beloved pet, or in search of specialized services and products, our app provides a seamless, secure, and pet-centric experience. We're dedicated to ensuring the well-being of all animals, from playful puppies and chatty parrots to exotic fish species.",
+                    ),
+                    const TextSpan(
+                      text: "\n\nBut ",
+                    ),
+                    TextSpan(
+                      text: "PetX",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const TextSpan(
+                      text:
+                          " is more than just a marketplace; it's a thriving community. We're here to connect animal enthusiasts, share heartwarming stories, and offer support. Our commitment to responsible pet ownership, bird care, and fishkeeping practices sets us apart, making us the ultimate destination for all your animal needs.",
+                    ),
+                    const TextSpan(
+                      text: "\n\nJoin us today and become part of a vibrant, caring community. ",
+                    ),
+                    TextSpan(
+                      text: "PetX",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const TextSpan(
+                      text: " - where pets, birds, and fish find loving homes, and animal lovers unite. Discover, connect, and share your love for your beloved companions with us!",
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

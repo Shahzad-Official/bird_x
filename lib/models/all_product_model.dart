@@ -1,0 +1,240 @@
+class AllProductsModel {
+  bool? success;
+  String? message;
+  List<ProductData>? productData;
+  int? perPage;
+  int? totalPages;
+  int? totalDocs;
+  int? currentPage;
+
+  AllProductsModel({this.success, this.message, this.productData, this.perPage, this.totalPages, this.totalDocs, this.currentPage});
+
+  AllProductsModel.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    if (json['data'] != null) {
+      productData = <ProductData>[];
+      json['data'].forEach((v) {
+        productData!.add(ProductData.fromJson(v));
+      });
+    }
+    perPage = json['perPage'];
+    totalPages = json['totalPages'];
+    totalDocs = json['totalDocs'];
+    currentPage = json['currentPage'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['success'] = success;
+    data['message'] = message;
+    if (productData != null) {
+      data['data'] = productData!.map((v) => v.toJson()).toList();
+    }
+    data['perPage'] = perPage;
+    data['totalPages'] = totalPages;
+    data['totalDocs'] = totalDocs;
+    data['currentPage'] = currentPage;
+    return data;
+  }
+}
+
+class ProductData {
+  String? sId;
+  String? name;
+  String? country;
+  String? userId;
+  String? categoryId;
+  String? description;
+  String? price;
+  Location? location;
+  String? thumbnail;
+  List<String>? otherPics;
+  String? startDate;
+  String? endDate;
+  User? user;
+  Category? category;
+
+  ProductData(
+      {this.sId,
+      this.name,
+      this.country,
+      this.userId,
+      this.categoryId,
+      this.description,
+      this.price,
+      this.location,
+      this.thumbnail,
+      this.otherPics,
+      this.startDate,
+      this.endDate,
+      this.user,
+      this.category});
+
+  ProductData.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    name = json['name'];
+    country = json['country'];
+    userId = json['userId'];
+    categoryId = json['categoryId'];
+    description = json['description'];
+    price = json['price'];
+    location = json['location'] != null ? Location.fromJson(json['location']) : null;
+    thumbnail = json['thumbnail'];
+    otherPics = json['otherPics'].cast<String>();
+    startDate = json['startDate'];
+    endDate = json['endDate'];
+    user = json['User'] != null ? User.fromJson(json['User']) : null;
+    category = json['Category'] != null ? Category.fromJson(json['Category']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['name'] = name;
+    data['country'] = country;
+    data['userId'] = userId;
+    data['categoryId'] = categoryId;
+    data['description'] = description;
+    data['price'] = price;
+    if (location != null) {
+      data['location'] = location!.toJson();
+    }
+    data['thumbnail'] = thumbnail;
+    data['otherPics'] = otherPics;
+    data['startDate'] = startDate;
+    data['endDate'] = endDate;
+    if (user != null) {
+      data['User'] = user!.toJson();
+    }
+    if (category != null) {
+      data['Category'] = category!.toJson();
+    }
+    return data;
+  }
+}
+
+class Location {
+  String? address;
+  String? latitude;
+  String? longitude;
+
+  Location({this.address, this.latitude, this.longitude});
+
+  Location.fromJson(Map<String, dynamic> json) {
+    address = json['address'];
+    latitude = json['latitude'];
+    longitude = json['longitude'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['address'] = address;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    return data;
+  }
+}
+
+class User {
+  String? sId;
+  String? firstName;
+  String? lastName;
+  String? email;
+  String? profile;
+  String? mobile;
+  String? password;
+  String? gender;
+  Location? location;
+  bool? isVerified;
+  String? subscription;
+  bool? isOnline;
+  String? createdOn;
+  String? lastActive;
+  String? fcmToken;
+
+  User(
+      {this.sId,
+      this.firstName,
+      this.lastName,
+      this.email,
+      this.profile,
+      this.mobile,
+      this.password,
+      this.gender,
+      this.location,
+      this.isVerified,
+      this.subscription,
+      this.isOnline,
+      this.createdOn,
+      this.lastActive,
+      this.fcmToken});
+
+  User.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    firstName = json['firstName'];
+    lastName = json['lastName'];
+    email = json['email'];
+    profile = json['profile'];
+    mobile = json['mobile'];
+    password = json['password'];
+    gender = json['gender'];
+    location = json['location'] != null ? Location.fromJson(json['location']) : null;
+    isVerified = json['isVerified'];
+    subscription = json['subscription'];
+    isOnline = json['isOnline'];
+    createdOn = json['createdOn'];
+    lastActive = json['lastActive'];
+    fcmToken = json['fcmToken'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['firstName'] = firstName;
+    data['lastName'] = lastName;
+    data['email'] = email;
+    data['profile'] = profile;
+    data['mobile'] = mobile;
+    data['password'] = password;
+    data['gender'] = gender;
+    if (location != null) {
+      data['location'] = location!.toJson();
+    }
+    data['isVerified'] = isVerified;
+    data['subscription'] = subscription;
+    data['isOnline'] = isOnline;
+    data['createdOn'] = createdOn;
+    data['lastActive'] = lastActive;
+    data['fcmToken'] = fcmToken;
+    return data;
+  }
+}
+
+class Category {
+  String? sId;
+  String? categoryName;
+  String? categoryIcon;
+  String? color;
+  String? createdOn;
+
+  Category({this.sId, this.categoryName, this.categoryIcon, this.color, this.createdOn});
+
+  Category.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    categoryName = json['categoryName'];
+    categoryIcon = json['categoryIcon'];
+    color = json['color'];
+    createdOn = json['createdOn'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['categoryName'] = categoryName;
+    data['categoryIcon'] = categoryIcon;
+    data['color'] = color;
+    data['createdOn'] = createdOn;
+    return data;
+  }
+}

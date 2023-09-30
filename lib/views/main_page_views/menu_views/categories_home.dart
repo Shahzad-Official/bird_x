@@ -1,9 +1,9 @@
-import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/models/category_model.dart';
 import 'package:bird_x/services/product_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/notifications.dart/notifications.dart';
+import 'package:bird_x/widgets/app_network_svg.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
@@ -46,8 +46,7 @@ class _CategoriesHomeState extends State<CategoriesHome> {
                 Flexible(
                   child: InkWell(
                     onTap: () {
-                      AppNavigation.to(context,
-                          nextPage: const Notifications());
+                      AppNavigation.to(context, nextPage: const Notifications());
                     },
                     child: AppShadowcontainer(
                       child: SvgPicture.asset(
@@ -113,10 +112,8 @@ class _CategoriesHomeState extends State<CategoriesHome> {
                                         ),
                                         shape: BoxShape.circle),
                                     child: Center(
-                                      child: SvgPicture.network(
-                                        "${ApiConstant.baseUrl}/${category.categoryIcon!}",
-                                        height: 30,
-                                        width: 30,
+                                      child: AppCachedSvg(
+                                        url: category.categoryIcon.toString(),
                                       ),
                                     ),
                                   ),

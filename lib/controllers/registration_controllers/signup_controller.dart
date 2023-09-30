@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bird_x/services/location_services.dart';
 import 'package:bird_x/services/registration_services.dart';
 import 'package:bird_x/utils/app_image_utils.dart';
+import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SignupController extends GetxController {
@@ -17,7 +21,8 @@ class SignupController extends GetxController {
   TextEditingController password = TextEditingController();
   TextEditingController cpassword = TextEditingController();
   String countryCode = "";
-
+  String latitude = "";
+  String longitude = "";
   String groupValue = "Male";
   changeGender(String value) {
     groupValue = value;
@@ -38,14 +43,30 @@ class SignupController extends GetxController {
 
   bool isLoading = false;
   final RegistrationServices _registrationServices = RegistrationServices();
+  pickLocation(context) async {
+    location.text = "loading....";
+    await await AppNavigation.to(
+      context,
+      nextPage: PlacePicker(
+        apiKey: "AIzaSyDq33g2UnBUqsMbCPvHT8imFd20IsLuel0",
+        initialPosition: const LatLng(30.1811532, 71.3098456),
+        enableMyLocationButton: true,
+        useCurrentLocation: true,
+        onPlacePicked: (value) async {
+          latitude = value.geometry!.location.lat.toString();
+          longitude = value.geometry!.location.lng.toString();
+          AppNavigation.back(context);
+          location.text = await LocationServices.translateAddress(latitude: value.geometry!.location.lat, longitude: value.geometry!.location.lng);
+        },
+      ),
+    );
+  }
 
   File? profile;
   String base64Image = "";
   pickProfile({required ImageSource source}) async {
     // ignore: invalid_use_of_visible_for_testing_member
-    await ImagePicker.platform
-        .getImageFromSource(source: source)
-        .then((value) async {
+    await ImagePicker.platform.getImageFromSource(source: source).then((value) async {
       if (value != null) {
         var newprofile = File(value.path);
         var fileSize = await AppImageUtils.fileSize(newprofile);
@@ -77,25 +98,19 @@ class SignupController extends GetxController {
     isLoading = true;
     update();
     if (profile == null) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please select your profile picture!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please select your profile picture!");
     } else if (email.text.isEmpty || !email.text.isEmail) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please enter valid email address!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email address!");
     } else if (number.text.isEmpty) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please enter your phone number!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please enter your phone number!");
     }
     //  else if (location.text.isEmpty) {
     //   AppSnackbar.showSnackbar(title: "Error", message: "Please select your location!");
     // }
     else if (password.text.isEmpty || password.text.length < 6) {
-      AppSnackbar.showSnackbar(
-          title: "Error",
-          message: "Please enter password having at least 6 characters!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please enter password having at least 6 characters!");
     } else if (password.text != cpassword.text) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please check your confirm password!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please check your confirm password!");
     } else {
       await _registrationServices.registerUser(
         context,
@@ -105,9 +120,9 @@ class SignupController extends GetxController {
         email: email.text,
         mobile: countryCode + number.text,
         profile: base64Image,
-        address: "address",
-        latitude: "latitude",
-        longitude: "longitude",
+        address: location.text,
+        latitude: latitude,
+        longitude: longitude,
         gender: groupValue,
       );
     }

@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:bird_x/constants/app_spacing.dart';
-import 'package:bird_x/services/location_services.dart';
+import 'package:bird_x/main.dart';
+import 'package:bird_x/models/user_model.dart';
+import 'package:bird_x/services/product_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/main_page_views/menu_views/categories_home.dart';
 import 'package:bird_x/views/main_page_views/menu_views/prdouct_details.dart';
@@ -9,8 +13,6 @@ import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -27,48 +29,28 @@ class _HomeViewState extends State<HomeView> {
     "https://w7.pngwing.com/pngs/862/145/png-transparent-chicken-as-food-broiler-poultry-hen-chicken-thumbnail.png"
   ];
   final List<String> namesPets = ["Fish", "Pigeon", "1 Pair of Cat", "Hen"];
-  final List<String> pricePets = [
-    "Rs 5,000",
-    "Rs  200",
-    "Rs 20000",
-    "Rs 8,000"
-  ];
+  final List<String> pricePets = ["Rs 5,000", "Rs  200", "Rs 20000", "Rs 8,000"];
 
-  String? currentLocation;
-  final LocationServices _locationServices = LocationServices();
+  LoginModel userData = LoginModel();
+  final ProductServices _services = ProductServices();
   bool isLoading = false;
-  initializeLocation() async {
+  getData() async {
     setState(() {
       isLoading = true;
     });
-    Position? position;
-
-    position = await _locationServices.determinePosition().then((value) async {
-      List<Placemark> placemark =
-          await placemarkFromCoordinates(value.latitude, value.longitude);
-      Placemark newPlace = placemark[0];
-      if (mounted) {
-        setState(() {
-          currentLocation =
-              "${newPlace.subAdministrativeArea!} , ${newPlace.administrativeArea!} , ${newPlace.country!}";
-          isLoading = false;
-        });
-      }
-      return value;
-    }).catchError((err) {
-      if (mounted) {
-        setState(() {
-          currentLocation = null;
-          isLoading = false;
-        });
-      }
-      return position!;
-    });
+    var data = jsonDecode(box.get("userData"));
+    userData = LoginModel.fromJson(data);
+    await _services.getAllProducts();
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   void initState() {
-    initializeLocation();
+    getData();
     super.initState();
   }
 
@@ -85,30 +67,17 @@ class _HomeViewState extends State<HomeView> {
               children: [
                 Flexible(
                   flex: 9,
-                  child: TextButton(
-                    onPressed: currentLocation == null
-                        ? () async {
-                            await initializeLocation();
-                          }
-                        : null,
-                    child: AppText(
-                      overFlow: TextOverflow.ellipsis,
-                      text: isLoading
-                          ? "loading... "
-                          : currentLocation == null
-                              ? "Pick Your Location 📍"
-                              : currentLocation!,
-                      color: Colors.black,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  child: AppText(
+                    text: userData.data!.location!.address.toString(),
+                    color: Colors.black,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 Flexible(
                   child: InkWell(
                     onTap: () {
-                      AppNavigation.to(context,
-                          nextPage: const Notifications());
+                      AppNavigation.to(context, nextPage: const Notifications());
                     },
                     child: AppShadowcontainer(
                       child: SvgPicture.asset(
@@ -122,164 +91,164 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: AppSpacing.defaultPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SearchField(
-                hintText: "Search",
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: SvgPicture.asset("assets/icons/search.svg"),
-                ),
-              ),
-              AppSpacing.heigthSpace30,
-              const AppText(
-                text: "Browse Categories",
-                fontSize: 16,
-                color: Color(0xff353535),
-              ),
-              AppSpacing.heigthSpace10,
-              InkWell(
-                onTap: () {
-                  AppNavigation.to(context, nextPage: const CategoriesHome());
-                },
-                child: Container(
-                  height: 48,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xff000000).withOpacity(0.1),
-                        offset: const Offset(0, 4),
-                        blurRadius: 15,
-                        spreadRadius: 0,
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: AppSpacing.defaultPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SearchField(
+                      hintText: "Search",
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: SvgPicture.asset("assets/icons/search.svg"),
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const SizedBox(
-                        width: 15,
+                    ),
+                    AppSpacing.heigthSpace30,
+                    const AppText(
+                      text: "Browse Categories",
+                      fontSize: 16,
+                      color: Color(0xff353535),
+                    ),
+                    AppSpacing.heigthSpace10,
+                    InkWell(
+                      onTap: () {
+                        AppNavigation.to(context, nextPage: const CategoriesHome());
+                      },
+                      child: Container(
+                        height: 48,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xff000000).withOpacity(0.1),
+                              offset: const Offset(0, 4),
+                              blurRadius: 15,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            SvgPicture.asset("assets/icons/category.svg"),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            const AppText(
+                              text: "Select Category",
+                              fontWeight: FontWeight.w300,
+                            )
+                          ],
+                        ),
                       ),
-                      SvgPicture.asset("assets/icons/category.svg"),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const AppText(
-                        text: "Select Category",
-                        fontWeight: FontWeight.w300,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              AppSpacing.heigthSpace30,
-              const AppText(
-                text: "Recent Recommendations",
-                fontSize: 16,
-                color: Color(0xff353535),
-              ),
-              AppSpacing.heigthSpace20,
-              GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 4,
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 4,
-                    mainAxisSpacing: 4,
-                    mainAxisExtent: 250),
-                itemBuilder: (BuildContext context, int index) {
-                  final imageUrl = imageUrls[index];
-                  final name = namesPets[index];
-                  final price = pricePets[index];
+                    ),
+                    AppSpacing.heigthSpace30,
+                    const AppText(
+                      text: "Recent Recommendations",
+                      fontSize: 16,
+                      color: Color(0xff353535),
+                    ),
+                    AppSpacing.heigthSpace20,
+                    GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 4,
+                      shrinkWrap: true,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 4, mainAxisSpacing: 4, mainAxisExtent: 250),
+                      itemBuilder: (BuildContext context, int index) {
+                        final imageUrl = imageUrls[index];
+                        final name = namesPets[index];
+                        final price = pricePets[index];
 
-                  return InkWell(
-                    onTap: () {
-                      AppNavigation.to(context,
-                          nextPage: ProductDetails(
-                            namesPets: name,
-                            currentLocation: currentLocation,
-                            img: imageUrl,
-                            price: price,
-                          ));
-                    },
-                    child: Container(
-                      height: 250,
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      margin: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xff000000).withOpacity(0.1),
-                            offset: const Offset(0, 4),
-                            blurRadius: 15,
-                            spreadRadius: 0,
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Stack(
-                            alignment: AlignmentDirectional.topEnd,
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(10),
-                                  topRight: Radius.circular(10),
+                        return InkWell(
+                          onTap: () {
+                            AppNavigation.to(context,
+                                nextPage: ProductDetails(
+                                  namesPets: name,
+                                  currentLocation: userData.data!.location!.address.toString(),
+                                  img: imageUrl,
+                                  price: price,
+                                ));
+                          },
+                          child: Container(
+                            height: 250,
+                            width: MediaQuery.of(context).size.width * 0.45,
+                            margin: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xff000000).withOpacity(0.1),
+                                  offset: const Offset(0, 4),
+                                  blurRadius: 15,
+                                  spreadRadius: 0,
                                 ),
-                                child: Image.network(
-                                  imageUrl,
-                                  height: 180,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(right: 5, top: 3),
-                                child: Icon(
-                                  Icons.favorite_border,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ],
-                          ),
-                          AppSpacing.heigthSpace10,
-                          Padding(
-                            padding: const EdgeInsets.only(left: 11),
+                              ],
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                AppText(
-                                  text: name,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w300,
+                                Stack(
+                                  alignment: AlignmentDirectional.topEnd,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        topRight: Radius.circular(10),
+                                      ),
+                                      child: Image.network(
+                                        imageUrl,
+                                        height: 180,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 5, top: 3),
+                                      child: Icon(
+                                        Icons.favorite_border,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                AppText(
-                                  text: price,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w300,
+                                AppSpacing.heigthSpace10,
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 11),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      AppText(
+                                        text: name,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w300,
+                                      ),
+                                      AppText(
+                                        text: price,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w300,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

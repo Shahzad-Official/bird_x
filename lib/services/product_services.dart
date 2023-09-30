@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bird_x/constants/api_constant.dart';
 import 'package:bird_x/main.dart';
+import 'package:bird_x/models/all_product_model.dart';
 import 'package:bird_x/models/category_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/main_page_views/main_page.dart';
@@ -20,30 +21,50 @@ class ProductServices {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-
-    await http
-        .get(
-      Uri.parse(ApiConstant.baseUrl + ApiConstant.categories),
-      headers: headers,
-    )
-        .then((value) {
-      var data = jsonDecode(value.body);
-      if (value.statusCode == 200) {
-        categoryModel = CategoryModel.fromJson(data);
-      } else {
-        AppSnackbar.showSnackbar(title: "Error", message: data['message']);
-      }
-    }).catchError((err) {
-      debugPrint("Error to load data=> $err");
-    });
-    return categoryModel;
+    if (box.get("allCategories") != null) {
+      var data = jsonDecode(box.get("allCategories"));
+      categoryModel = CategoryModel.fromJson(data);
+      http
+          .get(
+        Uri.parse(ApiConstant.baseUrl + ApiConstant.categories),
+        headers: headers,
+      )
+          .then((value) {
+        var data = jsonDecode(value.body);
+        if (value.statusCode == 200) {
+          box.put("allCategories", value.body);
+        } else {
+          AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+        }
+      }).catchError((err) {
+        debugPrint("Error to load data=> $err");
+      });
+      return categoryModel;
+    } else {
+      await http
+          .get(
+        Uri.parse(ApiConstant.baseUrl + ApiConstant.categories),
+        headers: headers,
+      )
+          .then((value) {
+        var data = jsonDecode(value.body);
+        if (value.statusCode == 200) {
+          box.put("allCategories", value.body);
+          categoryModel = CategoryModel.fromJson(data);
+        } else {
+          AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+        }
+      }).catchError((err) {
+        debugPrint("Error to load data=> $err");
+      });
+      return categoryModel;
+    }
   }
 
   Future<void> addProduct(
     context, {
     required String price,
     required String thumbnail,
-    required String categoryName,
     required String name,
     required String description,
     required String latitude,
@@ -51,14 +72,12 @@ class ProductServices {
     required List<String> multiImages,
     required String categoryId,
     required String address,
-    // required String location,
   }) async {
-    print("categoryId: $categoryId");
     var body = jsonEncode({
       "categoryId": categoryId,
-      "categoryName": categoryName,
       "description": description,
       "name": name,
+      "country": "Pakistan",
       "price": price,
       "address": address,
       "latitude": latitude,
@@ -66,31 +85,43 @@ class ProductServices {
       "otherPics": multiImages,
       "thumbnail": thumbnail,
     });
-
+    debugPrint(body);
     await post(
-      Uri.parse(ApiConstant.baseUrl + ApiConstant.addProduct),
+      Uri.parse(ApiConstant.baseUrl + ApiConstant.product),
       headers: {
+        "Content-Type": "application/json",
         "Authorization": "Bearer $token",
       },
       body: body,
     ).then((value) {
-      print("Response status code: ${value.statusCode}");
-      print("Response body: ${value.body}");
+      var data = jsonDecode(value.body);
       if (value.statusCode == 201) {
         AppNavigation.offAll(
           context,
           nextPage: const MainPage(),
         );
-        print(value.statusCode);
-      } else if (value.statusCode == 400) {
-        var data = jsonDecode(value.body);
-        AppSnackbar.showSnackbar(title: "Error", message: data['message']);
-        print(value.statusCode);
       } else {
-        print(value.statusCode);
+        AppSnackbar.showSnackbar(title: "Error", message: data['message']);
       }
     }).catchError((err) {
       debugPrint("Error to load data => $err");
+    });
+  }
+
+  AllProductsModel allProductsModel = AllProductsModel();
+  getAllProducts() async {
+    await get(
+      Uri.parse(ApiConstant.baseUrl + ApiConstant.product),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    ).then((value) {
+      var data = jsonDecode(value.body);
+      if (value.statusCode == 200) {
+        allProductsModel = AllProductsModel.fromJson(data);
+      }
+    }).catchError((err) {
+      debugPrint("products fetching eror=> $err");
     });
   }
 }

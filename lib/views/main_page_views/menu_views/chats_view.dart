@@ -42,9 +42,11 @@ class _ChatsViewState extends State<ChatsView> {
 
     await _chatServices.getAllUsers();
 
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override

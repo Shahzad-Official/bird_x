@@ -22,7 +22,7 @@ class ApiConstant {
   static const getUsers = "/chat/my-chat-rooms";
 
   //product
-  static const addProduct = "/product";
+  static const product = "/product";
 
   //categories
   static const categories = "/categories";

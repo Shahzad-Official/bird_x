@@ -42,12 +42,15 @@ dependencies:
   get: any
 
   #location plugins
+  google_maps_flutter: ^2.5.0
+  google_maps_place_picker_mb: any
   geolocator: ^10.0.1
   geocoding: ^2.1.0
 
   #databse plugins
   hive: any
   hive_flutter: any
+  flutter_cache_manager: ^3.3.1
 
   #internet plugins
   http: any
@@ -80,11 +83,10 @@ dependencies:
   
 
   #share plugins
-  share_plus: ^7.1.0
+  share_plus: any
   url_launcher: ^6.1.14
 
   #social login
-  twitter_login: ^4.4.2
   google_sign_in: ^6.1.5
   flutter_facebook_auth: ^6.0.2
 
