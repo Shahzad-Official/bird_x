@@ -7,11 +7,12 @@ import 'package:intl_phone_field/phone_number.dart';
 class AppField extends StatelessWidget {
   final TextEditingController? controller;
   final Widget? prefixIcon, suffixIcon;
-  final String? hintText;
+  final String? hintText, labelText;
   final TextInputType? textType;
-  final bool isObsecure;
+  final bool isObsecure, readOnly;
   final void Function()? onTap;
   final TextInputType? keyboardType;
+
   const AppField({
     super.key,
     this.controller,
@@ -22,6 +23,8 @@ class AppField extends StatelessWidget {
     this.isObsecure = false,
     this.onTap,
     this.keyboardType,
+    this.labelText,
+    this.readOnly = false,
   });
 
   @override
@@ -36,12 +39,12 @@ class AppField extends StatelessWidget {
       ),
       child: TextFormField(
         onTap: onTap,
-        readOnly: onTap == null ? false : true,
+        readOnly: readOnly,
         obscureText: isObsecure,
         keyboardType: textType,
         controller: controller,
         decoration: InputDecoration(
-          labelText: hintText,
+          labelText: labelText ?? hintText,
           labelStyle: GoogleFonts.poppins(),
           hintText: hintText,
           hintStyle: GoogleFonts.poppins(),
@@ -174,18 +177,15 @@ class SearchField extends StatelessWidget {
             fontWeight: FontWeight.w400,
             color: const Color(0xffABAAAA),
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
           prefixIcon: prefixIcon,
           suffixIcon: suffixIcon,
           enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
+            borderSide: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
             borderRadius: BorderRadius.circular(10),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
+            borderSide: BorderSide(color: Colors.black.withOpacity(0.1), width: 1),
             borderRadius: BorderRadius.circular(10),
           ),
         ),

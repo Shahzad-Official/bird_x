@@ -24,6 +24,12 @@ class Signup extends StatefulWidget {
 class _SignupState extends State<Signup> {
   final SignupController _controller = Get.put(SignupController());
   @override
+  void initState() {
+    _controller.refCode.text = box.get("referralCode") ?? "";
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -170,6 +176,13 @@ class _SignupState extends State<Signup> {
                   Icons.email_outlined,
                   color: AppColors.primaryColor,
                 ),
+              ),
+              AppSpacing.heigthSpace20,
+              AppField(
+                readOnly: true,
+                controller: _controller.refCode,
+                hintText: "Referral Code (optional)",
+                labelText: "Referral Code",
               ),
               AppSpacing.heigthSpace20,
               AppPhoneField(

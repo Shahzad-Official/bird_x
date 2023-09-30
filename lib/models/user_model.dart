@@ -36,9 +36,10 @@ class UserData {
   String? password;
   String? gender;
   bool? isVerified;
-  String? createdOn;
   String? subscription;
   bool? isOnline;
+  String? referralCode;
+  String? createdOn;
   String? lastActive;
 
   UserData(
@@ -52,9 +53,10 @@ class UserData {
       this.password,
       this.gender,
       this.isVerified,
-      this.createdOn,
       this.subscription,
       this.isOnline,
+      this.referralCode,
+      this.createdOn,
       this.lastActive});
 
   UserData.fromJson(Map<String, dynamic> json) {
@@ -68,9 +70,10 @@ class UserData {
     password = json['password'];
     gender = json['gender'];
     isVerified = json['isVerified'];
-    createdOn = json['createdOn'];
     subscription = json['subscription'];
     isOnline = json['isOnline'];
+    referralCode = json['referralCode'];
+    createdOn = json['createdOn'];
     lastActive = json['lastActive'];
   }
 
@@ -88,9 +91,10 @@ class UserData {
     data['password'] = password;
     data['gender'] = gender;
     data['isVerified'] = isVerified;
-    data['createdOn'] = createdOn;
     data['subscription'] = subscription;
     data['isOnline'] = isOnline;
+    data['referralCode'] = referralCode;
+    data['createdOn'] = createdOn;
     data['lastActive'] = lastActive;
     return data;
   }

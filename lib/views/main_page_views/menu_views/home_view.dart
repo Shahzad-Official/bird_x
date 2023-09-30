@@ -4,6 +4,7 @@ import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/main.dart';
 import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/services/product_services.dart';
+import 'package:bird_x/services/registration_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/main_page_views/menu_views/categories_home.dart';
 import 'package:bird_x/views/main_page_views/menu_views/prdouct_details.dart';
@@ -13,6 +14,8 @@ import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
+String inviteLink = '';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -33,6 +36,7 @@ class _HomeViewState extends State<HomeView> {
 
   LoginModel userData = LoginModel();
   final ProductServices _services = ProductServices();
+
   bool isLoading = false;
   getData() async {
     setState(() {
@@ -40,6 +44,15 @@ class _HomeViewState extends State<HomeView> {
     });
     var data = jsonDecode(box.get("userData"));
     userData = LoginModel.fromJson(data);
+    String inviteCode = userData.data!.referralCode.toString();
+    await RegistrationServices.generateLink(inviteCode).then(
+      (value) {
+        inviteLink = value;
+      },
+    ).catchError((err) {
+      debugPrint("link creation error => $err");
+    });
+
     await _services.getAllProducts();
     if (mounted) {
       setState(() {

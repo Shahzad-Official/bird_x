@@ -20,6 +20,8 @@ class SignupController extends GetxController {
   TextEditingController location = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController cpassword = TextEditingController();
+  TextEditingController refCode = TextEditingController();
+
   String countryCode = "";
   String latitude = "";
   String longitude = "";
@@ -103,11 +105,9 @@ class SignupController extends GetxController {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email address!");
     } else if (number.text.isEmpty) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter your phone number!");
-    }
-    //  else if (location.text.isEmpty) {
-    //   AppSnackbar.showSnackbar(title: "Error", message: "Please select your location!");
-    // }
-    else if (password.text.isEmpty || password.text.length < 6) {
+    } else if (location.text.isEmpty) {
+      AppSnackbar.showSnackbar(title: "Error", message: "Please select your location!");
+    } else if (password.text.isEmpty || password.text.length < 6) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter password having at least 6 characters!");
     } else if (password.text != cpassword.text) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please check your confirm password!");
@@ -124,6 +124,7 @@ class SignupController extends GetxController {
         latitude: latitude,
         longitude: longitude,
         gender: groupValue,
+        refCode: refCode.text,
       );
     }
     isLoading = false;

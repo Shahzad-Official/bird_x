@@ -7,6 +7,7 @@ import 'package:bird_x/main.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/views/registration_views/login.dart';
+import 'package:bird_x/views/registration_views/signup.dart';
 import 'package:bird_x/widgets/app_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -32,10 +33,17 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(
       const Duration(seconds: 3),
       () {
-        AppNavigation.offAll(
-          context,
-          nextPage: box.get("isLoggedIn") != null && box.get("isLoggedIn") == true ? const MainPage() : const Login(),
-        );
+        if (box.get("referralCode") != null) {
+          AppNavigation.offAll(
+            context,
+            nextPage: const Signup(),
+          );
+        } else {
+          AppNavigation.offAll(
+            context,
+            nextPage: box.get("isLoggedIn") != null && box.get("isLoggedIn") == true ? const MainPage() : const Login(),
+          );
+        }
       },
     );
     super.initState();

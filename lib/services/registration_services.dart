@@ -9,6 +9,7 @@ import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/views/registration_views/otp_verification.dart';
 import 'package:bird_x/views/registration_views/reset_password.dart';
 import 'package:bird_x/views/registration_views/successfull_registration.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
@@ -27,6 +28,7 @@ class RegistrationServices {
     required String latitude,
     required String longitude,
     required String gender,
+    required String refCode,
   }) async {
     var body = jsonEncode({
       "firstName": firstName,
@@ -39,29 +41,29 @@ class RegistrationServices {
       "latitude": latitude,
       "longitude": longitude,
       "gender": gender,
+      "referrer": refCode,
     });
     await post(
       Uri.parse(ApiConstant.baseUrl + ApiConstant.signUp),
       headers: {"Content-Type": "application/json"},
       body: body,
     ).then((value) {
-      if (value.statusCode == 200 || value.statusCode == 201 || value.statusCode == 400) {
-        var data = jsonDecode(value.body);
+      var data = jsonDecode(value.body);
 
-        if (value.statusCode == 201) {
-          box.put("token", data['token']);
-          box.put("tempPass", password);
+      if (value.statusCode == 201) {
+        box.put("referralCode", null);
+        box.put("token", data['token']);
+        box.put("tempPass", password);
 
-          AppNavigation.offAll(
-            context,
-            nextPage: OtpVerification(
-              email: email,
-            ),
-          );
-        } else {
-          AppSnackbar.showSnackbar(title: "Error", message: data['message']);
-        }
-      } else {}
+        AppNavigation.offAll(
+          context,
+          nextPage: OtpVerification(
+            email: email,
+          ),
+        );
+      } else {
+        AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+      }
     }).catchError((err) {
       debugPrint(err.toString());
       AppSnackbar.showSnackbar(title: "Error", message: err.toString());
@@ -125,7 +127,9 @@ class RegistrationServices {
           "firstName": value?.displayName?.split(" ").first,
           "lastName": value?.displayName?.split(" ").last,
           "imageUrl": value!.photoUrl ?? " ",
+          "referrer": box.get("referralCode") ?? " ",
         });
+
         await post(
           Uri.parse(ApiConstant.baseUrl + ApiConstant.googleSigin),
           headers: {
@@ -136,6 +140,7 @@ class RegistrationServices {
           var data = jsonDecode(value.body);
 
           if (value.statusCode == 200) {
+            box.put("referralCode", null);
             box.put("token", data['token']);
             box.put("isLoggedIn", true);
             box.put("userData", value.body);
@@ -301,5 +306,25 @@ class RegistrationServices {
       AppSnackbar.showSnackbar(title: "Error", message: err.toString());
     });
     return userData;
+  }
+
+  static Future<String> generateLink(inviteCode) async {
+    String link = "";
+    String url = "https://hexon.page.link";
+    DynamicLinkParameters linkParameters = DynamicLinkParameters(
+        uriPrefix: url,
+        link: Uri.parse("$url/invite?code=$inviteCode"),
+        androidParameters: const AndroidParameters(
+          packageName: "online.hexon.petx",
+        ),
+        socialMetaTagParameters: const SocialMetaTagParameters(
+          title: "Register on PetX and sell your pets and buy new One.",
+        ));
+    await FirebaseDynamicLinks.instance.buildShortLink(linkParameters).then((value) {
+      link = value.shortUrl.toString();
+    }).catchError((err) {
+      debugPrint(err.toString());
+    });
+    return link;
   }
 }

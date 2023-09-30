@@ -55,6 +55,7 @@ dependencies:
   #internet plugins
   http: any
   socket_io_client: any
+  
 
   #animation plugins
   animations: ^2.0.8
@@ -95,6 +96,7 @@ dependencies:
   firebase_auth: any
   firebase_messaging: any
   flutter_local_notifications: any
+  firebase_dynamic_links: ^5.3.6
 
 dev_dependencies:
   flutter_test:

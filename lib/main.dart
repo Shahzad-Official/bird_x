@@ -2,6 +2,7 @@ import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/firebase_options.dart';
 import 'package:bird_x/views/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,9 +19,34 @@ void main() async {
 }
 
 Box box = Hive.box("data");
+initDynamicLinks() async {
+  final PendingDynamicLinkData? data = await FirebaseDynamicLinks.instance.getInitialLink();
+  final Uri? link = data?.link;
 
-class MyApp extends StatelessWidget {
+  if (link != null) {
+    String referralCode = link.queryParameters.values.toList().first;
+    box.put("referralCode", referralCode);
+  }
+  FirebaseDynamicLinks.instance.onLink.listen((dynamicLink) {
+    Uri? deepLink = dynamicLink.link;
+    String referralCode = deepLink.queryParameters.values.toList().first;
+    box.put("referralCode", referralCode);
+  });
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    initDynamicLinks();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

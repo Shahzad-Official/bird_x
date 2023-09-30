@@ -4,12 +4,12 @@ import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/main.dart';
 import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/utils/app_url_launch.dart';
 import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/views/main_page_views/menu_views/home_view.dart';
 import 'package:bird_x/views/profile/about_us.dart';
 import 'package:bird_x/views/profile/edit_profile.dart';
 import 'package:bird_x/views/profile/privacy_policy.dart';
-import 'package:bird_x/views/profile/subscriptions.dart';
 import 'package:bird_x/views/registration_views/login.dart';
 import 'package:bird_x/widgets/app_cached_image.dart';
 import 'package:bird_x/widgets/app_text.dart';
@@ -31,6 +31,7 @@ class _ProfileViewState extends State<ProfileView> {
   LoginModel userData = LoginModel();
   @override
   void initState() {
+    initDynamicLinks();
     var data = jsonDecode(box.get("userData"));
     userData = LoginModel.fromJson(data);
 
@@ -87,17 +88,12 @@ class _ProfileViewState extends State<ProfileView> {
                   },
                 ),
                 ProfileTabWidget(
-                  img: "assets/icons/sub.svg",
-                  text: "Subscriptions",
-                  onTap: () {
-                    AppNavigation.to(context, nextPage: const Subscriptions());
-                  },
-                ),
-                ProfileTabWidget(
                   img: "assets/icons/share.svg",
                   text: "Tell your Friends",
-                  onTap: () {
-                    Share.share("https://play.google.com/");
+                  onTap: () async {
+                    await Share.share(
+                      inviteLink,
+                    );
                   },
                 ),
                 ProfileTabWidget(
@@ -119,6 +115,81 @@ class _ProfileViewState extends State<ProfileView> {
                   text: "About Us",
                   onTap: () {
                     AppNavigation.to(context, nextPage: const AboutUs());
+                  },
+                ),
+                ProfileTabWidget(
+                  img: "assets/icons/support.svg",
+                  text: "Contact Support",
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      showDragHandle: true,
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(25),
+                          topRight: Radius.circular(25),
+                        ),
+                      ),
+                      builder: (context) {
+                        return Padding(
+                          padding: AppSpacing.defaultPadding,
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      AppUrlLaunch.launchMyUrl("https://chat.whatsapp.com/L62BPSFuQgW7S9xNY1CjXc");
+                                    },
+                                    child: Column(
+                                      children: [
+                                        Image.asset(
+                                          "assets/images/community.png",
+                                          height: 50,
+                                          width: 50,
+                                        ),
+                                        AppSpacing.heigthSpace10,
+                                        const AppText(
+                                          text: "Join\nCommunity",
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      AppUrlLaunch.launchMyUrl("https://wa.me/+923081888686");
+                                    },
+                                    child: Column(
+                                      children: [
+                                        SvgPicture.asset(
+                                          "assets/icons/whatsapp.svg",
+                                          height: 50,
+                                          width: 50,
+                                        ),
+                                        AppSpacing.heigthSpace10,
+                                        const AppText(
+                                          text: "Direct\nSupport",
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    );
                   },
                 ),
                 ProfileTabWidget(

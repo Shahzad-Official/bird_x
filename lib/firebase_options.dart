@@ -61,7 +61,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDXRYDcGSXaRWtV42zmMbLCeZc7B4qwD-w',
-    appId: '1:1041073843468:android:1c895979a27d3df06ced29',
+    appId: '1:1041073843468:android:25c76a6da25b8bc56ced29',
     messagingSenderId: '1041073843468',
     projectId: 'birdx-1',
     storageBucket: 'birdx-1.appspot.com',

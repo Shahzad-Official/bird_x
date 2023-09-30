@@ -7,28 +7,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1041073843468:android:1c895979a27d3df06ced29",
+        "mobilesdk_app_id": "1:1041073843468:android:25c76a6da25b8bc56ced29",
         "android_client_info": {
-          "package_name": "com.example.bird_x"
+          "package_name": "online.hexon.petx"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "1041073843468-5plupmds7jjsvj3vissptfn1t4esi9n9.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.bird_x",
-            "certificate_hash": "8058ff0a6db4ea2f120a0e75af4b57b1973d6213"
-          }
-        },
-        {
-          "client_id": "1041073843468-egos897b918djmhaudntadsn6jsmergi.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.bird_x",
-            "certificate_hash": "0847209eb0442527a7aeec08983548e415ca8021"
-          }
-        },
         {
           "client_id": "1041073843468-ga202i6oamvb65tha578cq4oqibnp018.apps.googleusercontent.com",
           "client_type": 3
