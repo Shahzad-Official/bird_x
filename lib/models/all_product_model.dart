@@ -1,3 +1,5 @@
+import 'package:bird_x/models/user_model.dart';
+
 class AllProductsModel {
   bool? success;
   String? message;
@@ -52,7 +54,7 @@ class ProductData {
   List<String>? otherPics;
   String? startDate;
   String? endDate;
-  User? user;
+  UserData? user;
   Category? category;
 
   ProductData(
@@ -84,7 +86,7 @@ class ProductData {
     otherPics = json['otherPics'].cast<String>();
     startDate = json['startDate'];
     endDate = json['endDate'];
-    user = json['User'] != null ? User.fromJson(json['User']) : null;
+    user = json['User'] != null ? UserData.fromJson(json['User']) : null;
     category = json['Category'] != null ? Category.fromJson(json['Category']) : null;
   }
 
@@ -132,81 +134,6 @@ class Location {
     data['address'] = address;
     data['latitude'] = latitude;
     data['longitude'] = longitude;
-    return data;
-  }
-}
-
-class User {
-  String? sId;
-  String? firstName;
-  String? lastName;
-  String? email;
-  String? profile;
-  String? mobile;
-  String? password;
-  String? gender;
-  Location? location;
-  bool? isVerified;
-  String? subscription;
-  bool? isOnline;
-  String? createdOn;
-  String? lastActive;
-  String? fcmToken;
-
-  User(
-      {this.sId,
-      this.firstName,
-      this.lastName,
-      this.email,
-      this.profile,
-      this.mobile,
-      this.password,
-      this.gender,
-      this.location,
-      this.isVerified,
-      this.subscription,
-      this.isOnline,
-      this.createdOn,
-      this.lastActive,
-      this.fcmToken});
-
-  User.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    firstName = json['firstName'];
-    lastName = json['lastName'];
-    email = json['email'];
-    profile = json['profile'];
-    mobile = json['mobile'];
-    password = json['password'];
-    gender = json['gender'];
-    location = json['location'] != null ? Location.fromJson(json['location']) : null;
-    isVerified = json['isVerified'];
-    subscription = json['subscription'];
-    isOnline = json['isOnline'];
-    createdOn = json['createdOn'];
-    lastActive = json['lastActive'];
-    fcmToken = json['fcmToken'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = sId;
-    data['firstName'] = firstName;
-    data['lastName'] = lastName;
-    data['email'] = email;
-    data['profile'] = profile;
-    data['mobile'] = mobile;
-    data['password'] = password;
-    data['gender'] = gender;
-    if (location != null) {
-      data['location'] = location!.toJson();
-    }
-    data['isVerified'] = isVerified;
-    data['subscription'] = subscription;
-    data['isOnline'] = isOnline;
-    data['createdOn'] = createdOn;
-    data['lastActive'] = lastActive;
-    data['fcmToken'] = fcmToken;
     return data;
   }
 }

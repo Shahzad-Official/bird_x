@@ -1,11 +1,10 @@
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
+import 'package:bird_x/models/all_product_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/main_page_views/menu_views/categories_home.dart';
 import 'package:bird_x/views/main_page_views/menu_views/prdouct_details.dart';
-import 'package:bird_x/views/notifications.dart/notifications.dart';
 import 'package:bird_x/widgets/app_field.dart';
-import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -30,36 +29,9 @@ class _WishlistViewState extends State<WishlistView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Flexible(
-                    flex: 9,
-                    child: AppText(
-                      text: "Wishlist",
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    )),
-                Flexible(
-                  child: InkWell(
-                    onTap: () {
-                      AppNavigation.to(context, nextPage: const Notifications());
-                    },
-                    child: AppShadowcontainer(
-                      child: SvgPicture.asset(
-                        "assets/icons/bell.svg",
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+      appBar: AppBar(
+        title: const AppText(
+          text: "WishList",
         ),
       ),
       body: SingleChildScrollView(
@@ -137,13 +109,12 @@ class _WishlistViewState extends State<WishlistView> {
 
                   return InkWell(
                     onTap: () {
-                      AppNavigation.to(context,
-                          nextPage: ProductDetails(
-                            namesPets: name,
-                            currentLocation: "",
-                            img: imageUrl,
-                            price: price,
-                          ));
+                      AppNavigation.to(
+                        context,
+                        nextPage: ProductDetails(
+                          productData: ProductData(),
+                        ),
+                      );
                     },
                     child: Container(
                       height: 250,

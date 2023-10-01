@@ -109,10 +109,13 @@ class ProductServices {
   }
 
   AllProductsModel allProductsModel = AllProductsModel();
-  getAllProducts() async {
-    
+  getAllProducts({
+    int page = 1,
+    String categoryId = "",
+    String userId = "",
+  }) async {
     await get(
-      Uri.parse(ApiConstant.baseUrl + ApiConstant.product),
+      Uri.parse("${ApiConstant.baseUrl}${ApiConstant.product}?page=$page&catId=$categoryId&userId=$userId"),
       headers: {
         "Content-Type": "application/json",
       },
@@ -120,6 +123,7 @@ class ProductServices {
       var data = jsonDecode(value.body);
       if (value.statusCode == 200) {
         allProductsModel = AllProductsModel.fromJson(data);
+        box.put("totalPages", allProductsModel.totalPages.toString());
       }
     }).catchError((err) {
       debugPrint("products fetching eror=> $err");

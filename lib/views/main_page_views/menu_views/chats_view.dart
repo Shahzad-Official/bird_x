@@ -9,12 +9,9 @@ import 'package:bird_x/services/chat_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/views/chat_screens/chat_screen.dart';
-import 'package:bird_x/views/notifications.dart/notifications.dart';
 import 'package:bird_x/widgets/app_cached_image.dart';
-import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 class ChatsView extends StatefulWidget {
@@ -70,26 +67,26 @@ class _ChatsViewState extends State<ChatsView> {
           fontSize: 20,
           fontWeight: FontWeight.w500,
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 5,
-              bottom: 15,
-            ),
-            child: InkWell(
-              onTap: () {
-                AppNavigation.to(context, nextPage: const Notifications());
-              },
-              child: AppShadowcontainer(
-                child: SvgPicture.asset(
-                  "assets/icons/bell.svg",
-                  height: 20,
-                  width: 20,
-                ),
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(
+        //       top: 5,
+        //       bottom: 15,
+        //     ),
+        //     child: InkWell(
+        //       onTap: () {
+        //         AppNavigation.to(context, nextPage: const Notifications());
+        //       },
+        //       child: AppShadowcontainer(
+        //         child: SvgPicture.asset(
+        //           "assets/icons/bell.svg",
+        //           height: 20,
+        //           width: 20,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ],
       ),
       body: isLoading
           ? const Center(
@@ -97,17 +94,17 @@ class _ChatsViewState extends State<ChatsView> {
             )
           : Padding(
               padding: AppSpacing.defaultPadding,
-              child: Column(
-                children: [
-                  _chatServices.allUsersModel.data == null || _chatServices.allUsersModel.data!.isEmpty
-                      ? const Center(
-                          child: AppText(
-                            text: "NO Data found!",
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )
-                      : ListView.builder(
+              child: _chatServices.allUsersModel.data == null || _chatServices.allUsersModel.data!.isEmpty
+                  ? const Center(
+                      child: AppText(
+                        text: "NO Data found!",
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        ListView.builder(
                           shrinkWrap: true,
                           itemCount: _chatServices.allUsersModel.data!.length,
                           itemBuilder: (BuildContext context, int index) {
@@ -280,8 +277,8 @@ class _ChatsViewState extends State<ChatsView> {
                             // );
                           },
                         ),
-                ],
-              ),
+                      ],
+                    ),
             ),
     );
   }

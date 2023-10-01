@@ -138,6 +138,7 @@ class SearchField extends StatelessWidget {
   final String? hintText;
   final TextInputType? textType;
   final void Function()? onTap;
+  final void Function(String value)? onSubmit;
   const SearchField({
     super.key,
     this.controller,
@@ -146,6 +147,7 @@ class SearchField extends StatelessWidget {
     this.hintText,
     this.textType,
     this.onTap,
+    this.onSubmit,
   });
 
   @override
@@ -163,6 +165,7 @@ class SearchField extends StatelessWidget {
         ],
       ),
       child: TextFormField(
+        onFieldSubmitted: onSubmit,
         onTap: onTap,
         readOnly: onTap == null ? false : true,
         keyboardType: textType,
