@@ -110,6 +110,7 @@ class ProductServices {
 
   AllProductsModel allProductsModel = AllProductsModel();
   getAllProducts() async {
+    
     await get(
       Uri.parse(ApiConstant.baseUrl + ApiConstant.product),
       headers: {

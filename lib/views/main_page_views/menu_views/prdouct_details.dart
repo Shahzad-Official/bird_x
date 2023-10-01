@@ -1,5 +1,6 @@
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
+import 'package:bird_x/models/all_product_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_text.dart';
@@ -10,6 +11,9 @@ class ProductDetails extends StatelessWidget {
   final String? currentLocation;
   final String? namesPets;
   final String? price;
+  final String? description;
+  final Location? location;
+  final List<String>? otherPics;
 
   const ProductDetails({
     super.key,
@@ -17,6 +21,8 @@ class ProductDetails extends StatelessWidget {
     this.currentLocation,
     this.namesPets,
     this.price,
+    this.description,
+    this.location, this.otherPics,
   });
 
   @override

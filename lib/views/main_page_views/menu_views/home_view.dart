@@ -9,6 +9,7 @@ import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/main_page_views/menu_views/categories_home.dart';
 import 'package:bird_x/views/main_page_views/menu_views/prdouct_details.dart';
 import 'package:bird_x/views/notifications.dart/notifications.dart';
+import 'package:bird_x/widgets/app_cached_image.dart';
 import 'package:bird_x/widgets/app_field.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
@@ -25,15 +26,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final List<String> imageUrls = [
-    "https://b1157417.smushcdn.com/1157417/wp-content/uploads/fish-discus-swimming-825x550.jpg?lossy=1&strip=1&webp=0",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7bjwX3Gucn1jzP_7sIb82UzeiBLDhDZXnyg&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_NZukTmUyMB5GKl19VWQGdyRtksWj4Qh51w&usqp=CAU",
-    "https://w7.pngwing.com/pngs/862/145/png-transparent-chicken-as-food-broiler-poultry-hen-chicken-thumbnail.png"
-  ];
-  final List<String> namesPets = ["Fish", "Pigeon", "1 Pair of Cat", "Hen"];
-  final List<String> pricePets = ["Rs 5,000", "Rs  200", "Rs 20000", "Rs 8,000"];
-
   LoginModel userData = LoginModel();
   final ProductServices _services = ProductServices();
 
@@ -90,7 +82,8 @@ class _HomeViewState extends State<HomeView> {
                 Flexible(
                   child: InkWell(
                     onTap: () {
-                      AppNavigation.to(context, nextPage: const Notifications());
+                      AppNavigation.to(context,
+                          nextPage: const Notifications());
                     },
                     child: AppShadowcontainer(
                       child: SvgPicture.asset(
@@ -130,7 +123,8 @@ class _HomeViewState extends State<HomeView> {
                     AppSpacing.heigthSpace10,
                     InkWell(
                       onTap: () {
-                        AppNavigation.to(context, nextPage: const CategoriesHome());
+                        AppNavigation.to(context,
+                            nextPage: const CategoriesHome());
                       },
                       child: Container(
                         height: 48,
@@ -173,20 +167,33 @@ class _HomeViewState extends State<HomeView> {
                     AppSpacing.heigthSpace20,
                     GridView.builder(
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 4,
+                      itemCount: _services.allProductsModel.perPage,
                       shrinkWrap: true,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 4, mainAxisSpacing: 4, mainAxisExtent: 250),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 4,
+                              mainAxisSpacing: 4,
+                              mainAxisExtent: 250),
                       itemBuilder: (BuildContext context, int index) {
-                        final imageUrl = imageUrls[index];
-                        final name = namesPets[index];
-                        final price = pricePets[index];
+                        final productData =
+                            _services.allProductsModel.productData?[index];
+                        final imageUrl = productData?.thumbnail ?? "";
+                        final name = productData?.name ?? "";
+                        final price = productData?.price ?? "";
+                        final description = productData?.description ?? "";
 
                         return InkWell(
                           onTap: () {
                             AppNavigation.to(context,
                                 nextPage: ProductDetails(
+                                  // location: location,
+                                  description: description,
+                                  // otherPics: otherPics,
                                   namesPets: name,
-                                  currentLocation: userData.data!.location!.address.toString(),
+                                  currentLocation: userData
+                                      .data!.location!.address
+                                      .toString(),
                                   img: imageUrl,
                                   price: price,
                                 ));
@@ -198,7 +205,8 @@ class _HomeViewState extends State<HomeView> {
                             decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xff000000).withOpacity(0.1),
+                                  color:
+                                      const Color(0xff000000).withOpacity(0.1),
                                   offset: const Offset(0, 4),
                                   blurRadius: 15,
                                   spreadRadius: 0,
@@ -218,14 +226,15 @@ class _HomeViewState extends State<HomeView> {
                                         topLeft: Radius.circular(10),
                                         topRight: Radius.circular(10),
                                       ),
-                                      child: Image.network(
-                                        imageUrl,
+                                      child: AppCachedImage(
                                         height: 180,
+                                        url: imageUrl,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
                                     const Padding(
-                                      padding: EdgeInsets.only(right: 5, top: 3),
+                                      padding:
+                                          EdgeInsets.only(right: 5, top: 3),
                                       child: Icon(
                                         Icons.favorite_border,
                                         color: Colors.white,
@@ -237,7 +246,8 @@ class _HomeViewState extends State<HomeView> {
                                 Padding(
                                   padding: const EdgeInsets.only(left: 11),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       AppText(
                                         text: name,
