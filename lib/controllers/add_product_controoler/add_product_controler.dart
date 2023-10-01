@@ -30,7 +30,7 @@ class AddProductController extends GetxController {
   final ProductServices _addProductServices = ProductServices();
 
   pickLocation(context) async {
-    location.text = "loading....";
+    location.text = "loading.....";
     await await AppNavigation.to(
       context,
       nextPage: PlacePicker(
@@ -42,7 +42,9 @@ class AddProductController extends GetxController {
           latitude = value.geometry!.location.lat.toString();
           longitude = value.geometry!.location.lng.toString();
           AppNavigation.back(context);
-          location.text = await LocationServices.translateAddress(latitude: value.geometry!.location.lat, longitude: value.geometry!.location.lng);
+          location.text = await LocationServices.translateAddress(
+              latitude: value.geometry!.location.lat,
+              longitude: value.geometry!.location.lng);
         },
       ),
     );
@@ -50,7 +52,9 @@ class AddProductController extends GetxController {
 
   pickThumbnail({required ImageSource source}) async {
     // ignore: invalid_use_of_visible_for_testing_member
-    await ImagePicker.platform.getImageFromSource(source: source).then((value) async {
+    await ImagePicker.platform
+        .getImageFromSource(source: source)
+        .then((value) async {
       if (value != null) {
         var newthumbnail = File(value.path);
         var fileSize = await AppImageUtils.fileSize(newthumbnail);
@@ -110,18 +114,22 @@ class AddProductController extends GetxController {
     update();
   }
 
-  addProduct(context, {required String categoryName, required String categoryId}) async {
+  addProduct(context,
+      {required String categoryName, required String categoryId}) async {
     isLoading = true;
     update();
 
     if (thumbnailImage == null) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please select your thumbnail picture!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please select your thumbnail picture!");
     } else if (price.text.isEmpty || !price.text.isNotEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email price!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please enter valid email price!");
     } else if (title.text.isEmpty) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter title!");
     } else if (description.text.isEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter Description!");
+      AppSnackbar.showSnackbar(
+          title: "Error", message: "Please enter Description!");
     } else {
       await _addProductServices.addProduct(
         context,
