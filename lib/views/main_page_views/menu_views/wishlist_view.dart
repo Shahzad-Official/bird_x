@@ -1,6 +1,5 @@
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
-import 'package:bird_x/services/location_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/main_page_views/menu_views/categories_home.dart';
 import 'package:bird_x/views/main_page_views/menu_views/prdouct_details.dart';
@@ -10,8 +9,6 @@ import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 
 class WishlistView extends StatefulWidget {
   const WishlistView({Key? key}) : super(key: key);
@@ -28,50 +25,7 @@ class _WishlistViewState extends State<WishlistView> {
     "https://w7.pngwing.com/pngs/862/145/png-transparent-chicken-as-food-broiler-poultry-hen-chicken-thumbnail.png"
   ];
   final List<String> namesPets = ["Fish", "Pigeon", "1 Pair of Cat", "Hen"];
-  final List<String> pricePets = [
-    "Rs 5,000",
-    "Rs  200",
-    "Rs 20000",
-    "Rs 8,000"
-  ];
-
-  String? currentLocation;
-  final LocationServices _locationServices = LocationServices();
-  bool isLoading = false;
-  initializeLocation() async {
-    setState(() {
-      isLoading = true;
-    });
-    Position? position;
-
-    position = await _locationServices.determinePosition().then((value) async {
-      List<Placemark> placemark =
-          await placemarkFromCoordinates(value.latitude, value.longitude);
-      Placemark newPlace = placemark[0];
-      if (mounted) {
-        setState(() {
-          currentLocation =
-              "${newPlace.subAdministrativeArea!} , ${newPlace.administrativeArea!} , ${newPlace.country!}";
-          isLoading = false;
-        });
-      }
-      return value;
-    }).catchError((err) {
-      if (mounted) {
-        setState(() {
-          currentLocation = null;
-          isLoading = false;
-        });
-      }
-      return position!;
-    });
-  }
-
-  @override
-  void initState() {
-    initializeLocation();
-    super.initState();
-  }
+  final List<String> pricePets = ["Rs 5,000", "Rs  200", "Rs 20000", "Rs 8,000"];
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +48,7 @@ class _WishlistViewState extends State<WishlistView> {
                 Flexible(
                   child: InkWell(
                     onTap: () {
-                      AppNavigation.to(context,
-                          nextPage: const Notifications());
+                      AppNavigation.to(context, nextPage: const Notifications());
                     },
                     child: AppShadowcontainer(
                       child: SvgPicture.asset(
@@ -176,11 +129,7 @@ class _WishlistViewState extends State<WishlistView> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: 4,
                 shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 4,
-                    mainAxisSpacing: 4,
-                    mainAxisExtent: 250),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 4, mainAxisSpacing: 4, mainAxisExtent: 250),
                 itemBuilder: (BuildContext context, int index) {
                   final imageUrl = imageUrls[index];
                   final name = namesPets[index];
@@ -191,7 +140,7 @@ class _WishlistViewState extends State<WishlistView> {
                       AppNavigation.to(context,
                           nextPage: ProductDetails(
                             namesPets: name,
-                            currentLocation: currentLocation,
+                            currentLocation: "",
                             img: imageUrl,
                             price: price,
                           ));
