@@ -248,6 +248,7 @@ class _SignupState extends State<Signup> {
               ),
               AppSpacing.heigthSpace20,
               AppField(
+                readOnly: true,
                 controller: _controller.location,
                 onTap: () async {
                   await _controller.pickLocation(context);

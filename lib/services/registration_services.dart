@@ -9,6 +9,7 @@ import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/views/registration_views/otp_verification.dart';
 import 'package:bird_x/views/registration_views/reset_password.dart';
 import 'package:bird_x/views/registration_views/successfull_registration.dart';
+import 'package:bird_x/widgets/google_dropdown.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -23,6 +24,7 @@ class RegistrationServices {
     required String password,
     required String email,
     required String mobile,
+    required String mobileCode,
     required String profile,
     required String address,
     required String latitude,
@@ -36,6 +38,7 @@ class RegistrationServices {
       "email": email,
       "password": password,
       "mobile": mobile,
+      "mobileCode": mobileCode,
       "profile": profile,
       "address": address,
       "latitude": latitude,
@@ -118,51 +121,61 @@ class RegistrationServices {
     });
   }
 
- googleLogin(context, ) async {
-  await GoogleSignIn().signOut();
-  await GoogleSignIn().signIn().then(
-    (value) async {
-      var body = jsonEncode({
-        "email": value?.email,
-        "firstName": value?.displayName?.split(" ").first,
-        "lastName": value?.displayName?.split(" ").last,
-        "imageUrl": value!.photoUrl ?? " ",
-        "referrer": box.get("referralCode") ?? " ",
-      
-      });
-      print(body); 
+  googleLogin(
+    context,
+  ) async {
+    await GoogleSignIn().signOut();
+    await GoogleSignIn().signIn().then(
+      (value) async {
+        var body = jsonEncode({
+          "email": value?.email,
+          "firstName": value?.displayName?.split(" ").first,
+          "lastName": value?.displayName?.split(" ").last,
+          "imageUrl": value!.photoUrl ?? " ",
+          "referrer": box.get("referralCode") ?? " ",
+        });
 
-      await post(
-        Uri.parse(ApiConstant.baseUrl + ApiConstant.googleSigin),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: body,
-      ).then((value) {
-        var data = jsonDecode(value.body);
+        await post(
+          Uri.parse(ApiConstant.baseUrl + ApiConstant.googleSigin),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: body,
+        ).then((value) {
+          var data = jsonDecode(value.body);
 
-        if (value.statusCode == 200) {
-          box.put("referralCode", null);
-          box.put("token", data['token']);
-          box.put("isLoggedIn", true);
-          box.put("userData", value.body);
-          AppSnackbar.showSnackbar(
-              title: "Message", message: data['message']);
-          AppNavigation.offAll(
-            context,
-            nextPage: const MainPage(),
-          );
-        } else {
-          AppSnackbar.showSnackbar(title: "Error", message: data['message']);
-        }
-      }).catchError((err) {
-        debugPrint(err);
-        AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-      });
-    },
-  );
-}
+          if (value.statusCode == 200) {
+            box.put("referralCode", null);
+            box.put("token", data['token']);
+            if (data['data']['gender'] == null || data['data']['gender'].toString().trim().isEmpty) {
+              box.put("isLoggedIn", false);
 
+              showModalBottomSheet(
+                showDragHandle: true,
+                context: context,
+                builder: (context) {
+                  return const GoogleDropdown();
+                },
+              );
+            } else {
+              box.put("isLoggedIn", true);
+              box.put("userData", value.body);
+              AppSnackbar.showSnackbar(title: "Message", message: data['message']);
+              AppNavigation.offAll(
+                context,
+                nextPage: const MainPage(),
+              );
+            }
+          } else {
+            AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+          }
+        }).catchError((err) {
+          debugPrint(err);
+          AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+        });
+      },
+    );
+  }
 
   sendOtp(
     context, {
@@ -255,14 +268,17 @@ class RegistrationServices {
     });
   }
 
-  updatePassword(
+  forgetPassword(
     context, {
     required String email,
     required String password,
   }) async {
-    var body = jsonEncode({"email": email, "password": password});
+    var body = jsonEncode({
+      "email": email,
+      "password": password,
+    });
     await post(
-      Uri.parse(ApiConstant.baseUrl + ApiConstant.updatePassword),
+      Uri.parse(ApiConstant.baseUrl + ApiConstant.forgetPassword),
       headers: {
         "Content-Type": "application/json",
       },
@@ -287,11 +303,99 @@ class RegistrationServices {
     });
   }
 
+  updatePassword(
+    context, {
+    required String email,
+    required String password,
+    required String oldPassword,
+  }) async {
+    var body = jsonEncode({
+      "email": email,
+      "password": password,
+      "oldPassword": oldPassword,
+    });
+    await post(
+      Uri.parse(ApiConstant.baseUrl + ApiConstant.updatePassword),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body,
+    ).then((value) {
+      var data = jsonDecode(value.body);
+      if (value.statusCode == 200) {
+        AppSnackbar.showSnackbar(title: "Success", message: data['message']);
+        AppNavigation.back(context);
+      } else {
+        AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+      }
+    }).catchError((err) {
+      debugPrint(err.toString());
+      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
+    });
+  }
+
+  updateProfile(
+    context, {
+    String? firstName,
+    String? lastName,
+    String? password,
+    String? mobile,
+    String? mobileCode,
+    String? profile,
+    String? address,
+    String? latitude,
+    String? longitude,
+    String? gender,
+    String? refCode,
+  }) async {
+    var body = jsonEncode({
+      "firstName": firstName,
+      "lastName": lastName,
+      "password": password,
+      "mobile": mobile,
+      "mobileCode": mobileCode,
+      "profile": profile,
+      "address": address,
+      "latitude": latitude,
+      "longitude": longitude,
+      "gender": gender,
+      "referrer": refCode,
+    });
+    await post(
+      Uri.parse(ApiConstant.baseUrl + ApiConstant.updateProfile),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: body,
+    ).then((value) {
+      var data = jsonDecode(value.body);
+      if (value.statusCode == 200) {
+        box.put("referralCode", null);
+        box.put("token", data['token']);
+        box.put("isLoggedIn", true);
+        box.put("userData", value.body);
+        AppSnackbar.showSnackbar(title: "Message", message: data['message']);
+        AppNavigation.offAll(
+          context,
+          nextPage: const MainPage(),
+        );
+      } else {
+        AppNavigation.back(context);
+        AppSnackbar.showSnackbar(title: "Message", message: data['message']);
+      }
+    }).catchError((err) {
+      debugPrint(err.toString());
+      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
+    });
+  }
+
   Future<UserData> getUserData(String userId) async {
     UserData userData = UserData();
     await get(
-      Uri.parse(
-          "${ApiConstant.baseUrl}${ApiConstant.getUserData}?userId=$userId"),
+      Uri.parse("${ApiConstant.baseUrl}${ApiConstant.getUserData}?userId=$userId"),
       headers: {
         "Content-Type": "application/json",
       },
@@ -317,14 +421,10 @@ class RegistrationServices {
         ),
         socialMetaTagParameters: SocialMetaTagParameters(
           title: "Share the Pet Love: Grow Our Pack with PetX!",
-          description:
-              "Share PetX with friends, and let's make our pet-loving community even more purr-fect together! 🐾❤️",
-          imageUrl: Uri.parse(
-              "https://raw.githubusercontent.com/Shahzad-Official/Public-Files/main/17195464_5847918%201.png"),
+          description: "Share PetX with friends, and let's make our pet-loving community even more purr-fect together! 🐾❤️",
+          imageUrl: Uri.parse("https://raw.githubusercontent.com/Shahzad-Official/Public-Files/main/17195464_5847918%201.png"),
         ));
-    await FirebaseDynamicLinks.instance
-        .buildShortLink(linkParameters)
-        .then((value) {
+    await FirebaseDynamicLinks.instance.buildShortLink(linkParameters).then((value) {
       link = value.shortUrl.toString();
     }).catchError((err) {
       debugPrint(err.toString());

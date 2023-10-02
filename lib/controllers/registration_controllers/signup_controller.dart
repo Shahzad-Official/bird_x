@@ -7,6 +7,7 @@ import 'package:bird_x/utils/app_image_utils.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
@@ -47,21 +48,39 @@ class SignupController extends GetxController {
   final RegistrationServices _registrationServices = RegistrationServices();
   pickLocation(context) async {
     location.text = "loading....";
-    await await AppNavigation.to(
-      context,
-      nextPage: PlacePicker(
-        apiKey: "AIzaSyDq33g2UnBUqsMbCPvHT8imFd20IsLuel0",
-        initialPosition: const LatLng(30.1811532, 71.3098456),
-        enableMyLocationButton: true,
-        useCurrentLocation: true,
-        onPlacePicked: (value) async {
-          latitude = value.geometry!.location.lat.toString();
-          longitude = value.geometry!.location.lng.toString();
-          AppNavigation.back(context);
-          location.text = await LocationServices.translateAddress(latitude: value.geometry!.location.lat, longitude: value.geometry!.location.lng);
+    var isenable = await LocationServices().determinePosition();
+    if (!isenable) {
+      Get.defaultDialog(
+        title: "Please enable location permissions",
+        content: const SizedBox(),
+        onConfirm: () async {
+          await Geolocator.openLocationSettings().then((value) async {
+            location.text = "Tap again";
+            Get.back();
+          });
         },
-      ),
-    );
+        onCancel: () {
+          Get.back();
+        },
+      );
+    } else {
+      await AppNavigation.to(
+        context,
+        nextPage: PlacePicker(
+          apiKey: "AIzaSyDq33g2UnBUqsMbCPvHT8imFd20IsLuel0",
+          initialPosition: const LatLng(30.1811532, 71.3098456),
+          enableMyLocationButton: true,
+          useCurrentLocation: true,
+          onPlacePicked: (value) async {
+            latitude = value.geometry!.location.lat.toString();
+            longitude = value.geometry!.location.lng.toString();
+            AppNavigation.back(context);
+            location.text = await LocationServices.translateAddress(latitude: value.geometry!.location.lat, longitude: value.geometry!.location.lng);
+          },
+        ),
+      );
+    }
+    location.text = "Tap again";
   }
 
   File? profile;
@@ -114,11 +133,12 @@ class SignupController extends GetxController {
     } else {
       await _registrationServices.registerUser(
         context,
+        mobileCode: countryCode,
         firstName: firstName.text,
         lastName: lastName.text,
         password: password.text,
         email: email.text,
-        mobile: countryCode + number.text,
+        mobile: number.text,
         profile: base64Image,
         address: location.text,
         latitude: latitude,

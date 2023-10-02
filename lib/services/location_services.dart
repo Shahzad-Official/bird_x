@@ -1,47 +1,42 @@
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class LocationServices {
-  // Future<Position> determinePosition() async {
-  //   Position currentPosition;
-  //   bool serviceEnabled;
-  //   LocationPermission permission;
+  Future<bool> requestPermission() async {
+    var result = await Geolocator.openLocationSettings();
 
-  //   // Test if location services are enabled.
-  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     var res = await Geolocator.openLocationSettings();
-  //     if (res) {
-  //       currentPosition = await Geolocator.getCurrentPosition();
-  //       return currentPosition;
-  //     }
-  //   }
+    await Geolocator.requestPermission();
 
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       permission = await Geolocator.requestPermission();
+    return result;
+  }
 
-  //       currentPosition = await Geolocator.getCurrentPosition();
-  //       return currentPosition;
-  //     }
-  //   }
+  Future<bool> determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-  //   if (permission == LocationPermission.deniedForever) {
-  //     var res = await Geolocator.openAppSettings();
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      var result = await requestPermission();
+      if (result) {
+        await Geolocator.requestPermission();
+        permission = await Geolocator.checkPermission();
 
-  //     if (res) {
-  //       await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
 
-  //       currentPosition = await Geolocator.getCurrentPosition();
-  //       return currentPosition;
-  //     }
-  //   }
+        if (permission == LocationPermission.deniedForever) {
+          var res = await Geolocator.openAppSettings();
 
-  //   currentPosition = await Geolocator.getCurrentPosition();
-
-  //   return currentPosition;
-  // }
+          if (res) {
+            await Geolocator.openLocationSettings();
+            await Geolocator.requestPermission();
+          }
+        }
+      }
+    }
+    return serviceEnabled;
+  }
 
   static Future<String> translateAddress({required double latitude, required double longitude}) async {
     String address = '';

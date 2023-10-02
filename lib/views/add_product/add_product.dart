@@ -314,6 +314,7 @@ class _AddProductState extends State<AddProduct> {
                   ),
                   AppSpacing.heigthSpace20,
                   AppField(
+                    readOnly: true,
                     controller: _.location,
                     onTap: () async {
                       await _.pickLocation(context);

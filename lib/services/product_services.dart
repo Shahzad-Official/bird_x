@@ -14,9 +14,8 @@ import '../utils/app_snackbar.dart';
 
 class ProductServices {
   String get token => box.get("token");
+  CategoryModel categoryModel = CategoryModel();
   Future<CategoryModel> fetchCategories() async {
-    CategoryModel categoryModel = CategoryModel();
-
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

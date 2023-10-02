@@ -42,6 +42,7 @@ dependencies:
   get: any
 
   #location plugins
+  permission_handler: ^11.0.0
   google_maps_flutter: ^2.5.0
   google_maps_place_picker_mb: any
   geolocator: ^10.0.1

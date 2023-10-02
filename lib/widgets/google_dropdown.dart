@@ -1,5 +1,5 @@
 import 'package:bird_x/constants/app_spacing.dart';
-import 'package:bird_x/controllers/registration_controllers/login_controller.dart';
+import 'package:bird_x/controllers/profile_controllers/edit_profile_controllers.dart';
 import 'package:bird_x/main.dart';
 import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_field.dart';
@@ -12,16 +12,21 @@ class GoogleDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<LoginController>(
-        init: LoginController(),
+    return GetBuilder<EditProfileController>(
+        init: EditProfileController(),
         builder: (controller) {
           return Container(
             padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: ListView(
+              shrinkWrap: true,
               children: [
                 AppSpacing.heigthSpace20,
-                const AppText(text: "Fill data to proceed"),
+                const Center(
+                    child: AppText(
+                  text: "Complete the registration data",
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                )),
                 AppSpacing.heigthSpace20,
                 AppPhoneField(
                   controller: controller.number,
@@ -33,6 +38,7 @@ class GoogleDropdown extends StatelessWidget {
                 AppSpacing.heigthSpace20,
                 AppField(
                   controller: controller.location,
+                  readOnly: true,
                   onTap: () async {
                     await controller.pickLocation(context);
                   },
@@ -71,10 +77,20 @@ class GoogleDropdown extends StatelessWidget {
                   ],
                 ),
                 AppSpacing.heigthSpace30,
-                AppButton(
-                  text: "Google Login",
-                  onTap: () async {
-                    await controller.googleLogin(context,);
+                GetBuilder<EditProfileController>(
+                  init: EditProfileController(),
+                  initState: (_) {},
+                  builder: (_) {
+                    return AppButton(
+                      text: "Google Login",
+                      isLoading: _.isLoading,
+                      onTap: () async {
+                        await _.editUser(
+                          context,
+                          isUpdatePage: false,
+                        );
+                      },
+                    );
                   },
                 )
               ],

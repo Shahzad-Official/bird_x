@@ -8,7 +8,6 @@ import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_logo.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
-import 'package:bird_x/widgets/google_dropdown.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -85,9 +84,7 @@ class _LoginState extends State<Login> {
                         _.changeObsecurity();
                       },
                       icon: Icon(
-                        _.isObsecure
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
+                        _.isObsecure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                       ),
                     ),
                   );
@@ -160,8 +157,7 @@ class _LoginState extends State<Login> {
                                     size: 20,
                                   )
                                 : Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
                                       SvgPicture.asset(
                                         "assets/icons/google.svg",

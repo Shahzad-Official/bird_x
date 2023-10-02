@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/main.dart';
+import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/widgets/app_field.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
@@ -21,10 +24,22 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   final EditProfileController _controller = Get.put(EditProfileController());
+  LoginModel userData = LoginModel();
+
+  @override
+  void initState() {
+    var data = jsonDecode(box.get("userData"));
+    userData = LoginModel.fromJson(data);
+    _controller.initializeData(userData);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const AppText(text: "Update Profile"),
+      ),
       body: SafeArea(
         child: Padding(
           padding: AppSpacing.defaultPadding,
@@ -71,14 +86,12 @@ class _EditProfileState extends State<EditProfile> {
                                 return Padding(
                                   padding: const EdgeInsets.all(15),
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
                                       InkWell(
                                         onTap: () {
                                           AppNavigation.back(context);
-                                          _controller.pickProfile(
-                                              source: ImageSource.camera);
+                                          _controller.pickProfile(source: ImageSource.camera);
                                         },
                                         child: const SizedBox(
                                           height: 120,
@@ -103,8 +116,7 @@ class _EditProfileState extends State<EditProfile> {
                                       InkWell(
                                         onTap: () {
                                           AppNavigation.back(context);
-                                          _controller.pickProfile(
-                                              source: ImageSource.gallery);
+                                          _controller.pickProfile(source: ImageSource.gallery);
                                         },
                                         child: const SizedBox(
                                           height: 120,
@@ -165,6 +177,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
               AppSpacing.heigthSpace20,
               AppField(
+                readOnly: true,
                 controller: _controller.email,
                 hintText: "Email",
                 textType: TextInputType.emailAddress,
@@ -237,65 +250,14 @@ class _EditProfileState extends State<EditProfile> {
               ),
               AppSpacing.heigthSpace20,
               AppField(
+                readOnly: true,
                 controller: _controller.location,
-                onTap: () {},
+                onTap: () async {
+                  await _controller.pickLocation(context);
+                },
                 suffixIcon: const Icon(
                   Icons.location_on_outlined,
                 ),
-              ),
-              AppSpacing.heigthSpace20,
-              GetBuilder<EditProfileController>(
-                init: EditProfileController(),
-                initState: (_) {},
-                builder: (_) {
-                  return AppField(
-                    controller: _controller.password,
-                    isObsecure: _.isObsecure,
-                    textType: TextInputType.visiblePassword,
-                    hintText: "Password",
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: AppColors.primaryColor,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        _.changeObsecurity();
-                      },
-                      icon: Icon(
-                        _.isObsecure
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              AppSpacing.heigthSpace30,
-              GetBuilder<EditProfileController>(
-                init: EditProfileController(),
-                initState: (_) {},
-                builder: (_) {
-                  return AppField(
-                    controller: _controller.cpassword,
-                    isObsecure: _.isObsecure1,
-                    textType: TextInputType.visiblePassword,
-                    hintText: "Confirm Password",
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: AppColors.primaryColor,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        _.changeObsecurity1();
-                      },
-                      icon: Icon(
-                        _.isObsecure1
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
-                    ),
-                  );
-                },
               ),
               AppSpacing.heigthSpace30,
               GetBuilder<EditProfileController>(

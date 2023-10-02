@@ -28,7 +28,7 @@ class ResetPasswordController extends GetxController {
     } else if (password.text != cpassword.text) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please check your confirm password!");
     } else {
-      await RegistrationServices().updatePassword(
+      await RegistrationServices().forgetPassword(
         context,
         email: email,
         password: password.text,

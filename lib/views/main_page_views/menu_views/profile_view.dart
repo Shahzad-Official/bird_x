@@ -10,7 +10,9 @@ import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/views/main_page_views/menu_views/home_view.dart';
 import 'package:bird_x/views/profile/about_us.dart';
 import 'package:bird_x/views/profile/edit_profile.dart';
+import 'package:bird_x/views/profile/my_pets.dart';
 import 'package:bird_x/views/profile/privacy_policy.dart';
+import 'package:bird_x/views/profile/update_password.dart';
 import 'package:bird_x/views/registration_views/login.dart';
 import 'package:bird_x/widgets/app_cached_image.dart';
 import 'package:bird_x/widgets/app_text.dart';
@@ -88,6 +90,18 @@ class _ProfileViewState extends State<ProfileView> {
                   },
                 ),
                 ProfileTabWidget(
+                  img: "assets/icons/password_lock.svg",
+                  text: "Update Password",
+                  onTap: () {
+                    AppNavigation.to(
+                      context,
+                      nextPage: UpdatePassword(
+                        email: userData.data!.email.toString(),
+                      ),
+                    );
+                  },
+                ),
+                ProfileTabWidget(
                   img: "assets/icons/share.svg",
                   text: "Tell your Friends",
                   onTap: () async {
@@ -100,14 +114,20 @@ class _ProfileViewState extends State<ProfileView> {
                   img: "assets/icons/pets.svg",
                   text: "My Pets",
                   onTap: () {
-                    AppNavigation.to(context, nextPage: const HomeView());
+                    AppNavigation.to(
+                      context,
+                      nextPage: const MyPets(),
+                    );
                   },
                 ),
                 ProfileTabWidget(
                   img: "assets/icons/privacy.svg",
                   text: "Privacy Policy",
                   onTap: () {
-                    AppNavigation.to(context, nextPage: const PrivacyPolicy());
+                    AppNavigation.to(
+                      context,
+                      nextPage: const PrivacyPolicy(),
+                    );
                   },
                 ),
                 ProfileTabWidget(

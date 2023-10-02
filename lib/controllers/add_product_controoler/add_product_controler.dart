@@ -7,7 +7,8 @@ import 'package:bird_x/utils/app_image_utils.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
 import 'package:flutter/widgets.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -28,33 +29,46 @@ class AddProductController extends GetxController {
 
   bool isLoading = false;
   final ProductServices _addProductServices = ProductServices();
-
   pickLocation(context) async {
-    location.text = "loading.....";
-    await await AppNavigation.to(
-      context,
-      nextPage: PlacePicker(
-        apiKey: "AIzaSyDq33g2UnBUqsMbCPvHT8imFd20IsLuel0",
-        initialPosition: const LatLng(30.1811532, 71.3098456),
-        enableMyLocationButton: true,
-        useCurrentLocation: true,
-        onPlacePicked: (value) async {
-          latitude = value.geometry!.location.lat.toString();
-          longitude = value.geometry!.location.lng.toString();
-          AppNavigation.back(context);
-          location.text = await LocationServices.translateAddress(
-              latitude: value.geometry!.location.lat,
-              longitude: value.geometry!.location.lng);
+    location.text = "loading....";
+    var isenable = await LocationServices().determinePosition();
+    if (!isenable) {
+      Get.defaultDialog(
+        title: "Please enable location permissions",
+        content: const SizedBox(),
+        onConfirm: () async {
+          await Geolocator.openLocationSettings().then((value) async {
+            location.text = "Tap again";
+            Get.back();
+          });
         },
-      ),
-    );
+        onCancel: () {
+          Get.back();
+        },
+      );
+    } else {
+      await AppNavigation.to(
+        context,
+        nextPage: PlacePicker(
+          apiKey: "AIzaSyDq33g2UnBUqsMbCPvHT8imFd20IsLuel0",
+          initialPosition: const LatLng(30.1811532, 71.3098456),
+          enableMyLocationButton: true,
+          useCurrentLocation: true,
+          onPlacePicked: (value) async {
+            latitude = value.geometry!.location.lat.toString();
+            longitude = value.geometry!.location.lng.toString();
+            AppNavigation.back(context);
+            location.text = await LocationServices.translateAddress(latitude: value.geometry!.location.lat, longitude: value.geometry!.location.lng);
+          },
+        ),
+      );
+    }
+    location.text = "Tap again";
   }
 
   pickThumbnail({required ImageSource source}) async {
     // ignore: invalid_use_of_visible_for_testing_member
-    await ImagePicker.platform
-        .getImageFromSource(source: source)
-        .then((value) async {
+    await ImagePicker.platform.getImageFromSource(source: source).then((value) async {
       if (value != null) {
         var newthumbnail = File(value.path);
         var fileSize = await AppImageUtils.fileSize(newthumbnail);
@@ -114,22 +128,18 @@ class AddProductController extends GetxController {
     update();
   }
 
-  addProduct(context,
-      {required String categoryName, required String categoryId}) async {
+  addProduct(context, {required String categoryName, required String categoryId}) async {
     isLoading = true;
     update();
 
     if (thumbnailImage == null) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please select your thumbnail picture!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please select your thumbnail picture!");
     } else if (price.text.isEmpty || !price.text.isNotEmpty) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please enter valid email price!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email price!");
     } else if (title.text.isEmpty) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter title!");
     } else if (description.text.isEmpty) {
-      AppSnackbar.showSnackbar(
-          title: "Error", message: "Please enter Description!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please enter Description!");
     } else {
       await _addProductServices.addProduct(
         context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AppNavigation {
   static to(context, {required Widget nextPage}) {
@@ -21,6 +22,7 @@ class AppNavigation {
   }
 
   static offAll(context, {required Widget nextPage}) {
+    Get.deleteAll();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
