@@ -4,6 +4,7 @@ import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/controllers/main_page_controllers/home_page_controller.dart';
 import 'package:bird_x/main.dart';
 import 'package:bird_x/models/user_model.dart';
+import 'package:bird_x/services/local_db_service.dart';
 import 'package:bird_x/services/product_services.dart';
 import 'package:bird_x/services/registration_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
@@ -26,6 +27,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  final LocalDbService _localDbService = LocalDbService();
   final HomePageController _controller = Get.put(HomePageController());
   final ScrollController _scrollController = ScrollController();
   LoginModel userData = LoginModel();
@@ -75,7 +77,7 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: userData.data!.location!.address.toString(),
+          text: isLoading ? "loading..." : userData.data!.location!.address ?? "",
           color: Colors.black,
           fontSize: 17,
           fontWeight: FontWeight.w500,
@@ -193,11 +195,11 @@ class _HomeViewState extends State<HomeView> {
                           itemCount: 2,
                           itemBuilder: (context, ind) {
                             if (ind == 1) {
-                              return _.isLoading
-                                  ? const Center(
+                              return !_.isLoading
+                                  ? const SizedBox()
+                                  : const Center(
                                       child: CircularProgressIndicator(),
-                                    )
-                                  : const SizedBox();
+                                    );
                             } else {
                               return GridView.builder(
                                 itemCount: _.isSearching ? _.searchedProductList.length : _.productList.length,
@@ -214,6 +216,17 @@ class _HomeViewState extends State<HomeView> {
                                   final imageUrl = productData.thumbnail ?? "";
                                   final name = productData.name ?? "";
                                   final price = productData.price ?? "";
+                                  if (_.isSearching) {
+                                    for (int i = 0; i < _.searchedProductList.length; i++) {
+                                      _.checkedList.add(false);
+                                    }
+                                    _.checkedList[index] = _localDbService.isChecked(productData);
+                                  } else {
+                                    for (int i = 0; i < _.productList.length; i++) {
+                                      _.checkedList.add(false);
+                                    }
+                                    _.checkedList[index] = _localDbService.isChecked(productData);
+                                  }
 
                                   return InkWell(
                                     onTap: () {
@@ -257,13 +270,22 @@ class _HomeViewState extends State<HomeView> {
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
-                                              const Padding(
-                                                padding: EdgeInsets.only(right: 5, top: 3),
-                                                child: Icon(
-                                                  Icons.favorite_border,
-                                                  color: Colors.white,
+                                              IconButton(
+                                                onPressed: () {
+                                                  var jsonData = productData.toJson();
+                                                  if (_localDbService.isChecked(productData)) {
+                                                    _localDbService.removeItem(jsonData);
+                                                    _.changeCheck(index, false);
+                                                  } else {
+                                                    _localDbService.addItem(jsonData);
+                                                    _.changeCheck(index, true);
+                                                  }
+                                                },
+                                                icon: Icon(
+                                                  _.checkedList[index] ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                                  color: _.checkedList[index] ? Colors.red : Colors.white,
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                           AppSpacing.heigthSpace10,
