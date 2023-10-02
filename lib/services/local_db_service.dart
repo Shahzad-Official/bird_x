@@ -12,7 +12,6 @@ class LocalDbService {
         list.add(data);
         box.put("wishlist", list);
       }
-      print(list.length);
     } else {
       List list = [];
       list.add(data);
@@ -30,7 +29,6 @@ class LocalDbService {
           (element) => element['_id'] == data["_id"],
         );
         box.put("wishlist", list);
-        print(list.length);
       } else {}
     }
   }

@@ -125,7 +125,7 @@ class EditProfileController extends GetxController {
 
   initializeData(LoginModel loginModel) async {
     UserData userData = loginModel.data == null ? UserData() : loginModel.data!;
-    print("profile is => ${userData.profile}");
+
     if (userData.profile!.trim().isNotEmpty) {
       DefaultCacheManager manager = DefaultCacheManager();
       var file = await manager.downloadFile("${ApiConstant.baseUrl}/${userData.profile}");
