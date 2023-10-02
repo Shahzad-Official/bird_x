@@ -1,5 +1,7 @@
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/services/product_services.dart';
+import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/views/profile/my_pets.dart';
 import 'package:bird_x/widgets/app_network_svg.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
@@ -57,7 +59,14 @@ class _CategoriesHomeState extends State<CategoriesHome> {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              AppNavigation.to(
+                                context,
+                                nextPage: MyPets(
+                                  categoryData: category,
+                                ),
+                              );
+                            },
                             child: AppShadowcontainer(
                               shape: BoxShape.rectangle,
                               height: 60,

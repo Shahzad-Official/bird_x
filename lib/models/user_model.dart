@@ -2,14 +2,16 @@ class LoginModel {
   bool? success;
   String? message;
   UserData? data;
+  Country? country;
   String? token;
 
-  LoginModel({this.success, this.message, this.data, this.token});
+  LoginModel({this.success, this.message, this.data, this.country, this.token});
 
   LoginModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     data = json['data'] != null ? UserData.fromJson(json['data']) : null;
+    country = json['country'] != null ? Country.fromJson(json['country']) : null;
     token = json['token'];
   }
 
@@ -19,6 +21,9 @@ class LoginModel {
     data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
+    }
+    if (country != null) {
+      data['country'] = country!.toJson();
     }
     data['token'] = token;
     return data;
@@ -113,23 +118,54 @@ class UserData {
 }
 
 class Location {
+  String? address;
   String? latitude;
   String? longitude;
-  String? address;
 
-  Location({this.latitude, this.longitude, this.address});
+  Location({this.address, this.latitude, this.longitude});
 
   Location.fromJson(Map<String, dynamic> json) {
+    address = json['address'];
     latitude = json['latitude'];
     longitude = json['longitude'];
-    address = json['address'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['address'] = address;
     data['latitude'] = latitude;
     data['longitude'] = longitude;
-    data['address'] = address;
+    return data;
+  }
+}
+
+class Country {
+  String? sId;
+  String? countryName;
+  String? countryIso;
+  String? currencyName;
+  String? currencyCode;
+  String? currencySymbol;
+
+  Country({this.sId, this.countryName, this.countryIso, this.currencyName, this.currencyCode, this.currencySymbol});
+
+  Country.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    countryName = json['countryName'];
+    countryIso = json['countryIso'];
+    currencyName = json['currencyName'];
+    currencyCode = json['currencyCode'];
+    currencySymbol = json['currencySymbol'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['countryName'] = countryName;
+    data['countryIso'] = countryIso;
+    data['currencyName'] = currencyName;
+    data['currencyCode'] = currencyCode;
+    data['currencySymbol'] = currencySymbol;
     return data;
   }
 }

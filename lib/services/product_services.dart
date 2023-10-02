@@ -120,6 +120,7 @@ class ProductServices {
       },
     ).then((value) {
       var data = jsonDecode(value.body);
+
       if (value.statusCode == 200) {
         allProductsModel = AllProductsModel.fromJson(data);
         box.put("totalPages", allProductsModel.totalPages.toString());

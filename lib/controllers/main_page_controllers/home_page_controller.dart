@@ -16,9 +16,11 @@ class HomePageController extends GetxController {
   }
 
   int currentPage = 1;
-  bool isLoading = true;
+  bool isLoading = false;
   paginateProducts() async {
     if (currentPage < int.parse(box.get("totalPages"))) {
+      isLoading = true;
+      update();
       currentPage++;
 
       query.text = "";

@@ -8,6 +8,7 @@ import 'package:bird_x/services/local_db_service.dart';
 import 'package:bird_x/services/product_services.dart';
 import 'package:bird_x/services/registration_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/utils/intl_utils.dart';
 import 'package:bird_x/views/main_page_views/menu_views/categories_home.dart';
 import 'package:bird_x/views/main_page_views/menu_views/prdouct_details.dart';
 import 'package:bird_x/widgets/app_cached_image.dart';
@@ -309,7 +310,7 @@ class _HomeViewState extends State<HomeView> {
                                                     fontWeight: FontWeight.w300,
                                                   ),
                                                   AppText(
-                                                    text: price,
+                                                    text: IntlUtils.formatedPrice(price: price),
                                                     fontSize: 11,
                                                     fontWeight: FontWeight.w300,
                                                   ),

@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/controllers/profile_controllers/my_pets_controller.dart';
 import 'package:bird_x/main.dart';
+import 'package:bird_x/models/category_model.dart';
 import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/services/product_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/utils/intl_utils.dart';
 import 'package:bird_x/views/main_page_views/menu_views/prdouct_details.dart';
 import 'package:bird_x/widgets/app_cached_image.dart';
 import 'package:bird_x/widgets/app_field.dart';
@@ -15,13 +17,15 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 class MyPets extends StatefulWidget {
-  const MyPets({Key? key}) : super(key: key);
+  final CategoryData? categoryData;
+  const MyPets({Key? key, this.categoryData}) : super(key: key);
 
   @override
   State<MyPets> createState() => _MyPetsState();
 }
 
 class _MyPetsState extends State<MyPets> {
+  CategoryData? get category => widget.categoryData;
   final ScrollController _scrollController = ScrollController();
   final MyPetsController _controller = Get.put(MyPetsController());
   LoginModel userData = LoginModel();
@@ -33,9 +37,16 @@ class _MyPetsState extends State<MyPets> {
     });
     var data = jsonDecode(box.get("userData"));
     userData = LoginModel.fromJson(data);
-    await _services.getAllProducts(
-      userId: userData.data!.sId.toString(),
-    );
+    if (category == null) {
+      await _services.getAllProducts(
+        userId: userData.data!.sId.toString(),
+      );
+    } else {
+      await _services.getAllProducts(
+        categoryId: category!.sId.toString(),
+      );
+    }
+
     _controller.productList = _services.allProductsModel.productData ?? [];
     if (mounted) {
       setState(() {
@@ -49,10 +60,19 @@ class _MyPetsState extends State<MyPets> {
     _scrollController.addListener(
       () {
         if (_scrollController.position.maxScrollExtent == _scrollController.offset) {
-          _controller.paginateProducts();
+          if (category == null) {
+            _controller.paginateProducts(
+              userId: userData.data!.sId.toString(),
+            );
+          } else {
+            _controller.paginateProducts(
+              catId: category!.sId.toString(),
+            );
+          }
         }
       },
     );
+    getData();
     super.initState();
   }
 
@@ -60,8 +80,8 @@ class _MyPetsState extends State<MyPets> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const AppText(
-          text: "My Pets",
+        title: AppText(
+          text: category == null ? "My Pets" : category!.categoryName.toString(),
           color: Colors.black,
           fontSize: 17,
           fontWeight: FontWeight.w500,
@@ -192,7 +212,7 @@ class _MyPetsState extends State<MyPets> {
                                                     fontWeight: FontWeight.w300,
                                                   ),
                                                   AppText(
-                                                    text: price,
+                                                    text: IntlUtils.formatedPrice(price: price),
                                                     fontSize: 11,
                                                     fontWeight: FontWeight.w300,
                                                   ),

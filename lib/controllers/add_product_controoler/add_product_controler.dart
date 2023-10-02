@@ -20,7 +20,7 @@ class AddProductController extends GetxController {
   TextEditingController location = TextEditingController();
   String latitude = "";
   String longitude = "";
-
+  final ImagePicker _imagePicker = ImagePicker();
   File? thumbnailImage;
 
   String base64Thumbnail = "";
@@ -67,8 +67,7 @@ class AddProductController extends GetxController {
   }
 
   pickThumbnail({required ImageSource source}) async {
-    // ignore: invalid_use_of_visible_for_testing_member
-    await ImagePicker.platform.getImageFromSource(source: source).then((value) async {
+    await _imagePicker.pickImage(source: source).then((value) async {
       if (value != null) {
         var newthumbnail = File(value.path);
         var fileSize = await AppImageUtils.fileSize(newthumbnail);
@@ -95,8 +94,6 @@ class AddProductController extends GetxController {
       } else if (err is FileSystemException) {}
     });
   }
-
-  final ImagePicker _imagePicker = ImagePicker();
 
   multiimagePicked() async {
     final List<XFile> pickedImage = await _imagePicker.pickMultiImage();
@@ -156,5 +153,11 @@ class AddProductController extends GetxController {
       isLoading = false;
       update();
     }
+  }
+
+  bool isFocused = false;
+  changeFocus(bool value) {
+    isFocused = value;
+    update();
   }
 }

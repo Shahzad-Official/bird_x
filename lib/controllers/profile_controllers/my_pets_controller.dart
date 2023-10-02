@@ -16,13 +16,22 @@ class MyPetsController extends GetxController {
   }
 
   int currentPage = 1;
-  bool isLoading = true;
-  paginateProducts() async {
+  bool isLoading = false;
+  paginateProducts({
+    String userId = '',
+    String catId = "",
+  }) async {
     if (currentPage < int.parse(box.get("totalPages"))) {
+      isLoading = true;
+      update();
       currentPage++;
 
       query.text = "";
-      await _productServices.getAllProducts(page: currentPage);
+      await _productServices.getAllProducts(
+        page: currentPage,
+        categoryId: catId,
+        userId: userId,
+      );
       for (var i in _productServices.allProductsModel.productData!) {
         productList.add(i);
       }

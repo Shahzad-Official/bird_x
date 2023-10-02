@@ -1,14 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/controllers/add_product_controoler/add_product_controler.dart';
+import 'package:bird_x/main.dart';
+import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_field.dart';
+import 'package:bird_x/widgets/app_network_svg.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -26,6 +29,7 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProductState extends State<AddProduct> {
+  LoginModel userData = LoginModel.fromJson(jsonDecode(box.get("userData")));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -264,11 +268,28 @@ class _AddProductState extends State<AddProduct> {
                     ),
                   ),
                   AppSpacing.heigthSpace20,
-                  AppField(
-                    hintText: "Price",
-                    prefixIcon: const Icon(Icons.attach_money_rounded),
-                    controller: _.price,
-                    keyboardType: TextInputType.number,
+                  Focus(
+                    onFocusChange: (value) {
+                      _.changeFocus(value);
+                    },
+                    child: AppField(
+                      hintText: "Price",
+                      controller: _.price,
+                      keyboardType: TextInputType.number,
+                      prefixIcon: SizedBox(
+                        height: 40,
+                        width: 20,
+                        child: Center(
+                          child: AppText(
+                            text: userData.country == null ? "RS" : userData.country!.currencySymbol.toString(),
+                            textAlign: TextAlign.center,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                            color: _.isFocused ? AppColors.primaryColor : const Color.fromARGB(255, 137, 137, 137),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                   AppSpacing.heigthSpace20,
                   const AppText(
@@ -288,10 +309,10 @@ class _AddProductState extends State<AddProduct> {
                           width: 55,
                           decoration: BoxDecoration(border: Border.all(width: 0.1), shape: BoxShape.circle),
                           child: Center(
-                            child: SvgPicture.network(
-                              widget.categoryIcon,
-                              height: 40,
-                              width: 40,
+                            child: AppCachedSvg(
+                              height: 45,
+                              width: 45,
+                              url: widget.categoryIcon,
                             ),
                           ),
                         ),
