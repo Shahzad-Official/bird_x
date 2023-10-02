@@ -6,6 +6,7 @@ import 'package:bird_x/widgets/app_logo.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
@@ -112,36 +113,47 @@ class _OtpVerificationState extends State<OtpVerification> {
                 init: OtpController(),
                 initState: (_) {},
                 builder: (_) {
-                  return RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: _.isOtpExpires ? "" : "Resend Code in: ",
-                          style: GoogleFonts.poppins(
-                            fontSize: 17,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
+                  if (_.isResending) {
+                    return const Center(
+                      child: SpinKitThreeBounce(
+                        color: AppColors.primaryColor,
+                        size: 10,
+                      ),
+                    );
+                  } else {
+                    return RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: _.isOtpExpires ? "" : "Resend Code in: ",
+                            style: GoogleFonts.poppins(
+                              fontSize: 17,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w300,
+                            ),
                           ),
-                        ),
-                        TextSpan(
-                          text: _.isOtpExpires ? "Resend Code" : "${_.otpTime}",
-                          style: GoogleFonts.poppins(
-                            fontSize: 17,
-                            color: _.isOtpExpires ? AppColors.primaryColor : Colors.black,
-                            fontWeight: FontWeight.w600,
-                            decoration: _.isOtpExpires ? TextDecoration.underline : null,
+                          TextSpan(
+                            text: _.isOtpExpires ? "Resend Code" : "${_.otpTime}",
+                            style: GoogleFonts.poppins(
+                              fontSize: 17,
+                              color: _.isOtpExpires ? AppColors.primaryColor : Colors.black,
+                              fontWeight: FontWeight.w600,
+                              decoration: _.isOtpExpires ? TextDecoration.underline : null,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () async {
+                                if (_.isOtpExpires) {
+                                  _controller.email = widget.email;
+                                  await _.resendOtp(context);
+                                  _controller.startTimer();
+                                }
+                              },
                           ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              if (_.isOtpExpires) {
-                                _controller.startTimer();
-                              }
-                            },
-                        ),
-                      ],
-                    ),
-                  );
+                        ],
+                      ),
+                    );
+                  }
                 },
               ),
               AppSpacing.heigthSpace30,
@@ -160,6 +172,7 @@ class _OtpVerificationState extends State<OtpVerification> {
                   return AppButton(
                     isLoading: _.isLoading,
                     onTap: () async {
+                      _controller.email = widget.email;
                       await _.verifyOtp(context, isForgetEmail: widget.isForgetEmail);
                     },
                     text: "VERIFY",

@@ -275,7 +275,7 @@ class _AddProductState extends State<AddProduct> {
                     child: AppField(
                       hintText: "Price",
                       controller: _.price,
-                      keyboardType: TextInputType.number,
+                      textType: TextInputType.number,
                       prefixIcon: SizedBox(
                         height: 40,
                         width: 20,
@@ -352,8 +352,8 @@ class _AddProductState extends State<AddProduct> {
                   ),
                   AppSpacing.heigthSpace20,
                   AppField(
+                    maxLines: 10,
                     hintText: "Describe what are you seling",
-                    prefixIcon: const Icon(Icons.sell),
                     controller: _.description,
                   ),
                   AppSpacing.heigthSpace30,

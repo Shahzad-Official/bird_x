@@ -12,6 +12,7 @@ import 'package:bird_x/views/registration_views/successfull_registration.dart';
 import 'package:bird_x/widgets/google_dropdown.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 
@@ -181,6 +182,7 @@ class RegistrationServices {
     context, {
     required String email,
     bool fromLogin = false,
+    bool isResend = false,
   }) async {
     var body = jsonEncode({
       "email": email,
@@ -197,15 +199,24 @@ class RegistrationServices {
       if (value.statusCode == 200) {
         if (!fromLogin) {
           AppSnackbar.showSnackbar(title: "Success", message: data['message']);
+          AppNavigation.offAll(
+            context,
+            nextPage: OtpVerification(
+              email: email,
+              isForgetEmail: fromLogin ? false : true,
+            ),
+          );
+        } else if (isResend) {
+          AppSnackbar.showSnackbar(title: "Success", message: "Otp has been resend to your email!");
+        } else {
+          AppNavigation.offAll(
+            context,
+            nextPage: OtpVerification(
+              email: email,
+              isForgetEmail: fromLogin ? false : true,
+            ),
+          );
         }
-
-        AppNavigation.offAll(
-          context,
-          nextPage: OtpVerification(
-            email: email,
-            isForgetEmail: fromLogin ? false : true,
-          ),
-        );
       } else {
         AppSnackbar.showSnackbar(title: "Error", message: data['message']);
       }
@@ -224,6 +235,7 @@ class RegistrationServices {
   }) async {
     var body = jsonEncode({
       "otp": otp,
+      "email": email,
     });
     await post(
       Uri.parse(ApiConstant.baseUrl + ApiConstant.verifyOtp),
@@ -325,6 +337,7 @@ class RegistrationServices {
       if (value.statusCode == 200) {
         AppSnackbar.showSnackbar(title: "Success", message: data['message']);
         AppNavigation.back(context);
+        Get.deleteAll();
       } else {
         AppSnackbar.showSnackbar(title: "Error", message: data['message']);
       }

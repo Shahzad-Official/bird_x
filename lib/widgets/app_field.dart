@@ -11,8 +11,7 @@ class AppField extends StatelessWidget {
   final TextInputType? textType;
   final bool isObsecure, readOnly;
   final void Function()? onTap;
-  final TextInputType? keyboardType;
-
+  final int maxLines;
   const AppField({
     super.key,
     this.controller,
@@ -22,9 +21,9 @@ class AppField extends StatelessWidget {
     this.suffixIcon,
     this.isObsecure = false,
     this.onTap,
-    this.keyboardType,
     this.labelText,
     this.readOnly = false,
+    this.maxLines = 1,
   });
 
   @override
@@ -38,12 +37,14 @@ class AppField extends StatelessWidget {
         ),
       ),
       child: TextFormField(
+        maxLines: maxLines,
         onTap: onTap,
         readOnly: readOnly,
         obscureText: isObsecure,
         keyboardType: textType,
         controller: controller,
         decoration: InputDecoration(
+          alignLabelWithHint: true,
           labelText: labelText ?? hintText,
           labelStyle: GoogleFonts.poppins(),
           hintText: hintText,

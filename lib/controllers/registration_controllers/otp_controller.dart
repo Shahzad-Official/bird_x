@@ -20,6 +20,19 @@ class OtpController extends GetxController {
   );
   Timer? timer;
   String? otpTime;
+  bool isResending = false;
+  resendOtp(context) async {
+    isResending = true;
+    update();
+    await RegistrationServices().sendOtp(
+      context,
+      email: email,
+      isResend: true,
+    );
+    isResending = false;
+    update();
+  }
+
   startTimer() {
     isOtpExpires = false;
     currentTime = DateTime(

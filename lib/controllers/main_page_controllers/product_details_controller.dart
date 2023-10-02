@@ -6,4 +6,10 @@ class ProductDetailsController extends GetxController {
     currentIndex = index;
     update();
   }
+
+  bool isReadMore = true;
+  changeReadMore() {
+    isReadMore = !isReadMore;
+    update();
+  }
 }

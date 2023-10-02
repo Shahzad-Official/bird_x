@@ -21,8 +21,10 @@ class AppNavigation {
     );
   }
 
-  static offAll(context, {required Widget nextPage}) {
-    Get.deleteAll();
+  static offAll(context, {required Widget nextPage, bool deleteAll = true}) {
+    if (deleteAll) {
+      Get.deleteAll();
+    }
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(

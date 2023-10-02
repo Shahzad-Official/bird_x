@@ -280,7 +280,12 @@ class _HomeViewState extends State<HomeView> {
                                                     fit: BoxFit.cover,
                                                   ),
                                                 ),
-                                                IconButton(
+                                                IconButton.filled(
+                                                  style: ButtonStyle(
+                                                    backgroundColor: MaterialStateColor.resolveWith(
+                                                      (states) => Colors.black.withOpacity(0.5),
+                                                    ),
+                                                  ),
                                                   onPressed: () {
                                                     var jsonData = productData.toJson();
                                                     if (_localDbService.isChecked(productData)) {

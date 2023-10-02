@@ -165,6 +165,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                           AppNavigation.offAll(
                             context,
                             nextPage: const MainPage(),
+                            deleteAll: false,
                           );
                         },
                       ),

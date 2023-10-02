@@ -19,6 +19,8 @@ import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../constants/app_spacing.dart';
@@ -31,10 +33,17 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
+  PackageInfo? packageInfo;
   LoginModel userData = LoginModel();
   @override
   void initState() {
     var data = jsonDecode(box.get("userData"));
+    PackageInfo.fromPlatform().then((value) {
+      setState(() {
+        packageInfo = value;
+      });
+    });
+
     userData = LoginModel.fromJson(data);
     RegistrationServices.generateLink(userData.data!.referralCode.toString());
     super.initState();
@@ -67,11 +76,13 @@ class _ProfileViewState extends State<ProfileView> {
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                     ),
+                    AppSpacing.heigthSpace10,
                     AppText(
                       text: userData.data!.location!.address.toString(),
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
                     ),
+                    AppSpacing.heigthSpace10,
                     AppText(
                       text: "Since ${AppDateUtils.formatDate(pattern: "dd MMM yyyy", date: userData.data!.createdOn.toString())}",
                       fontSize: 15,
@@ -105,8 +116,44 @@ class _ProfileViewState extends State<ProfileView> {
                   img: "assets/icons/share.svg",
                   text: "Tell your Friends",
                   onTap: () async {
-                    await Share.share(
-                      inviteLink,
+                    Get.defaultDialog(
+                      titlePadding: const EdgeInsets.only(
+                        top: 10,
+                        bottom: 5,
+                      ),
+                      title: "Refer your friends to PetX",
+                      titleStyle: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.black),
+                      content: const Center(
+                        child: Column(
+                          children: [
+                            AppText(
+                              text: "For every successful referral, we'll add an extra day to your listing's end date.",
+                            ),
+                            SizedBox(
+                              height: 3,
+                            ),
+                            AppText(
+                              text: "Share now and let your referrals bring extra life to your listings! 🐾🌟",
+                            )
+                          ],
+                        ),
+                      ),
+                      textConfirm: "Share",
+                      onCancel: () {
+                        Get.back();
+                      },
+                      onConfirm: () async {
+                        Get.back();
+                        await Share.share(
+                          inviteLink,
+                        );
+                      },
+                      contentPadding: const EdgeInsets.only(
+                        top: 0,
+                        left: 25,
+                        right: 25,
+                        bottom: 25,
+                      ),
                     );
                   },
                 ),
@@ -216,6 +263,7 @@ class _ProfileViewState extends State<ProfileView> {
                   img: "assets/icons/logout.svg",
                   text: "Logout",
                   onTap: () {
+                    box.put("isLoggedIn", null);
                     box.deleteAt(0);
                     Get.deleteAll();
 
@@ -226,6 +274,14 @@ class _ProfileViewState extends State<ProfileView> {
                   },
                 ),
                 AppSpacing.heigthSpace30,
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: AppText(
+                    text: packageInfo != null ? "v ${packageInfo!.version}" : "v 1.0.0",
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                )
               ],
             ),
           ),

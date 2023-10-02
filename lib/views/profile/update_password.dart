@@ -56,7 +56,7 @@ class UpdatePassword extends StatelessWidget {
                         controller: _.password,
                         isObsecure: _.isObsecure,
                         textType: TextInputType.visiblePassword,
-                        hintText: "Password",
+                        hintText: "New Password",
                         prefixIcon: const Icon(
                           Icons.lock_outline,
                           color: AppColors.primaryColor,
