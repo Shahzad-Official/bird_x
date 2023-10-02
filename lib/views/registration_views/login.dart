@@ -8,6 +8,7 @@ import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_logo.dart';
 import 'package:bird_x/widgets/app_shadowcontainer.dart';
 import 'package:bird_x/widgets/app_text.dart';
+import 'package:bird_x/widgets/google_dropdown.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -178,38 +179,6 @@ class _LoginState extends State<Login> {
                         );
                       },
                     ),
-                    // InkWell(
-                    //   onTap: () async {
-                    //     await FacebookAuth.instance.login().then(
-                    //       (value) {
-                    //         debugPrint(value.message);
-                    //       },
-                    //     );
-                    //   },
-                    //   child: AppShadowcontainer(
-                    //     height: 55,
-                    //     width: 55,
-                    //     child: SvgPicture.asset(
-                    //       "assets/icons/facebook.svg",
-                    //       height: 30,
-                    //       width: 30,
-                    //     ),
-                    //   ),
-                    // ),
-                    // InkWell(
-                    //   onTap: () async {
-                    //     // await TwitterLogin(apiKey: "1703391159060492288Bitsbytes60", apiSecretKey: "27787682", redirectURI: "").login().then((value) => null);
-                    //   },
-                    //   child: AppShadowcontainer(
-                    //     height: 55,
-                    //     width: 55,
-                    //     child: SvgPicture.asset(
-                    //       "assets/icons/twitter.svg",
-                    //       height: 30,
-                    //       width: 30,
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

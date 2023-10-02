@@ -118,54 +118,51 @@ class RegistrationServices {
     });
   }
 
-  googleLogin(context) async {
-    await GoogleSignIn().signOut();
-    await GoogleSignIn().signIn().then(
-      (value) async {
-        var body = jsonEncode({
-          "email": value?.email,
-          "firstName": value?.displayName?.split(" ").first,
-          "lastName": value?.displayName?.split(" ").last,
-          "imageUrl": value!.photoUrl ?? " ",
-          "referrer": box.get("referralCode") ?? " ",
-        });
+ googleLogin(context, ) async {
+  await GoogleSignIn().signOut();
+  await GoogleSignIn().signIn().then(
+    (value) async {
+      var body = jsonEncode({
+        "email": value?.email,
+        "firstName": value?.displayName?.split(" ").first,
+        "lastName": value?.displayName?.split(" ").last,
+        "imageUrl": value!.photoUrl ?? " ",
+        "referrer": box.get("referralCode") ?? " ",
+      
+      });
+      print(body); 
 
-        await post(
-          Uri.parse(ApiConstant.baseUrl + ApiConstant.googleSigin),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: body,
-        ).then((value) {
-          var data = jsonDecode(value.body);
+      await post(
+        Uri.parse(ApiConstant.baseUrl + ApiConstant.googleSigin),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: body,
+      ).then((value) {
+        var data = jsonDecode(value.body);
 
-          if (value.statusCode == 200) {
-            box.put("referralCode", null);
-            box.put("token", data['token']);
-            box.put("isLoggedIn", true);
-            box.put("userData", value.body);
-            AppSnackbar.showSnackbar(title: "Message", message: data['message']);
-            AppNavigation.offAll(
-              context,
-              nextPage: const MainPage(),
-            );
-          } else {
-            AppSnackbar.showSnackbar(title: "Error", message: data['message']);
-          }
-        }).catchError((err) {
-          debugPrint(err);
-          AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-          // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
-        });
-      },
-    )
-        // .catchError((err) {
-        //   debugPrint(err.toString());
-        //   AppSnackbar.showSnackbar(title: "Error", message: err.toString());
-        //   // AppSnackbar.showSnackbar(title: "Error", message: "Something went wrong please try again later!");
-        // })
-        ;
-  }
+        if (value.statusCode == 200) {
+          box.put("referralCode", null);
+          box.put("token", data['token']);
+          box.put("isLoggedIn", true);
+          box.put("userData", value.body);
+          AppSnackbar.showSnackbar(
+              title: "Message", message: data['message']);
+          AppNavigation.offAll(
+            context,
+            nextPage: const MainPage(),
+          );
+        } else {
+          AppSnackbar.showSnackbar(title: "Error", message: data['message']);
+        }
+      }).catchError((err) {
+        debugPrint(err);
+        AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+      });
+    },
+  );
+}
+
 
   sendOtp(
     context, {
@@ -293,7 +290,8 @@ class RegistrationServices {
   Future<UserData> getUserData(String userId) async {
     UserData userData = UserData();
     await get(
-      Uri.parse("${ApiConstant.baseUrl}${ApiConstant.getUserData}?userId=$userId"),
+      Uri.parse(
+          "${ApiConstant.baseUrl}${ApiConstant.getUserData}?userId=$userId"),
       headers: {
         "Content-Type": "application/json",
       },
@@ -319,10 +317,14 @@ class RegistrationServices {
         ),
         socialMetaTagParameters: SocialMetaTagParameters(
           title: "Share the Pet Love: Grow Our Pack with PetX!",
-          description: "Share PetX with friends, and let's make our pet-loving community even more purr-fect together! 🐾❤️",
-          imageUrl: Uri.parse("https://raw.githubusercontent.com/Shahzad-Official/Public-Files/main/17195464_5847918%201.png"),
+          description:
+              "Share PetX with friends, and let's make our pet-loving community even more purr-fect together! 🐾❤️",
+          imageUrl: Uri.parse(
+              "https://raw.githubusercontent.com/Shahzad-Official/Public-Files/main/17195464_5847918%201.png"),
         ));
-    await FirebaseDynamicLinks.instance.buildShortLink(linkParameters).then((value) {
+    await FirebaseDynamicLinks.instance
+        .buildShortLink(linkParameters)
+        .then((value) {
       link = value.shortUrl.toString();
     }).catchError((err) {
       debugPrint(err.toString());
