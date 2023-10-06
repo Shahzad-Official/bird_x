@@ -9,7 +9,7 @@ class IntlUtils {
     LoginModel userData = LoginModel.fromJson(jsonDecode(box.get("userData")));
     String countryIso = userData.country == null || userData.country!.currencyCode == null ? "PKR" : userData.country!.currencyCode!;
     String symbol = NumberFormat().simpleCurrencySymbol(countryIso);
-    var format = NumberFormat.compact();
+    var format = NumberFormat();
     return "$symbol ${format.format(double.parse(price))}";
   }
 }

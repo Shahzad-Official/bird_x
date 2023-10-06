@@ -37,13 +37,8 @@ class ProductDetails extends StatelessWidget {
     LatLng latLng = LatLng(double.parse(productData.location!.latitude.toString()), double.parse(productData.location!.longitude.toString()));
     return Scaffold(
       appBar: AppBar(
-        leading: GestureDetector(
-            onTap: () {
-              AppNavigation.back(context);
-            },
-            child: const Icon(Icons.arrow_back_ios_new)),
         title: const AppText(
-          text: "Product Details",
+          text: "Pet Details",
           fontSize: 20,
           fontWeight: FontWeight.w500,
         ),

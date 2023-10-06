@@ -10,25 +10,10 @@ class AboutUs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.black,
-          ),
-        ),
         title: const AppText(
           text: "About us",
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: Colors.black,
         ),
-        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Padding(

@@ -210,7 +210,7 @@ class _ProfileViewState extends State<ProfileView> {
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      AppUrlLaunch.launchMyUrl("https://chat.whatsapp.com/L62BPSFuQgW7S9xNY1CjXc");
+                                      AppUrlLaunch.launchMyUrl("https://chat.whatsapp.com/C5mxlM4Cmh0LrZVBI13nzm");
                                     },
                                     child: Column(
                                       children: [
@@ -222,8 +222,8 @@ class _ProfileViewState extends State<ProfileView> {
                                         AppSpacing.heigthSpace10,
                                         const AppText(
                                           text: "Join\nCommunity",
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
                                           textAlign: TextAlign.center,
                                         ),
                                       ],
@@ -243,8 +243,8 @@ class _ProfileViewState extends State<ProfileView> {
                                         AppSpacing.heigthSpace10,
                                         const AppText(
                                           text: "Direct\nSupport",
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
                                           textAlign: TextAlign.center,
                                         ),
                                       ],

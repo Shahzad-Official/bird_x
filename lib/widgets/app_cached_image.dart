@@ -24,47 +24,51 @@ class AppCachedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: "${ApiConstant.baseUrl}/$url",
-      imageBuilder: (context, imageProvider) {
-        return Container(
-          height: height,
-          width: width,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: borderRadius,
-            shape: shape,
-            image: DecorationImage(
-              image: imageProvider,
-              fit: fit,
+    return SizedBox(
+      height: height,
+      width: width,
+      child: CachedNetworkImage(
+        imageUrl: "${ApiConstant.baseUrl}/$url",
+        imageBuilder: (context, imageProvider) {
+          return Container(
+            height: height,
+            width: width,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: borderRadius,
+              shape: shape,
+              image: DecorationImage(
+                image: imageProvider,
+                fit: fit,
+              ),
             ),
-          ),
-          child: child,
-        );
-      },
-      progressIndicatorBuilder: (context, url, progress) {
-        return Center(
-          child: CircularProgressIndicator(
-            value: progress.progress,
-          ),
-        );
-      },
-      errorWidget: (context, url, error) {
-        return Container(
-          height: height,
-          width: width,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: borderRadius,
-            shape: shape,
-            image: DecorationImage(
-              image: const AssetImage("assets/images/placeholder.png"),
-              fit: fit,
+            child: child,
+          );
+        },
+        progressIndicatorBuilder: (context, url, progress) {
+          return Center(
+            child: CircularProgressIndicator(
+              value: progress.progress,
             ),
-          ),
-          child: child,
-        );
-      },
+          );
+        },
+        errorWidget: (context, url, error) {
+          return Container(
+            height: height,
+            width: width,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: borderRadius,
+              shape: shape,
+              image: DecorationImage(
+                image: const AssetImage("assets/images/placeholder.png"),
+                fit: fit,
+              ),
+            ),
+            child: child,
+          );
+        },
+      ),
     );
   }
 }

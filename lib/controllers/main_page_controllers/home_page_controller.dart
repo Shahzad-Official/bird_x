@@ -35,10 +35,4 @@ class HomePageController extends GetxController {
       update();
     }
   }
-
-  List<bool> checkedList = [];
-  changeCheck(index, bool value) {
-    checkedList[index] = value;
-    update();
-  }
 }

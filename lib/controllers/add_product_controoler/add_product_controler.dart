@@ -71,7 +71,8 @@ class AddProductController extends GetxController {
       if (value != null) {
         var newthumbnail = File(value.path);
         var fileSize = await AppImageUtils.fileSize(newthumbnail);
-        if (fileSize > 2) {
+
+        if (fileSize > 1) {
           var file = await AppImageUtils.compressImage(
             file: newthumbnail,
             quality: 20,
@@ -105,10 +106,10 @@ class AddProductController extends GetxController {
       for (var element in pickedImage) {
         File otherImage = File(element.path);
         var fileSize = await AppImageUtils.fileSize(otherImage);
-        if (fileSize > 2) {
+        if (fileSize > 1) {
           otherImage = await AppImageUtils.compressImage(
             file: otherImage,
-            quality: 10,
+            quality: 15,
           );
         }
         multiImages.add(otherImage);

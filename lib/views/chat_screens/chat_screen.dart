@@ -9,7 +9,6 @@ import 'package:bird_x/models/all_chats_model.dart';
 import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/services/chat_services.dart';
 import 'package:bird_x/services/registration_services.dart';
-import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/widgets/app_text.dart';
@@ -29,6 +28,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
+  final MainPageController _mainPageController = Get.put(MainPageController());
   final ChatController _chatController = Get.put(ChatController());
   ChatData? myChatData;
 
@@ -137,11 +137,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Get.find<MainPageController>().selectedIndex = 1;
+        _mainPageController.selectedIndex = 1;
 
-        AppNavigation.offAll(
-          context,
-          nextPage: const MainPage(),
+        Get.offAll(
+          () => const MainPage(),
         );
         return true;
       },
@@ -160,12 +159,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                     children: [
                       BackButton(
                         onPressed: () {
-                          Get.find<MainPageController>().selectedIndex = 1;
+                          _mainPageController.selectedIndex = 1;
 
-                          AppNavigation.offAll(
-                            context,
-                            nextPage: const MainPage(),
-                            deleteAll: false,
+                          Get.offAll(
+                            () => const MainPage(),
                           );
                         },
                       ),
@@ -195,8 +192,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                               ? ""
                                               : snapshot.data!.isOnline!
                                                   ? "Online"
-                                                  : "Last active: ${AppDateUtils.formatDate(
-                                                      pattern: "hh:mm aa",
+                                                  : "Last seen at ${AppDateUtils.formatDate(
+                                                      pattern: "hh:mm aa  dd MMM ",
                                                       date: snapshot.data!.lastActive.toString(),
                                                     )}",
                                       fontSize: 12,

@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/controllers/main_page_controllers/home_page_controller.dart';
+import 'package:bird_x/controllers/main_page_controllers/product_controller.dart';
 import 'package:bird_x/main.dart';
+import 'package:bird_x/models/all_product_model.dart';
 import 'package:bird_x/models/user_model.dart';
-import 'package:bird_x/services/local_db_service.dart';
 import 'package:bird_x/services/product_services.dart';
 import 'package:bird_x/services/registration_services.dart';
 import 'package:bird_x/utils/app_navigation.dart';
@@ -28,7 +30,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final LocalDbService _localDbService = LocalDbService();
   final HomePageController _controller = Get.put(HomePageController());
   final ScrollController _scrollController = ScrollController();
   LoginModel userData = LoginModel();
@@ -41,6 +42,8 @@ class _HomeViewState extends State<HomeView> {
     });
     var data = jsonDecode(box.get("userData"));
     userData = LoginModel.fromJson(data);
+
+    box.put("myCountry", userData.country!.countryName ?? "Pakistan");
     String inviteCode = userData.data!.referralCode.toString();
     await RegistrationServices.generateLink(inviteCode).then(
       (value) {
@@ -199,137 +202,28 @@ class _HomeViewState extends State<HomeView> {
                             ),
                           );
                         } else {
-                          return ListView.builder(
-                            controller: _scrollController,
-                            shrinkWrap: true,
-                            itemCount: 2,
-                            itemBuilder: (context, ind) {
-                              if (ind == 1) {
-                                return !_.isLoading
-                                    ? const SizedBox()
-                                    : const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                              } else {
-                                return GridView.builder(
-                                  itemCount: _.isSearching ? _.searchedProductList.length : _.productList.length,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 4,
-                                    mainAxisSpacing: 4,
-                                    mainAxisExtent: 250,
-                                  ),
-                                  itemBuilder: (BuildContext context, int index) {
-                                    final productData = _.isSearching ? _.searchedProductList[index] : _.productList[index];
-                                    final imageUrl = productData.thumbnail ?? "";
-                                    final name = productData.name ?? "";
-                                    final price = productData.price ?? "";
-                                    if (_.isSearching) {
-                                      for (int i = 0; i < _.searchedProductList.length; i++) {
-                                        _.checkedList.add(false);
-                                      }
-                                      _.checkedList[index] = _localDbService.isChecked(productData);
-                                    } else {
-                                      for (int i = 0; i < _.productList.length; i++) {
-                                        _.checkedList.add(false);
-                                      }
-                                      _.checkedList[index] = _localDbService.isChecked(productData);
-                                    }
-
-                                    return InkWell(
-                                      onTap: () {
-                                        AppNavigation.to(
-                                          context,
-                                          nextPage: ProductDetails(
-                                            productData: productData,
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        height: 250,
-                                        width: MediaQuery.of(context).size.width * 0.45,
-                                        margin: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: const Color(0xff000000).withOpacity(0.1),
-                                              offset: const Offset(0, 4),
-                                              blurRadius: 15,
-                                              spreadRadius: 0,
-                                            ),
-                                          ],
-                                          borderRadius: BorderRadius.circular(10),
-                                          color: Colors.white,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Stack(
-                                              alignment: AlignmentDirectional.topEnd,
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius: const BorderRadius.only(
-                                                    topLeft: Radius.circular(10),
-                                                    topRight: Radius.circular(10),
-                                                  ),
-                                                  child: AppCachedImage(
-                                                    height: 180,
-                                                    url: imageUrl,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                                IconButton.filled(
-                                                  style: ButtonStyle(
-                                                    backgroundColor: MaterialStateColor.resolveWith(
-                                                      (states) => Colors.black.withOpacity(0.5),
-                                                    ),
-                                                  ),
-                                                  onPressed: () {
-                                                    var jsonData = productData.toJson();
-                                                    if (_localDbService.isChecked(productData)) {
-                                                      _localDbService.removeItem(jsonData);
-                                                      _.changeCheck(index, false);
-                                                    } else {
-                                                      _localDbService.addItem(jsonData);
-                                                      _.changeCheck(index, true);
-                                                    }
-                                                  },
-                                                  icon: Icon(
-                                                    _.checkedList[index] ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                                                    color: _.checkedList[index] ? Colors.red : Colors.white,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            AppSpacing.heigthSpace10,
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 11),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  AppText(
-                                                    text: name,
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w300,
-                                                  ),
-                                                  AppText(
-                                                    text: IntlUtils.formatedPrice(price: price),
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w300,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
+                          return RefreshIndicator(
+                            onRefresh: () async {
+                              await getData();
                             },
+                            child: ListView.builder(
+                              controller: _scrollController,
+                              shrinkWrap: true,
+                              itemCount: 2,
+                              itemBuilder: (context, ind) {
+                                if (ind == 1) {
+                                  return !_.isLoading
+                                      ? const SizedBox()
+                                      : const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                } else {
+                                  return ProductWidget(
+                                    products: _.isSearching ? _.searchedProductList : _.productList,
+                                  );
+                                }
+                              },
+                            ),
                           );
                         }
                       },
@@ -339,5 +233,140 @@ class _HomeViewState extends State<HomeView> {
               ),
             ),
     );
+  }
+}
+
+class ProductWidget extends StatelessWidget {
+  ProductWidget({
+    super.key,
+    this.isMe = false,
+    required this.products,
+    this.physics = const NeverScrollableScrollPhysics(),
+  });
+
+  final bool isMe;
+  final List<ProductData> products;
+  final ScrollPhysics? physics;
+  final ProductController _controller = Get.put(ProductController());
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+        shrinkWrap: true,
+        itemCount: products.length,
+        physics: physics,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+          childAspectRatio: 0.58,
+        ),
+        itemBuilder: (context, index) {
+          final productData = products[index];
+          _controller.addDataToCheckList(
+            index: index,
+            productData: productData,
+            products: products,
+          );
+          return GetBuilder<ProductController>(
+            init: ProductController(),
+            initState: (_) {},
+            builder: (_) {
+              return InkWell(
+                onTap: () {
+                  AppNavigation.to(
+                    context,
+                    nextPage: ProductDetails(
+                      productData: productData,
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xff000000).withOpacity(0.1),
+                        offset: const Offset(0, 4),
+                        blurRadius: 15,
+                        spreadRadius: 0,
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 4,
+                        child: Stack(
+                          alignment: AlignmentDirectional.topEnd,
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                              ),
+                              child: AppCachedImage(
+                                url: productData.thumbnail.toString(),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            isMe
+                                ? const SizedBox()
+                                : IconButton.filled(
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateColor.resolveWith(
+                                        (states) => Colors.black.withOpacity(0.5),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      _.onFavorite(
+                                        productData: productData,
+                                        index: index,
+                                      );
+                                    },
+                                    icon: Icon(
+                                      _.checkedList[index] ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                      color: _.checkedList[index] ? Colors.red : Colors.white,
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 11),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              AppText(
+                                text: "${productData.name.toString()} ",
+                                fontSize: 12,
+                                maxLines: 2,
+                                fontWeight: FontWeight.w500,
+                                overFlow: TextOverflow.ellipsis,
+                              ),
+                              AppText(
+                                text: IntlUtils.formatedPrice(
+                                  price: productData.price.toString(),
+                                ),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primaryColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        });
   }
 }

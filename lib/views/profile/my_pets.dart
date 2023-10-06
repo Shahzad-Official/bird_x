@@ -6,10 +6,7 @@ import 'package:bird_x/main.dart';
 import 'package:bird_x/models/category_model.dart';
 import 'package:bird_x/models/user_model.dart';
 import 'package:bird_x/services/product_services.dart';
-import 'package:bird_x/utils/app_navigation.dart';
-import 'package:bird_x/utils/intl_utils.dart';
-import 'package:bird_x/views/main_page_views/menu_views/prdouct_details.dart';
-import 'package:bird_x/widgets/app_cached_image.dart';
+import 'package:bird_x/views/main_page_views/menu_views/home_view.dart';
 import 'package:bird_x/widgets/app_field.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +54,7 @@ class _MyPetsState extends State<MyPets> {
 
   @override
   void initState() {
+    _controller.currentPage = 1;
     _scrollController.addListener(
       () {
         if (_scrollController.position.maxScrollExtent == _scrollController.offset) {
@@ -145,85 +143,10 @@ class _MyPetsState extends State<MyPets> {
                                         child: CircularProgressIndicator(),
                                       );
                               } else {
-                                return GridView.builder(
-                                  itemCount: _.isSearching ? _.searchedProductList.length : _.productList.length,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 4,
-                                    mainAxisSpacing: 4,
-                                    mainAxisExtent: 250,
-                                  ),
-                                  itemBuilder: (BuildContext context, int index) {
-                                    final productData = _.isSearching ? _.searchedProductList[index] : _.productList[index];
-                                    final imageUrl = productData.thumbnail ?? "";
-                                    final name = productData.name ?? "";
-                                    final price = productData.price ?? "";
-
-                                    return InkWell(
-                                      onTap: () {
-                                        AppNavigation.to(
-                                          context,
-                                          nextPage: ProductDetails(
-                                            productData: productData,
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        height: 250,
-                                        width: MediaQuery.of(context).size.width * 0.45,
-                                        margin: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: const Color(0xff000000).withOpacity(0.1),
-                                              offset: const Offset(0, 4),
-                                              blurRadius: 15,
-                                              spreadRadius: 0,
-                                            ),
-                                          ],
-                                          borderRadius: BorderRadius.circular(10),
-                                          color: Colors.white,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius: const BorderRadius.only(
-                                                topLeft: Radius.circular(10),
-                                                topRight: Radius.circular(10),
-                                              ),
-                                              child: AppCachedImage(
-                                                height: 180,
-                                                url: imageUrl,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                            AppSpacing.heigthSpace10,
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 11),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  AppText(
-                                                    text: name,
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w300,
-                                                  ),
-                                                  AppText(
-                                                    text: IntlUtils.formatedPrice(price: price),
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w300,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                return ProductWidget(
+                                  physics: null,
+                                  products: _.isSearching ? _.searchedProductList : _.productList,
+                                  isMe: category == null ? true : false,
                                 );
                               }
                             },

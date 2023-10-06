@@ -1,4 +1,4 @@
-package com.example.bird_x
+package online.hexon.petx
 
 import io.flutter.embedding.android.FlutterActivity
 

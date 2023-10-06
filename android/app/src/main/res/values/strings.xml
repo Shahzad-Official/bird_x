@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">BirdX</string>
-    <string name="facebook_app_id">984532802812816</string>
-    <string name="fb_login_protocol_scheme">fb984532802812816</string>
-    <string name="facebook_client_token">3f2dc6500882c63f569944d556e2d7a4</string>
-
-
-</resources>

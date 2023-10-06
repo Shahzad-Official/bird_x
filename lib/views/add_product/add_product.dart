@@ -33,33 +33,36 @@ class _AddProductState extends State<AddProduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                    child: InkWell(
-                        onTap: () {
-                          AppNavigation.back(context);
-                        },
-                        child: const Icon(Icons.arrow_back_ios_new))),
-                const Flexible(
-                    flex: 3,
-                    child: AppText(
-                      text: "Sell your pet ",
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                    )),
-                const Flexible(child: SizedBox())
-              ],
-            ),
-          ),
-        ),
+      appBar: AppBar(
+        title: const AppText(text: "Sell your Pet"),
       ),
+      // appBar: PreferredSize(
+      //   preferredSize: const Size.fromHeight(100),
+      //   child: SafeArea(
+      //     child: Padding(
+      //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      //       child: Row(
+      //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //         children: [
+      //           Flexible(
+      //               child: InkWell(
+      //                   onTap: () {
+      //                     AppNavigation.back(context);
+      //                   },
+      //                   child: const Icon(Icons.arrow_back_ios_new))),
+      //           const Flexible(
+      //               flex: 3,
+      //               child: AppText(
+      //                 text: "Sell your pet ",
+      //                 fontSize: 20,
+      //                 fontWeight: FontWeight.w500,
+      //               )),
+      //           const Flexible(child: SizedBox())
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // ),
       body: SingleChildScrollView(
         child: Padding(
           padding: AppSpacing.defaultPadding,

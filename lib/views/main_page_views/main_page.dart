@@ -54,18 +54,15 @@ class _MainPageState extends State<MainPage> {
         debugPrint("FirebaseMessaging.instance.getInitialMessage");
         if (message != null) {
           if (message.notification != null) {
-            if (message.notification!.title
-                .toString()
-                .toLowerCase()
-                .contains("message")) {
+            if (message.notification!.title.toString().toLowerCase().contains("message")) {
               ChatData chatData = ChatData.fromJson(message.data);
 
               _chatController.changeIsNewStatus(true);
               _chatController.getChatData(chatData);
-              Get.find<MainPageController>().selectedIndex = 1;
-              AppNavigation.offAll(
-                context,
-                nextPage: const MainPage(),
+
+              _controller.selectedIndex = 1;
+              Get.offAll(
+                () => const MainPage(),
               );
             }
           }
@@ -92,14 +89,10 @@ class _MainPageState extends State<MainPage> {
 
         if (message.notification != null) {
           debugPrint(message.data.toString());
-          if (message.notification!.title
-              .toString()
-              .toLowerCase()
-              .contains("message")) {
-            Get.find<MainPageController>().selectedIndex = 1;
-            AppNavigation.offAll(
-              context,
-              nextPage: const MainPage(),
+          if (message.notification!.title.toString().toLowerCase().contains("message")) {
+            _controller.selectedIndex = 1;
+            Get.offAll(
+              () => const MainPage(),
             );
           }
         }
@@ -160,9 +153,7 @@ class _MainPageState extends State<MainPage> {
                   height: 25,
                   width: 25,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 0
-                      ? AppColors.primaryColor
-                      : Colors.black,
+                  color: _.selectedIndex == 0 ? AppColors.primaryColor : Colors.black,
                 ),
                 label: "Home",
               ),
@@ -172,9 +163,7 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 1
-                      ? AppColors.primaryColor
-                      : Colors.black,
+                  color: _.selectedIndex == 1 ? AppColors.primaryColor : Colors.black,
                 ),
                 label: "Chats",
               ),
@@ -184,9 +173,7 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 2
-                      ? AppColors.primaryColor
-                      : Colors.black,
+                  color: _.selectedIndex == 2 ? AppColors.primaryColor : Colors.black,
                 ),
                 label: "WishList",
               ),
@@ -196,9 +183,7 @@ class _MainPageState extends State<MainPage> {
                   height: 30,
                   width: 30,
                   // ignore: deprecated_member_use
-                  color: _.selectedIndex == 3
-                      ? AppColors.primaryColor
-                      : Colors.black,
+                  color: _.selectedIndex == 3 ? AppColors.primaryColor : Colors.black,
                 ),
                 label: "Profile",
               ),

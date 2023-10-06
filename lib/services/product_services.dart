@@ -60,6 +60,7 @@ class ProductServices {
     }
   }
 
+  String get myCountry => box.get("myCountry");
   Future<void> addProduct(
     context, {
     required String price,
@@ -76,7 +77,7 @@ class ProductServices {
       "categoryId": categoryId,
       "description": description,
       "name": name,
-      "country": "Pakistan",
+      "country": myCountry,
       "price": price,
       "address": address,
       "latitude": latitude,
@@ -114,7 +115,7 @@ class ProductServices {
     String userId = "",
   }) async {
     await get(
-      Uri.parse("${ApiConstant.baseUrl}${ApiConstant.product}?page=$page&catId=$categoryId&userId=$userId"),
+      Uri.parse("${ApiConstant.baseUrl}${ApiConstant.product}?country=$myCountry&page=$page&catId=$categoryId&userId=$userId"),
       headers: {
         "Content-Type": "application/json",
       },
