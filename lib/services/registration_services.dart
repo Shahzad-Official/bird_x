@@ -175,7 +175,9 @@ class RegistrationServices {
           AppSnackbar.showSnackbar(title: "Error", message: err.toString());
         });
       },
-    );
+    ).catchError((err) {
+      AppSnackbar.showSnackbar(title: "Error", message: err.toString());
+    });
   }
 
   sendOtp(

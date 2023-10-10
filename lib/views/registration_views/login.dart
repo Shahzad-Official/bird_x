@@ -42,7 +42,7 @@ class _LoginState extends State<Login> {
               Row(
                 children: [
                   const AppText(
-                    text: "Welcome To BirdX ",
+                    text: "Welcome To PetX ",
                     fontSize: 25,
                     fontWeight: FontWeight.w600,
                   ),
