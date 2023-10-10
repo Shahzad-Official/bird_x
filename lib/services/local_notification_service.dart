@@ -8,7 +8,7 @@ class LocalNotificationService {
   static void initialize() {
     // initializationSettings  for Android
     const InitializationSettings initializationSettings = InitializationSettings(
-      android: AndroidInitializationSettings("@mipmap/launcher_icon"),
+      android: AndroidInitializationSettings("@mipmap/ic_launcher"),
     );
 
     _notificationsPlugin.initialize(
@@ -20,7 +20,7 @@ class LocalNotificationService {
     const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'petx',
       'petx',
-      icon: "@mipmap/launcher_icon",
+      icon: "@mipmap/ic_launcher",
       color: Colors.white,
       importance: Importance.max,
       priority: Priority.high,
