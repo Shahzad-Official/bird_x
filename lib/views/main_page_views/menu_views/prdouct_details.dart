@@ -1,18 +1,19 @@
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/controllers/main_page_controllers/product_details_controller.dart';
+import 'package:bird_x/main.dart';
 import 'package:bird_x/models/all_product_model.dart';
 import 'package:bird_x/utils/app_navigation.dart';
-import 'package:bird_x/utils/app_snackbar.dart';
+import 'package:bird_x/utils/app_url_launch.dart';
 import 'package:bird_x/utils/date_utils.dart';
 import 'package:bird_x/utils/intl_utils.dart';
 import 'package:bird_x/views/chat_screens/chat_screen.dart';
+import 'package:bird_x/views/registration_views/login.dart';
 import 'package:bird_x/widgets/app_button.dart';
 import 'package:bird_x/widgets/app_cached_image.dart';
 import 'package:bird_x/widgets/app_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -68,13 +69,24 @@ class ProductDetails extends StatelessWidget {
                               carouselController: _pageController,
                               itemCount: productData.otherPics?.length,
                               itemBuilder: (context, index, realIndex) {
-                                return AppCachedImage(
-                                  height: 250,
-                                  width: double.infinity,
-                                  url: productData.otherPics![index].toString(),
-                                  fit: BoxFit.cover,
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.circular(15),
+                                return InkWell(
+                                  onTap: () {
+                                    AppNavigation.to(
+                                      context,
+                                      nextPage: DetailedImages(
+                                        images: productData.otherPics!,
+                                        currentIndex: index,
+                                      ),
+                                    );
+                                  },
+                                  child: AppCachedImage(
+                                    height: 250,
+                                    width: double.infinity,
+                                    url: productData.otherPics![index].toString(),
+                                    fit: BoxFit.cover,
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
                                 );
                               },
                               options: CarouselOptions(
@@ -177,6 +189,7 @@ class ProductDetails extends StatelessWidget {
                     ),
               AppSpacing.heigthSpace20,
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AppText(
                     text: IntlUtils.formatedPrice(price: productData.price ?? "0"),
@@ -184,19 +197,40 @@ class ProductDetails extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     color: AppColors.primaryColor,
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  // Row(
+                  //   children: [
+                  //     IconButton(
+                  //       onPressed: () async {
+                  //         await AppUrlLaunch.call(
+                  //           productData.user!.mobileCode.toString() + productData.user!.mobile.toString(),
+                  //         );
+                  //       },
+                  //       icon: Icon(
+                  //         Icons.call,
+                  //       ),
+                  //     ),
+                  //     IconButton(
+                  //       onPressed: () async {
+                  //         await AppUrlLaunch.message(
+                  //           productData.user!.mobileCode.toString() + productData.user!.mobile.toString(),
+                  //         );
+                  //       },
+                  //       icon: Icon(
+                  //         Icons.message,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
               AppSpacing.heigthSpace10,
               AppText(
-                text: productData.name.toString(),
+                text: IntlUtils.capitalizeEachWord(productData.name.toString()),
                 fontWeight: FontWeight.w500,
                 color: AppColors.primaryColor,
-                fontSize: 18,
+                fontSize: 20,
               ),
-              AppSpacing.heigthSpace20,
+              AppSpacing.heigthSpace10,
               const AppText(
                 text: "Pet Description",
                 fontSize: 16,
@@ -269,24 +303,50 @@ class ProductDetails extends StatelessWidget {
                           children: [
                             Flexible(
                               child: AppText(
-                                text: "${productData.user!.mobileCode}${productData.user!.mobile}",
+                                text: box.get("isGuest") ? "*************" : "${productData.user!.mobileCode}${productData.user!.mobile}",
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            IconButton(
-                              onPressed: () {
-                                Clipboard.setData(ClipboardData(text: "${productData.user!.mobileCode}${productData.user!.mobile}")).then((value) {
-                                  AppSnackbar.showSnackbar(
-                                    title: "Message",
-                                    message: "Phone Number Copied to clipboard!",
-                                  );
-                                });
-                              },
-                              icon: const Icon(
-                                Icons.copy_rounded,
-                              ),
-                            ),
+                            box.get("isGuest")
+                                ? const SizedBox()
+                                : Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () async {
+                                          await AppUrlLaunch.call(
+                                            productData.user!.mobileCode.toString() + productData.user!.mobile.toString(),
+                                          );
+                                        },
+                                        icon: const Icon(
+                                          Icons.call,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () async {
+                                          await AppUrlLaunch.message(
+                                            productData.user!.mobileCode.toString() + productData.user!.mobile.toString(),
+                                          );
+                                        },
+                                        icon: const Icon(
+                                          Icons.message,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                            // IconButton(
+                            //   onPressed: () {
+                            //     Clipboard.setData(ClipboardData(text: "${productData.user!.mobileCode}${productData.user!.mobile}")).then((value) {
+                            //       AppSnackbar.showSnackbar(
+                            //         title: "Message",
+                            //         message: "Phone Number Copied to clipboard!",
+                            //       );
+                            //     });
+                            //   },
+                            //   icon: const Icon(
+                            //     Icons.copy_rounded,
+                            //   ),
+                            // ),
                           ],
                         ),
                       ],
@@ -429,19 +489,32 @@ class ProductDetails extends StatelessWidget {
                 ),
               ),
               AppSpacing.heigthSpace20,
-              AppButton(
-                text: "Chat Now",
-                onTap: () {
-                  AppNavigation.to(
-                    context,
-                    nextPage: ChatScreen(
-                      userData: productData.user!,
-                    ),
-                  );
-                },
-              ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: AppSpacing.defaultPadding,
+        child: AppButton(
+          height: 45,
+          text: "Chat Now",
+          onTap: () {
+            if (box.get("isGuest")) {
+              AppNavigation.to(
+                context,
+                nextPage: const Login(
+                  isGuest: true,
+                ),
+              );
+            } else {
+              AppNavigation.to(
+                context,
+                nextPage: ChatScreen(
+                  userData: productData.user!,
+                ),
+              );
+            }
+          },
         ),
       ),
     );
@@ -470,6 +543,53 @@ class GoogleMapPage extends StatelessWidget {
         initialCameraPosition: CameraPosition(
           zoom: 14,
           target: latLng,
+        ),
+      ),
+    );
+  }
+}
+
+class DetailedImages extends StatefulWidget {
+  final List<String> images;
+  final int currentIndex;
+  const DetailedImages({Key? key, required this.images, required this.currentIndex}) : super(key: key);
+
+  @override
+  State<DetailedImages> createState() => _DetailedImagesState();
+}
+
+class _DetailedImagesState extends State<DetailedImages> {
+  PageController _pageController = PageController();
+  @override
+  void initState() {
+    _pageController = PageController(
+      initialPage: widget.currentIndex,
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const AppText(text: "Pet Images"),
+      ),
+      body: Center(
+        child: Row(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: widget.images.length,
+                itemBuilder: (context, index) {
+                  return AppCachedImage(
+                    url: widget.images[index],
+                    fit: BoxFit.fitWidth,
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

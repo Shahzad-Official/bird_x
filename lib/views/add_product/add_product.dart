@@ -67,12 +67,14 @@ class _AddProductState extends State<AddProduct> {
         child: Padding(
           padding: AppSpacing.defaultPadding,
           child: GetBuilder<AddProductController>(
-              init: AddProductController(),
-              initState: (_) {},
-              builder: (_) {
-                return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            init: AddProductController(),
+            initState: (_) {},
+            builder: (_) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   const AppText(
-                    text: "Add Thumnail of your Pet",
+                    text: "Add Thumnail of your Pet *",
                     fontWeight: FontWeight.w500,
                   ),
                   AppSpacing.heigthSpace10,
@@ -195,7 +197,7 @@ class _AddProductState extends State<AddProduct> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const AppText(
-                        text: "Add Multiple Images",
+                        text: "Add Multiple Images *",
                         fontWeight: FontWeight.w500,
                       ),
                       _.multiImages.isEmpty
@@ -278,6 +280,7 @@ class _AddProductState extends State<AddProduct> {
                     child: AppField(
                       hintText: "Price",
                       controller: _.price,
+                      isRequired: true,
                       textType: TextInputType.number,
                       prefixIcon: SizedBox(
                         height: 40,
@@ -350,6 +353,7 @@ class _AddProductState extends State<AddProduct> {
                   AppSpacing.heigthSpace20,
                   AppField(
                     hintText: "Add Title",
+                    isRequired: true,
                     prefixIcon: const Icon(Icons.title_outlined),
                     controller: _.title,
                   ),
@@ -357,6 +361,7 @@ class _AddProductState extends State<AddProduct> {
                   AppField(
                     maxLines: 10,
                     hintText: "Describe what are you seling",
+                    isRequired: true,
                     controller: _.description,
                   ),
                   AppSpacing.heigthSpace30,
@@ -367,8 +372,10 @@ class _AddProductState extends State<AddProduct> {
                       await _.addProduct(context, categoryName: widget.categoryName, categoryId: widget.categoryId);
                     },
                   )
-                ]);
-              }),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

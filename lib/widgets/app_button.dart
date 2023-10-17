@@ -7,11 +7,13 @@ class AppButton extends StatelessWidget {
   final String text;
   final VoidCallback? onTap;
   final bool isLoading;
+  final double? height;
   const AppButton({
     Key? key,
     required this.text,
     this.onTap,
     this.isLoading = false,
+    this.height,
   }) : super(key: key);
 
   @override
@@ -19,6 +21,7 @@ class AppButton extends StatelessWidget {
     return InkWell(
       onTap: isLoading ? null : onTap,
       child: Container(
+        height: height,
         padding: const EdgeInsets.symmetric(
           vertical: 10,
         ),

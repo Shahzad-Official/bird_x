@@ -31,11 +31,13 @@ class _ChatsViewState extends State<ChatsView> {
     setState(() {
       isLoading = true;
     });
-    loginModel = LoginModel.fromJson(
-      jsonDecode(
-        box.get("userData"),
-      ),
-    );
+    loginModel = box.get("userData") == null
+        ? LoginModel()
+        : LoginModel.fromJson(
+            jsonDecode(
+              box.get("userData"),
+            ),
+          );
 
     await _chatServices.getAllUsers();
 

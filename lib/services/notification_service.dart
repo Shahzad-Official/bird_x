@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
 class NotificationService {
-  String get token => box.get("token");
+  String get token => box.get("token") ?? "";
   updateFcm() async {
     var body = jsonEncode(
       {

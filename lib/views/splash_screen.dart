@@ -25,7 +25,12 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     try {
       http.get(Uri.parse('http://ip-api.com/json')).then((value) {
-        box.put("myCountryCode", json.decode(value.body)['countryCode']);
+        var data = jsonDecode(value.body);
+        if (box.get("myAddress") == null) {
+          box.put("myAddress", data['country']);
+        }
+        box.put("myCountry", data['country']);
+        box.put("myCountryCode", data['countryCode']);
       });
     } on SocketException catch (err) {
       debugPrint(err.message);

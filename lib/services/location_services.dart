@@ -1,48 +1,60 @@
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
+import 'dart:convert';
 
-class LocationServices {
-  Future<bool> requestPermission() async {
-    var result = await Geolocator.openLocationSettings();
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart';
 
-    await Geolocator.requestPermission();
+// For storing our result
+class Suggestion {
+  final String placeId;
+  final String description;
 
-    return result;
+  Suggestion(this.placeId, this.description);
+
+  @override
+  String toString() {
+    return 'Suggestion(description: $description, placeId: $placeId)';
   }
+}
 
-  Future<bool> determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+class PlaceApiProvider {
+  String apiKey = "AIzaSyDq33g2UnBUqsMbCPvHT8imFd20IsLuel0";
+  Future<List<Suggestion>> getPlaceAutocomplete(
+    String input,
+  ) async {
+    String url = 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$apiKey';
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      var result = await requestPermission();
-      if (result) {
-        await Geolocator.requestPermission();
-        permission = await Geolocator.checkPermission();
+    final response = await get(Uri.parse(url));
 
-        if (permission == LocationPermission.denied) {
-          permission = await Geolocator.requestPermission();
-        }
-
-        if (permission == LocationPermission.deniedForever) {
-          var res = await Geolocator.openAppSettings();
-
-          if (res) {
-            await Geolocator.openLocationSettings();
-            await Geolocator.requestPermission();
-          }
-        }
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      List<Suggestion> suggestions = [];
+      for (var i in data['predictions']) {
+        suggestions.add(Suggestion(i['place_id'], i['description']));
       }
+      return suggestions;
+    } else {
+      throw Exception('Failed to load place predictions');
     }
-    return serviceEnabled;
   }
 
-  static Future<String> translateAddress({required double latitude, required double longitude}) async {
-    String address = '';
-    await placemarkFromCoordinates(latitude, longitude).then((value) {
-      address = "${value.first.subAdministrativeArea}, ${value.first.administrativeArea}, ${value.first.country}";
-    });
-    return address;
+  Future<LatLng> getPlaceDetails(String placeId) async {
+    LatLng latLng;
+    String url = 'https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeId&key=$apiKey';
+
+    final response = await get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      Map<String, dynamic> result = data['result']['geometry']['location'];
+      latLng = LatLng(
+        result['lat'],
+        result['lng'],
+      );
+
+      return latLng;
+    } else {
+      throw Exception('Failed to load place details');
+    }
   }
 }

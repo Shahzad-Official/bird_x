@@ -8,6 +8,7 @@ import 'package:bird_x/services/local_notification_service.dart';
 import 'package:bird_x/services/notification_service.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/views/add_product/add_categories_product.dart';
+import 'package:bird_x/views/registration_views/login.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -29,13 +30,9 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final MainChatController _chatController = Get.put(MainChatController());
   final MainPageController _controller = Get.put(MainPageController());
-  late PageController _pageController;
 
   @override
   void initState() {
-    _pageController = PageController(
-      initialPage: _controller.selectedIndex,
-    );
     socket.connect();
     socket.onConnect((data) => debugPrint("user connected"));
     socket.onDisconnect((data) {
@@ -106,23 +103,22 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: GetBuilder<MainPageController>(
         init: MainPageController(),
-        builder: (controller) {
-          return PageView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            controller: _pageController,
-            onPageChanged: (value) {
-              controller.changeIndex(value);
-            },
-            itemCount: controller.allPages.length,
-            itemBuilder: (context, index) {
-              return controller.allPages[index];
-            },
-          );
+        builder: (_) {
+          return _controller.currentPage;
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          AppNavigation.to(context, nextPage: const CategoriesAddProduct());
+          if (box.get("isGuest")) {
+            AppNavigation.to(
+              context,
+              nextPage: const Login(
+                isGuest: true,
+              ),
+            );
+          } else {
+            AppNavigation.to(context, nextPage: const CategoriesAddProduct());
+          }
         },
         child: SvgPicture.asset(
           "assets/icons/add.svg",
@@ -138,13 +134,6 @@ class _MainPageState extends State<MainPage> {
             selectedIndex: _.selectedIndex,
             onDestinationSelected: (value) {
               _.changeIndex(value);
-              _pageController.animateToPage(
-                value,
-                curve: Curves.ease,
-                duration: const Duration(
-                  milliseconds: 400,
-                ),
-              );
             },
             destinations: [
               NavigationDestination(

@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bird_x/services/location_services.dart';
+import 'package:bird_x/controllers/location_controller.dart';
 import 'package:bird_x/services/registration_services.dart';
 import 'package:bird_x/utils/app_image_utils.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
+import 'package:bird_x/utils/location_utils.dart';
+import 'package:bird_x/widgets/app_location_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SignupController extends GetxController {
@@ -22,7 +22,7 @@ class SignupController extends GetxController {
   TextEditingController password = TextEditingController();
   TextEditingController cpassword = TextEditingController();
   TextEditingController refCode = TextEditingController();
-
+  final LocationController _locationController = Get.put(LocationController());
   String countryCode = "";
   String latitude = "";
   String longitude = "";
@@ -46,41 +46,27 @@ class SignupController extends GetxController {
 
   bool isLoading = false;
   final RegistrationServices _registrationServices = RegistrationServices();
+
   pickLocation(context) async {
     location.text = "loading....";
-    var isenable = await LocationServices().determinePosition();
-    if (!isenable) {
-      Get.defaultDialog(
-        title: "Please enable location permissions",
-        content: const SizedBox(),
-        onConfirm: () async {
-          await Geolocator.openLocationSettings().then((value) async {
-            location.text = "Tap again";
-            Get.back();
-          });
-        },
-        onCancel: () {
-          Get.back();
-        },
-      );
+    await _locationController.pickCurrentLocation();
+    if (_locationController.currentPosition == null) {
+      location.text = "Tap Again";
     } else {
+      LatLng latLng;
+      latLng = _locationController.currentPosition == null ? const LatLng(0, 0) : LatLng(_locationController.currentPosition!.latitude!, _locationController.currentPosition!.longitude!);
       await AppNavigation.to(
         context,
-        nextPage: PlacePicker(
-          apiKey: "AIzaSyDq33g2UnBUqsMbCPvHT8imFd20IsLuel0",
-          initialPosition: const LatLng(30.1811532, 71.3098456),
-          enableMyLocationButton: true,
-          useCurrentLocation: true,
-          onPlacePicked: (value) async {
-            latitude = value.geometry!.location.lat.toString();
-            longitude = value.geometry!.location.lng.toString();
-            AppNavigation.back(context);
-            location.text = await LocationServices.translateAddress(latitude: value.geometry!.location.lat, longitude: value.geometry!.location.lng);
+        nextPage: AppLocationPicker(
+          latLng: latLng,
+          onPick: (latLng) async {
+            location.text = await LocationUtils.translateAddress(latitude: latLng.latitude, longitude: latLng.longitude);
+            latitude = latLng.latitude.toString();
+            longitude = latLng.longitude.toString();
           },
         ),
       );
     }
-    location.text = "Tap again";
   }
 
   File? profile;
@@ -124,7 +110,7 @@ class SignupController extends GetxController {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email address!");
     } else if (number.text.isEmpty) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter your phone number!");
-    } else if (location.text.isEmpty) {
+    } else if (location.text.isEmpty || location.text.toLowerCase().contains("tap again")) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please select your location!");
     } else if (password.text.isEmpty || password.text.length < 6) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter password having at least 6 characters!");

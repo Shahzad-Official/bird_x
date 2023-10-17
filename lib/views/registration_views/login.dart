@@ -1,7 +1,9 @@
 import 'package:bird_x/constants/app_colors.dart';
 import 'package:bird_x/constants/app_spacing.dart';
 import 'package:bird_x/controllers/registration_controllers/login_controller.dart';
+import 'package:bird_x/main.dart';
 import 'package:bird_x/utils/app_navigation.dart';
+import 'package:bird_x/views/main_page_views/main_page.dart';
 import 'package:bird_x/views/registration_views/forget_password.dart';
 import 'package:bird_x/views/registration_views/signup.dart';
 import 'package:bird_x/widgets/app_button.dart';
@@ -18,7 +20,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../widgets/app_field.dart';
 
 class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+  final bool isGuest;
+  const Login({
+    Key? key,
+    this.isGuest = false,
+  }) : super(key: key);
 
   @override
   State<Login> createState() => _LoginState();
@@ -30,15 +36,44 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: Navigator.canPop(context)
+          ? AppBar(
+              backgroundColor: Colors.white,
+            )
+          : null,
       body: SafeArea(
         child: Padding(
           padding: AppSpacing.defaultPadding,
           child: ListView(
             shrinkWrap: true,
             children: [
-              SizedBox(
-                height: size.height * 0.05,
-              ),
+              widget.isGuest
+                  ? const SizedBox()
+                  : Align(
+                      alignment: Alignment.topRight,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateColor.resolveWith(
+                          (states) => AppColors.primaryColor,
+                        )),
+                        onPressed: () {
+                          box.put("isGuest", true);
+                          box.put("isLoggedIn", true);
+                          AppNavigation.offAll(
+                            context,
+                            deleteAll: true,
+                            nextPage: const MainPage(),
+                          );
+                        },
+                        child: const AppText(
+                          text: "Skip",
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+              AppSpacing.heigthSpace10,
               Row(
                 children: [
                   const AppText(
@@ -65,6 +100,7 @@ class _LoginState extends State<Login> {
                 prefixIcon: const Icon(
                   Icons.email_outlined,
                 ),
+                isRequired: true,
               ),
               AppSpacing.heigthSpace20,
               GetBuilder<LoginController>(
@@ -79,6 +115,7 @@ class _LoginState extends State<Login> {
                     prefixIcon: const Icon(
                       Icons.lock_outline,
                     ),
+                    isRequired: true,
                     suffixIcon: IconButton(
                       onPressed: () {
                         _.changeObsecurity();

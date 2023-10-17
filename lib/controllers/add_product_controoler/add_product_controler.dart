@@ -1,16 +1,20 @@
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bird_x/services/location_services.dart';
+import 'package:bird_x/controllers/location_controller.dart';
 import 'package:bird_x/services/product_services.dart';
 import 'package:bird_x/utils/app_image_utils.dart';
 import 'package:bird_x/utils/app_navigation.dart';
 import 'package:bird_x/utils/app_snackbar.dart';
+import 'package:bird_x/utils/location_utils.dart';
+import 'package:bird_x/widgets/app_location_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddProductController extends GetxController {
@@ -20,7 +24,7 @@ class AddProductController extends GetxController {
   TextEditingController location = TextEditingController();
   String latitude = "";
   String longitude = "";
-  final ImagePicker _imagePicker = ImagePicker();
+  // final ImagePicker _imagePicker = ImagePicker();
   File? thumbnailImage;
 
   String base64Thumbnail = "";
@@ -29,45 +33,32 @@ class AddProductController extends GetxController {
 
   bool isLoading = false;
   final ProductServices _addProductServices = ProductServices();
+  final LocationController _locationController = Get.put(LocationController());
+
   pickLocation(context) async {
     location.text = "loading....";
-    var isenable = await LocationServices().determinePosition();
-    if (!isenable) {
-      Get.defaultDialog(
-        title: "Please enable location permissions",
-        content: const SizedBox(),
-        onConfirm: () async {
-          await Geolocator.openLocationSettings().then((value) async {
-            location.text = "Tap again";
-            Get.back();
-          });
-        },
-        onCancel: () {
-          Get.back();
-        },
-      );
+    await _locationController.pickCurrentLocation();
+    if (_locationController.currentPosition == null) {
+      location.text = "Tap Again";
     } else {
+      LatLng latLng;
+      latLng = _locationController.currentPosition == null ? const LatLng(0, 0) : LatLng(_locationController.currentPosition!.latitude!, _locationController.currentPosition!.longitude!);
       await AppNavigation.to(
         context,
-        nextPage: PlacePicker(
-          apiKey: "AIzaSyDq33g2UnBUqsMbCPvHT8imFd20IsLuel0",
-          initialPosition: const LatLng(30.1811532, 71.3098456),
-          enableMyLocationButton: true,
-          useCurrentLocation: true,
-          onPlacePicked: (value) async {
-            latitude = value.geometry!.location.lat.toString();
-            longitude = value.geometry!.location.lng.toString();
-            AppNavigation.back(context);
-            location.text = await LocationServices.translateAddress(latitude: value.geometry!.location.lat, longitude: value.geometry!.location.lng);
+        nextPage: AppLocationPicker(
+          latLng: latLng,
+          onPick: (latLng) async {
+            location.text = await LocationUtils.translateAddress(latitude: latLng.latitude, longitude: latLng.longitude);
+            latitude = latLng.latitude.toString();
+            longitude = latLng.longitude.toString();
           },
         ),
       );
     }
-    location.text = "Tap again";
   }
 
   pickThumbnail({required ImageSource source}) async {
-    await _imagePicker.pickImage(source: source).then((value) async {
+    await ImagePicker.platform.getImageFromSource(source: source).then((value) async {
       if (value != null) {
         var newthumbnail = File(value.path);
         var fileSize = await AppImageUtils.fileSize(newthumbnail);
@@ -93,9 +84,25 @@ class AddProductController extends GetxController {
   }
 
   multiimagePicked() async {
-    final List<XFile> pickedImage = await _imagePicker.pickMultiImage();
+    List<File> files = [];
+    await FilePicker.platform
+        .pickFiles(
+      allowMultiple: true,
+      type: FileType.image,
+    )
+        .then((value) {
+      if (value != null) {
+        for (var i in value.files) {
+          files.add(
+            File(
+              i.path.toString(),
+            ),
+          );
+        }
+      }
+    });
 
-    if (pickedImage.length < 2 || pickedImage.length > 5) {
+    if (files.length < 2 || files.length > 5) {
       AppSnackbar.showSnackbar(
         title: "Image Selection Error",
         message: "Please select between 2 to 5 images.",
@@ -103,7 +110,7 @@ class AddProductController extends GetxController {
     } else {
       multiImages.clear();
 
-      for (var element in pickedImage) {
+      for (var element in files) {
         File otherImage = File(element.path);
         var fileSize = await AppImageUtils.fileSize(otherImage);
         if (fileSize > 1) {
@@ -129,9 +136,11 @@ class AddProductController extends GetxController {
     if (thumbnailImage == null) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please select your thumbnail picture!");
     } else if (price.text.isEmpty || !price.text.isNotEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid email price!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please enter valid price!");
+    } else if (location.text.isEmpty || location.text.toLowerCase().contains("tap again") || location.text.toLowerCase().contains("loading")) {
+      AppSnackbar.showSnackbar(title: "Error", message: "Please select your location!");
     } else if (title.text.isEmpty) {
-      AppSnackbar.showSnackbar(title: "Error", message: "Please enter title!");
+      AppSnackbar.showSnackbar(title: "Error", message: "Please enter Pet Title!");
     } else if (description.text.isEmpty) {
       AppSnackbar.showSnackbar(title: "Error", message: "Please enter Description!");
     } else {
@@ -147,9 +156,9 @@ class AddProductController extends GetxController {
         categoryId: categoryId,
         address: location.text,
       );
-      isLoading = false;
-      update();
     }
+    isLoading = false;
+    update();
   }
 
   bool isFocused = false;

@@ -12,6 +12,7 @@ import 'package:bird_x/views/registration_views/successfull_registration.dart';
 import 'package:bird_x/widgets/google_dropdown.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
@@ -94,6 +95,7 @@ class RegistrationServices {
       var data = jsonDecode(value.body);
 
       if (value.statusCode == 200) {
+        box.put("isGuest", false);
         box.put("token", data['token']);
         box.put("userData", value.body);
 
@@ -146,9 +148,10 @@ class RegistrationServices {
           var data = jsonDecode(value.body);
 
           if (value.statusCode == 200) {
+            box.put("isGuest", false);
             box.put("referralCode", null);
             box.put("token", data['token']);
-            if (data['data']['gender'] == null || data['data']['gender'].toString().trim().isEmpty) {
+            if (data['country'] == null) {
               box.put("isLoggedIn", false);
 
               showModalBottomSheet(
@@ -171,11 +174,14 @@ class RegistrationServices {
             AppSnackbar.showSnackbar(title: "Error", message: data['message']);
           }
         }).catchError((err) {
-          debugPrint(err);
           AppSnackbar.showSnackbar(title: "Error", message: err.toString());
         });
       },
     ).catchError((err) {
+      if (err is PlatformException) {
+        print(err.toString());
+      }
+
       AppSnackbar.showSnackbar(title: "Error", message: err.toString());
     });
   }
@@ -391,6 +397,7 @@ class RegistrationServices {
         box.put("token", data['token']);
         box.put("isLoggedIn", true);
         box.put("userData", value.body);
+
         AppSnackbar.showSnackbar(title: "Message", message: data['message']);
         AppNavigation.offAll(
           context,

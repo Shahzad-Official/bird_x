@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -263,8 +264,8 @@ class _ProfileViewState extends State<ProfileView> {
                   img: "assets/icons/logout.svg",
                   text: "Logout",
                   onTap: () {
-                    box.put("isLoggedIn", null);
-                    box.deleteAt(0);
+                    Hive.box("data").clear();
+
                     Get.deleteAll();
 
                     AppNavigation.offAll(
