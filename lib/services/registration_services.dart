@@ -137,7 +137,7 @@ class RegistrationServices {
           "imageUrl": value!.photoUrl ?? " ",
           "referrer": box.get("referralCode") ?? " ",
         });
-
+        print(body);
         await post(
           Uri.parse(ApiConstant.baseUrl + ApiConstant.googleSigin),
           headers: {

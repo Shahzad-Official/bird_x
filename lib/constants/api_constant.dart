@@ -1,7 +1,7 @@
 class ApiConstant {
   // static const mainUrl = "http://192.168.102.70:3000";
-  static const mainUrl = "http://api.hexon.online:8080";
-  static const baseUrl = "$mainUrl/api";
+  static const mainUrl = "http://pet-x.shop:3000";
+  static const baseUrl = "https://pet-x.shop/api";
 
   //Auth routes
   // static const getUsers = "/auth/all";
