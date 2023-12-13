@@ -34,7 +34,6 @@ class _LoginState extends State<Login> {
   final LoginController _controller = Get.put(LoginController());
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: Navigator.canPop(context)
           ? AppBar(
